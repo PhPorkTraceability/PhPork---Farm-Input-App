@@ -3,18 +3,18 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import helper.SessionManager;
+import android.widget.Toast;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -23,54 +23,68 @@ public class WeekFarrowedPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = WeekFarrowedPage.class.getSimpleName();
-
+    private Toolbar toolbar;
     LinearLayout ll;
     LinearLayout bl;
-    TextView tv_rf11;
-    TextView tv_rf18;
-    TextView tv_rf19;
+    TextView tv_weekf1;
+    TextView tv_weekf2;
+    TextView tv_weekf3;
 
-    SessionManager session;
-
-    String function = "";
-    String location = "";
+    String weekf = "";
+    String boar_id = "";
+    String sow_id = "";
+    String breed = "";
+    String group_label = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
+        setContentView(R.layout.activity_weekfarrowed);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
-        session = new SessionManager(getApplicationContext());
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         Intent i = getIntent();
-        function = i.getStringExtra("function");
+        boar_id = i.getStringExtra("boar_id");
+        sow_id = i.getStringExtra("sow_id");
+        breed = i.getStringExtra("breed");
+        group_label = i.getStringExtra("group_label");
 
         ll = (LinearLayout) findViewById(R.id.top_container);
         bl = (LinearLayout) findViewById(R.id.bottom_container);
         //ll.setOnDragListener(this);
         bl.setOnDragListener(this);
 
-        tv_rf11 = (TextView) findViewById(R.id.tv_rf11);
-        tv_rf18 = (TextView) findViewById(R.id.tv_rf18);
-        tv_rf19 = (TextView) findViewById(R.id.tv_rf19);
+        tv_weekf1 = (TextView) findViewById(R.id.tv_weekF1);
+        tv_weekf2 = (TextView) findViewById(R.id.tv_weekF2);
+        tv_weekf3 = (TextView) findViewById(R.id.tv_weekF3);
 
-        tv_rf11.setOnTouchListener(this);
-        tv_rf18.setOnTouchListener(this);
-        tv_rf19.setOnTouchListener(this);
+        tv_weekf1.setOnTouchListener(this);
+        tv_weekf2.setOnTouchListener(this);
+        tv_weekf3.setOnTouchListener(this);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -96,23 +110,25 @@ public class WeekFarrowedPage extends AppCompatActivity
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
-                if(findViewById(id) == tv_rf11){
-                    location = tv_rf11.getText().toString();
-                } else if(findViewById(id) == tv_rf18){
-                    location = tv_rf18.getText().toString();
-                } else if(findViewById(id) == tv_rf19){
-                    location = tv_rf19.getText().toString();
-                }
+                weekf = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    session.setLogin(function, location);
-                    Intent i = new Intent(WeekFarrowedPage.this, WeaningPage.class);
+                    Toast.makeText(WeekFarrowedPage.this, "Chosen " + weekf,
+                            Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(WeekFarrowedPage.this, ChooseGender.class);
+                    i.putExtra("boar_id", boar_id);
+                    i.putExtra("sow_id", sow_id);
+                    i.putExtra("breed", breed);
+                    i.putExtra("week_farrowed", weekf);
+                    i.putExtra("group_label", group_label);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
 
-                Log.d(LOGCAT, "Dropped ");
+                Log.d(LOGCAT, "Dropped " + weekf);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -133,4 +149,7 @@ public class WeekFarrowedPage extends AppCompatActivity
         }
         else { return false; }
     }
+
+    @Override
+    public void onBackPressed(){super.onBackPressed(); finish(); }
 }

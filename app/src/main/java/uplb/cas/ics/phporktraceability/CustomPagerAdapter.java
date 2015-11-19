@@ -18,12 +18,15 @@ public class CustomPagerAdapter extends PagerAdapter
 
     private Context mContext;
     String[] arr = {};
+    String[] ids = {};
     LayoutInflater inflater;
 
-    public CustomPagerAdapter(Context context, String[] values) {
+    public CustomPagerAdapter(Context context, String[] display, String[] values) {
         mContext = context;
-        arr = values;
+        arr = display;
+        ids = values;
     }
+
 
     @Override
     public int getCount() {
@@ -50,7 +53,7 @@ public class CustomPagerAdapter extends PagerAdapter
         tv_item = (TextView) itemView.findViewById(R.id.tv_item);
         // Capture position and set to the TextViews
         tv_item.setText(arr[position]);
-        tv_item.setTag(arr[position]);
+        tv_item.setTag(ids[position]);
         tv_item.setOnTouchListener(this);
         // Add viewpager_item.xml to ViewPager
         ((ViewPager) container).addView(itemView);

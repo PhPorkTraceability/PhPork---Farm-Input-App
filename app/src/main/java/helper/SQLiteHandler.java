@@ -378,14 +378,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing pig details in database
      */
-    public void addPig(String pig_id, String boar_id, String gender, String birth_date,
+    public void addPig(String pig_id, String boar_id, String sow_id, String gender, String birth_date,
                        String pig_status, String pen_id, String breed_id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_PIGID, pig_id);
         values.put(KEY_BOARID, boar_id);
-        //values.put(KEY_SOWID, sow_id);
+        values.put(KEY_SOWID, sow_id);
         values.put(KEY_GENDER, gender);
         values.put(KEY_BIRTH, birth_date);
         values.put(KEY_PIGSTAT, pig_status);
@@ -550,7 +550,6 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<HashMap<String, String>> getPens(String location) {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
-
         String selectQuery = "SELECT a.pen_id, a.pen_no, a.function, a.house_id FROM "
                 + TABLE_PEN + " a JOIN " + TABLE_HOUSE
                 + " b ON(a.house_id = b.house_id) JOIN " + TABLE_LOC
@@ -586,9 +585,41 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return list;
     }
 
+    public ArrayList<HashMap<String, String>> getPen(String _id) {
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
+
+        String selectQuery = "SELECT pen_no, function FROM " + TABLE_PEN
+                + " WHERE pen_id = '" + _id + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        Log.d(TAG, String.valueOf(cursor.getCount()));
+        // Move to first row
+        cursor.moveToFirst();
+
+        for(int i = 0; i < cursor.getCount();i++)
+        {
+            HashMap<String, String> result = new HashMap<String, String>();
+
+            result.put(KEY_PENNO, cursor.getString(0));
+            result.put(KEY_FUNCTION, cursor.getString(1));
+            cursor.moveToNext();
+            list.add(result);
+
+            Log.d(TAG, "Getting result: " + list.toString());
+
+        }
+
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching pens from Sqlite: " + list.toString());
+
+        return list;
+    }
+
     public ArrayList<HashMap<String, String>> getInactiveTags() {
-        ArrayList<HashMap<String, String>> list
-                = new ArrayList<>();
+        ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         String selectQuery = "SELECT tag_id, tag_rfid, status FROM " + TABLE_RFID_TAGS
                 + " WHERE status = 'Inactive'";
@@ -732,6 +763,30 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         return id;
+    }
+
+    public String getRFID(String _rfid) {
+
+        String result = "";
+        String selectQuery = "SELECT tag_rfid FROM " + TABLE_RFID_TAGS + " WHERE tag_id = '"
+                + _rfid + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        cursor.moveToFirst();
+
+        if (cursor.getCount() > 0) {
+            String res = cursor.getString(0);
+            if(res != null){
+                result = res;
+            }
+        }
+
+        cursor.close();
+        db.close();
+
+        return result;
     }
 
     public int getMaxTagID(){

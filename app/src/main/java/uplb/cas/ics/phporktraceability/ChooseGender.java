@@ -3,16 +3,18 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -21,31 +23,34 @@ public class ChooseGender extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = ChooseGender.class.getSimpleName();
-
+    private Toolbar toolbar;
     private ImageView iv_male;
     private ImageView iv_female;
     private LinearLayout top_cont;
     private LinearLayout bot_cont;
 
     String gender = "";
+    String boar_id = "";
+    String sow_id = "";
+    String group_label = "";
+    String breed = "";
+    String week_farrowed = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weekfarrowed);
+        setContentView(R.layout.activity_gender);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        Intent i = getIntent();
+        boar_id = i.getStringExtra("boar_id");
+        sow_id = i.getStringExtra("sow_id");
+        group_label = i.getStringExtra("group_label");
+        breed = i.getStringExtra("breed");
+        week_farrowed = i.getStringExtra("week_farrowed");
 
         iv_male = (ImageView) findViewById(R.id.iv_male);
         iv_female = (ImageView) findViewById(R.id.iv_female);
@@ -57,6 +62,27 @@ public class ChooseGender extends AppCompatActivity
         //top_cont.setOnDragListener(this);
         bot_cont.setOnDragListener(this);
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -86,7 +112,17 @@ public class ChooseGender extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Intent i = new Intent(ChooseGender.this, HomeActivity.class);
+                    Toast.makeText(ChooseGender.this, "Chosen " + gender,
+                            Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(ChooseGender.this, AssignRFIDPage.class);
+                    i.putExtra("boar_id", boar_id);
+                    i.putExtra("sow_id", sow_id);
+                    i.putExtra("group_label", group_label);
+                    i.putExtra("breed", breed);
+                    i.putExtra("week_farrowed", week_farrowed);
+                    i.putExtra("gender", gender);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -112,4 +148,7 @@ public class ChooseGender extends AppCompatActivity
         }
         else { return false; }
     }
+
+    @Override
+    public void onBackPressed(){super.onBackPressed(); finish(); }
 }

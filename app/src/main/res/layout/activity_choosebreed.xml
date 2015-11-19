@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose Boar Parent"
+            android:text="Swipe to Choose a Breed"
             android:layout_margin="5dp"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -23,7 +23,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Drag and Drop it to the box below"
+            android:text="Then Drag and Drop it to the box below"
             android:layout_margin="5dp"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -39,15 +39,12 @@
             android:layout_marginBottom="10dp"
             android:background="@color/white">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/tv_boarID"
-                android:text="1"
-                android:gravity="center"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:background="@color/bg_main" />
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -66,9 +63,5 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom" android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/back" />
 
 </android.support.design.widget.CoordinatorLayout>

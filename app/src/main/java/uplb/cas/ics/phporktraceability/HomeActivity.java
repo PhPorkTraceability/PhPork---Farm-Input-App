@@ -1,56 +1,59 @@
 package uplb.cas.ics.phporktraceability;
 
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import android.widget.TextView;
+import helper.SessionManager;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity
+        implements View.OnTouchListener, View.OnDragListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final String LOGCAT = HomeActivity.class.getSimpleName();
+    private Toolbar toolbar;
+    private ImageView iv_weaning;
+    private ImageView iv_growing;
+    private LinearLayout bot_cont;
+    private LinearLayout top_cont;
+    String function = "";
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
+    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        session = new SessionManager(getApplicationContext());
+        session.checkLogin();
 
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
+        iv_weaning = (ImageView) findViewById(R.id.iv_weaning);
+        iv_growing = (ImageView) findViewById(R.id.iv_growing);
+        top_cont = (LinearLayout) findViewById(R.id.top_container);
+        bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
 
+        iv_weaning.setOnTouchListener(this);
+        iv_growing.setOnTouchListener(this);
+        //top_cont.setOnDragListener(this);
+        bot_cont.setOnDragListener(this);
+
+        /*
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,9 +62,8 @@ public class HomeActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-
+        */
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,86 +77,72 @@ public class HomeActivity extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()){
+            case R.id.action_settings:
+                return true;
+            case android.R.id.home:
+                Intent i = getIntent();
+                finish();
+                startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onDrag(View v, DragEvent e) {
+        int action = e.getAction();
+        switch(action){
+            case DragEvent.ACTION_DRAG_STARTED:
+                Log.d(LOGCAT, "Drag event started");
+                break;
+            case DragEvent.ACTION_DRAG_ENTERED:
+                Log.d(LOGCAT, "Drag event entered into "+ v.toString());
+                break;
+            case DragEvent.ACTION_DRAG_EXITED:
+                Log.d(LOGCAT, "Drag event exited from " + v.toString());
+                break;
+            case DragEvent.ACTION_DROP:
+                View view = (View) e.getLocalState();
+                ViewGroup from = (ViewGroup) view.getParent();
+                from.removeView(view);
+                view.invalidate();
+                LinearLayout to = (LinearLayout) v;
+                to.addView(view);
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+                view.setVisibility(View.VISIBLE);
+                int id = view.getId();
+                function = findViewById(id).getTag().toString();
+                int vid = to.getId();
+                if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    Toast.makeText(HomeActivity.this, "Chosen " + function.toUpperCase(),
+                            Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(HomeActivity.this, LocationPage.class);
+                    i.putExtra("function", function);
+                    startActivity(i);
+                }
+                Log.d(LOGCAT, "Dropped " + function);
+                break;
+            case DragEvent.ACTION_DRAG_ENDED:
+                Log.d(LOGCAT, "Drag ended");
+                break;
+            default:
+                break;
         }
+        return true;
 
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
-        }
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "SECTION 1";
-                case 1:
-                    return "SECTION 2";
-                case 2:
-                    return "SECTION 3";
-            }
-            return null;
-        }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
+    @Override
+    public boolean onTouch(View v, MotionEvent e) {
+        if (e.getAction() == MotionEvent.ACTION_DOWN) {
+            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
+            v.startDrag(null, shadowBuilder, v, 0);
+            return true;
         }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_home, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
-            return rootView;
-        }
+        else { return false; }
     }
+
+    @Override
+    public void onBackPressed(){super.onBackPressed(); finish(); }
 }

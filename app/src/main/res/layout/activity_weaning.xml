@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose a Function"
+            android:text="Choose What to Do"
             android:layout_margin="5dp"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -42,7 +42,7 @@
                 android:textSize="26sp"
                 android:gravity="center"
                 android:layout_weight=".5"
-                android:text="WEANING" />
+                android:text="Add a Pig" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -50,7 +50,7 @@
                 android:textSize="26sp"
                 android:gravity="center"
                 android:layout_weight=".5"
-                android:text="GROWING" />
+                android:text="View List of Pigs" />
 
         </LinearLayout>
         <LinearLayout
@@ -67,22 +67,22 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/iv_weaning"
-                android:src="@drawable/weaning"
+                android:id="@+id/iv_addpig"
+                android:src="@drawable/addpig"
                 android:scaleType="fitXY"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="weaning"
+                android:tag="addpig"
                 />
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:tag="growing"
-                android:src="@drawable/growing"
-                android:id="@+id/iv_growing"
+                android:tag="viewpig"
+                android:src="@drawable/viewpig"
+                android:id="@+id/iv_viewpig"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
@@ -105,9 +105,5 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom" android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/back" />
 
 </android.support.design.widget.CoordinatorLayout>

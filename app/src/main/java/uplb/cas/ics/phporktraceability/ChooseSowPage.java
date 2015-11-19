@@ -25,34 +25,37 @@ import helper.SQLiteHandler;
 /**
  * Created by marmagno on 11/11/2015.
  */
-public class ChooseBoarPage extends AppCompatActivity
+public class ChooseSowPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
-    private static final String LOGCAT = ChooseBoarPage.class.getSimpleName();
+    private static final String LOGCAT = ChooseSowPage.class.getSimpleName();
     private Toolbar toolbar;
-
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
 
     SQLiteHandler db;
+    String sow_id = "";
     String boar_id = "";
 
     public final static String KEY_PIGID = "pig_id";
     public final static String KEY_BREED = "breed_name";
-    ArrayList<HashMap<String, String>> boar_list;
+    ArrayList<HashMap<String, String>> sow_list;
     String[] lists;
     String[] ids;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chooseboar);
+        setContentView(R.layout.activity_choosesow);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        Intent i = getIntent();
+        boar_id = i.getStringExtra("boar_id");
 
         db = new SQLiteHandler(getApplicationContext());
 
@@ -64,7 +67,7 @@ public class ChooseBoarPage extends AppCompatActivity
         bl.setOnDragListener(this);
         //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new CustomPagerAdapter(ChooseBoarPage.this, lists, ids);
+        adapter = new CustomPagerAdapter(ChooseSowPage.this, lists, ids);
         viewPager.setAdapter(adapter);
 
     }
@@ -110,18 +113,18 @@ public class ChooseBoarPage extends AppCompatActivity
 
     public void loadLists(){
 
-        ArrayList<HashMap<String, String>> boars = db.getBoars();
+        ArrayList<HashMap<String, String>> sows = db.getSows();
 
-        boar_list = new ArrayList<>();
-        lists = new String[boars.size()];
-        ids = new String[boars.size()];
-        for(int i = 0;i < boars.size();i++)
+        sow_list = new ArrayList<>();
+        lists = new String[sows.size()];
+        ids = new String[sows.size()];
+        for(int i = 0;i < sows.size();i++)
         {
-            HashMap<String, String> c = boars.get(i);
-            String boar_id = getLabel(c.get(KEY_PIGID));
-            lists[i] = "Boar: " + boar_id + " -> " + c.get(KEY_BREED);
-            ids[i] = c.get(KEY_PIGID);
-            boar_list.add(c);
+            HashMap<String, String> c = sows.get(i);
+            String sow_id = getLabel(c.get(KEY_PIGID));
+            lists[i] = "Sow: " + sow_id + " -> " + c.get(KEY_BREED);
+            ids[i] =c.get(KEY_PIGID);
+            sow_list.add(c);
         }
     }
 
@@ -148,19 +151,20 @@ public class ChooseBoarPage extends AppCompatActivity
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
-                boar_id = view.findViewById(id).getTag().toString();
+                sow_id = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseBoarPage.this, "Chosen Boar Parent: " +
-                                    getLabel(boar_id),
+                    Toast.makeText(ChooseSowPage.this,  "Chosen Sow Parent: " +
+                                    getLabel(sow_id),
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseBoarPage.this, ChooseSowPage.class);
+                    Intent i = new Intent(ChooseSowPage.this, ChooseBreedPage.class);
                     i.putExtra("boar_id", boar_id);
+                    i.putExtra("sow_id", sow_id);
                     startActivity(i);
                 }
 
-                Log.d(LOGCAT, "Dropped " + boar_id);
+                Log.d(LOGCAT, "Dropped " + sow_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");

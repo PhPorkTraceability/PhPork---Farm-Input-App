@@ -2,22 +2,161 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uplb.cas.ics.phporktraceability" >
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
+        android:name="app.AppController"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_phpork"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".HomeActivity"
+            android:name=".LoadSyncAll"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name="helper.NetworkChangeReceiver"
+            android:label="NetworkChangeReceiver" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name=".HomeActivity"
+            android:label="@string/home"
+            android:launchMode="singleTop" />
+
+        <activity
+            android:name=".LocationPage"
+            android:label="@string/location"
+            android:launchMode="singleTop"
+            android:parentActivityName=".LocationPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LocationPage" />
+        </activity>
+
+
+        <activity
+            android:name=".WeaningPage"
+            android:label="@string/function"
+            android:launchMode="singleTop"
+            android:parentActivityName=".LocationPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LocationPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseBoarPage"
+            android:label="@string/boar_parent"
+            android:launchMode="singleTop"
+            android:parentActivityName=".WeaningPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WeaningPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseSowPage"
+            android:label="@string/sow_parent"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseBoarPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseBoarPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseBreedPage"
+            android:label="@string/breed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseSowPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseSowPage" />
+        </activity>
+
+        <activity
+            android:name=".WeekFarrowedPage"
+            android:label="@string/week_farrowed"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ChooseBreedPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseBreedPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseGender"
+            android:label="@string/gender"
+            android:launchMode="singleTask"
+            android:parentActivityName=".WeekFarrowedPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WeekFarrowedPage" />
+        </activity>
+
+        <activity
+            android:name=".AssignRFIDPage"
+            android:label="@string/assign_rfid"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ChooseGender" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseGender" />
+        </activity>
+
+        <activity
+            android:name=".AssignPenPage"
+            android:label="@string/assign_pen"
+            android:launchMode="singleTask"
+            android:parentActivityName=".AssignRFIDPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AssignRFIDPage" />
+        </activity>
+
+        <activity
+            android:name=".AddThePig"
+            android:label="@string/add_pig"
+            android:launchMode="singleTask"
+            android:parentActivityName=".AssignPenPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AssignPenPage" />
+        </activity>
     </application>
+
 
 </manifest>

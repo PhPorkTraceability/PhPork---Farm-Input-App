@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:fitsSystemWindows="true" tools:context=".HomeActivity">
 
@@ -15,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose Location"
+            android:text="Choose Pig Gender"
             android:layout_margin="5dp"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -29,6 +28,31 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight=".35"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:background="@color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
+                android:gravity="center"
+                android:layout_weight=".5"
+                android:text="Male" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="26sp"
+                android:gravity="center"
+                android:layout_weight=".5"
+                android:text="Female" />
+
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/top_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -39,38 +63,29 @@
             android:layout_marginBottom="10dp"
             android:background="@color/white">
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:id="@+id/iv_male"
+                android:src="@drawable/male_pig"
+                android:scaleType="fitXY"
+                android:layout_gravity="top"
+                android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:id="@+id/tv_rf11"
-                android:text="RF 11"
-                android:gravity="center"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:background="@color/bg_login" />
+                android:tag="M"
+                />
 
-            <TextView
+            <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:id="@+id/iv_female"
+                android:src="@drawable/female_pig"
+                android:layout_gravity="top"
+                android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:id="@+id/tv_rf18"
-                android:text="RF 18"
-                android:gravity="center"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:background="@color/white" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight=".5"
-                android:id="@+id/tv_rf19"
-                android:text="RF 19"
-                android:gravity="center"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:background="@color/bg_main" />
+                android:tag="F"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -89,9 +104,5 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom" android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/back" />
 
 </android.support.design.widget.CoordinatorLayout>

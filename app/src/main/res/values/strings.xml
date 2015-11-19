@@ -2,4 +2,87 @@
     <string name="app_name">PhPorkTraceability</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
+
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_account">Account</string>
+    <string name="hint_name">Fullname</string>
+    <string name="btn_login">LOGIN</string>
+    <string name="welcome">Welcome</string>
+    <string name="btn_logout">LOGOUT</string>
+    <string name="name">Fullname</string>
+    <string name="action_logout"> Logout </string>
+
+    <string name="btn_addPig"> Add New Pig </string>
+    <string name="btn_addRFID"> Add New RFID Tags </string>
+    <string name="btn_addFeed"> Add Pig Feed </string>
+    <string name="btn_addMed"> Add Med Rec </string>
+    <string name="btn_viewPigs"> View List of Pigs </string>
+
+    <string name="text_chooseLoc"> Choose Function </string>
+    <string name="btn_weaning"> For Weaning </string>
+    <string name="btn_growing"> For Growing </string>
+
+    <string name="text_addPig">Add New Pig Info</string>
+    <string name="hint_boar">Boar Parent :</string>
+    <string name="hint_sow">Sow Parent :</string>
+    <string name="hint_gender">Gender :</string>
+    <string name="hint_birth">Birth Date :</string>
+    <string name="hint_pigStatus">Pig Status :</string>
+    <string name="hint_pen">Located At :</string>
+    <string name="hint_breed">Breed :</string>
+    <string name="hint_rfid">Assign RFID :</string>
+    <string name="btn_select">Select Pig</string>
+    <string name="btn_choose">Choose Date</string>
+    <string name="btn_submit">Add Pig</string>
+
+    <string-array name="pig_breeds">
+        <item>Galore</item>
+        <item>Largewhite</item>
+        <item>Landrace</item>
+        <item>Galore-Largewhite</item>
+        <item>Galore-Landrace</item>
+        <item>Largewhite-Landrace</item>
+    </string-array>
+
+    <string-array name="rfid_status">
+        <item>Used</item>
+        <item>Unused</item>
+        <item>Broken</item>
+        <item>Lost</item>
+    </string-array>
+
+    <string-array name="pen_label">
+        <item>Nursery Pen</item>
+        <item>Quarantine Pen</item>
+    </string-array>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <string-array name="activities_weaning">
+        <item>Home</item>
+        <item>Location Page</item>
+        <item>Farm Function</item>
+        <item>Boar Parent</item>
+        <item>Sow Parent</item>
+        <item>Breed</item>
+        <item>Week Farrowed</item>
+        <item>Gender</item>
+        <item>Assign RFID</item>
+        <item>Assign Pen</item>
+    </string-array>
+
+    <string name="home">Home</string>
+    <string name="location">Location Page</string>
+    <string name="function">Farm Function</string>
+    <string name="boar_parent">Boar Parent</string>
+    <string name="sow_parent">Sow Parent</string>
+    <string name="breed">Breed</string>
+    <string name="week_farrowed">Week Farrowed</string>
+    <string name="gender">Gender</string>
+    <string name="assign_rfid">Assign RFID</string>
+    <string name="assign_pen">Assign Pen</string>
+    <string name="add_pig">Add The Pig</string>
+
 </resources>

@@ -12,9 +12,9 @@ import android.util.Log;
 
 import java.util.HashMap;
 
-import uplb.cas.ics.porktraceability.GrowingMainActivity;
-import uplb.cas.ics.porktraceability.LoginActivity;
-import uplb.cas.ics.porktraceability.WeaningMainActivity;
+import uplb.cas.ics.phporktraceability.HomeActivity;
+import uplb.cas.ics.phporktraceability.WeaningPage;
+
 
 public class SessionManager {
     // LogCat tag
@@ -63,32 +63,32 @@ public class SessionManager {
      * Else won't do anything
      * */
     public void checkLogin(){
-        // Check login status
-        if(KEY_FUNC.equals("weaning")) {
-            // user is logged in redirect him to supposed activity
-            Intent i = new Intent(_context, WeaningMainActivity.class);
-            // Closing all the Activities
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        if(isLoggedIn() == true){
+           if(KEY_FUNC.equals("weaning")){
+               // After logout redirect user to Login Activity
+               Intent i = new Intent(_context, WeaningPage.class);
 
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               // Closing all the Activities
+               //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            // Staring Login Activity
-            _context.startActivity(i);
+               // Add new Flag to start new Activity
+               //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+               // Starting Login Activity
+               _context.startActivity(i);
+           } else if(KEY_FUNC.equals("growing")){
+               // After logout redirect user to Login Activity
+               Intent i = new Intent(_context, WeaningPage.class);
+               // Closing all the Activities
+               //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+               // Add new Flag to start new Activity
+               //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+               // Starting Login Activity
+               _context.startActivity(i);
+           }
         }
-        else if(KEY_FUNC.equals("growing")){
-            // user is logged in redirect him to supposed activity
-            Intent i = new Intent(_context, GrowingMainActivity.class);
-            // Closing all the Activities
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            // Add new Flag to start new Activity
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            // Starting Activity
-            _context.startActivity(i);
-        }
-
     }
     /**
      * Get stored session data
@@ -114,7 +114,7 @@ public class SessionManager {
         editor.commit();
 
         // After logout redirect user to Login Activity
-        Intent i = new Intent(_context, LoginActivity.class);
+        Intent i = new Intent(_context, HomeActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 

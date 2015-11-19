@@ -14,7 +14,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Swipe to Choose RFID to Assign"
+            android:text="Swipe to Choose a Sow Parent"
             android:layout_margin="5dp"
             android:textSize="24sp"
             android:textStyle="bold" />
@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:text="Then Drag and Drop it to the box below"
             android:layout_margin="5dp"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <LinearLayout

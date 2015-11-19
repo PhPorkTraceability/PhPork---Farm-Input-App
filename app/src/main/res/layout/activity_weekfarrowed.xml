@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Swipe to Choose a Breed"
+            android:text="Choose Week Farrowed"
             android:layout_margin="5dp"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -39,11 +39,43 @@
             android:layout_marginBottom="10dp"
             android:background="@color/white">
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewpager"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                />
+                android:id="@+id/tv_weekF1"
+                android:text="Week 4 Oct 2015"
+                android:tag="Week 4 Oct 2015"
+                android:layout_weight=".5"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:background="@color/bg_main"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/tv_weekF2"
+                android:text="Week 1 Nov 2015"
+                android:tag="Week 1 Nov 2015"
+                android:layout_weight=".5"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/tv_weekF3"
+                android:layout_weight=".5"
+                android:text="Week 2 Nov 2015"
+                android:tag="Week 2 Nov 2015"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:background="@color/bg_login"
+                android:layout_gravity="center"
+                android:gravity="center"/>
         </LinearLayout>
 
         <LinearLayout
@@ -62,9 +94,5 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom" android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/back" />
 
 </android.support.design.widget.CoordinatorLayout>
