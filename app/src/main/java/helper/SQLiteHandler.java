@@ -36,6 +36,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String TABLE_LOC = "location";
     private static final String TABLE_HOUSE = "house";
     private static final String TABLE_PEN = "pen";
+    private static final String TABLE_GROUP = "pig_groups";
     private static final String TABLE_PIG = "pig";
     private static final String TABLE_RFID_TAGS = "rfid_tags";
     private static final String TABLE_TAG_PIG = "rfid_tag_pig";
@@ -45,7 +46,6 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String TABLE_MEDS = "medication";
     private static final String TABLE_MR = "med_record";
     private static final String TABLE_PB = "pig_breeds";
-    private static final String TABLE_GROUP = "pig_group";
 
     // Table Employee Columns names
     /*
@@ -75,6 +75,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_PENID = "pen_id";
     private static final String KEY_PENNO = "pen_no";
 
+    // Table Pig Groups
+    private static final String KEY_GNAME = "group_name";
+
     // Table Pig Breeds
     private static final String KEY_BREEDID = "breed_id";
     private static final String KEY_BREEDNAME = "breed_name";
@@ -84,7 +87,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_BOARID = "boar_id";
     private static final String KEY_SOWID = "sow_id";
     private static final String KEY_GENDER = "gender";
-    private static final String KEY_BIRTH = "birth_date";
+    private static final String KEY_WEEKF = "week_farrowed";
     private static final String KEY_PIGSTAT = "pig_status";
 
     // Table Weight Record
@@ -163,16 +166,25 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + TABLE_HOUSE + "(" + KEY_HOUSEID + ")" + ")";
         db.execSQL(CREATE_PEN_TABLE);
 
+        String CREATE_GROUP_TABLE = "CREATE TABLE " + TABLE_GROUP + "("
+                + KEY_GNAME + " TEXT PRIMARY KEY,"
+                + KEY_PENID + " INTEGER," + "FOREIGN KEY(" + KEY_PENID + ") REFERENCES "
+                + TABLE_PEN + "(" + KEY_PENID + ")" + ")";
+        db.execSQL(CREATE_GROUP_TABLE);
+
         String CREATE_BREED_TABLE = "CREATE TABLE " + TABLE_PB + "("
                 + KEY_BREEDID + " INTEGER PRIMARY KEY," + KEY_BREEDNAME + " TEXT" + ")";
         db.execSQL(CREATE_BREED_TABLE);
 
         String CREATE_PIG_TABLE = "CREATE TABLE " + TABLE_PIG + "("
                 + KEY_PIGID + " INTEGER PRIMARY KEY," + KEY_BOARID + " INTEGER,"
-                + KEY_SOWID + " INTEGER," + KEY_GENDER + " TEXT," + KEY_BIRTH + " DATE,"
+                + KEY_SOWID + " INTEGER," + KEY_GENDER + " TEXT," + KEY_WEEKF + " TEXT,"
                 + KEY_PIGSTAT + " TEXT,"
                 + KEY_PENID + " INTEGER,"
                 + KEY_BREEDID + " INTEGER,"
+                + KEY_GNAME + " TEXT,"
+                + "FOREIGN KEY(" + KEY_GNAME + ") REFERENCES "
+                + TABLE_GROUP + "(" + KEY_GNAME + "),"
                 + "FOREIGN KEY(" + KEY_PENID + ") REFERENCES "
                 + TABLE_PEN + "(" + KEY_PENID + "),"
                 + "FOREIGN KEY(" + KEY_BREEDID + ") REFERENCES "
@@ -346,6 +358,20 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "New pen inserted into sqlite: " + id);
     }
 
+    public void addGroup(String group_name, String pen_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_GNAME, group_name);
+        values.put(KEY_PENID, pen_id);
+
+        // Inserting Row
+        long id = db.insert(TABLE_GROUP, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New pig group inserted into sqlite: " + id);
+    }
+
     public void addBreed(String breed_id, String breed_name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -378,8 +404,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing pig details in database
      */
-    public void addPig(String pig_id, String boar_id, String sow_id, String gender, String birth_date,
-                       String pig_status, String pen_id, String breed_id) {
+    public void addPig(String pig_id, String boar_id, String sow_id, String gender,
+                       String week_farrowed, String pig_status,
+                       String pen_id, String breed_id, String group_name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -387,10 +414,11 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(KEY_BOARID, boar_id);
         values.put(KEY_SOWID, sow_id);
         values.put(KEY_GENDER, gender);
-        values.put(KEY_BIRTH, birth_date);
+        values.put(KEY_WEEKF, week_farrowed);
         values.put(KEY_PIGSTAT, pig_status);
         values.put(KEY_PENID, pen_id);
         values.put(KEY_BREEDID, breed_id);
+        values.put(KEY_GNAME, group_name);
 
         // Inserting Row
         long id = db.insert(TABLE_PIG, null, values);
@@ -622,7 +650,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         String selectQuery = "SELECT tag_id, tag_rfid, status FROM " + TABLE_RFID_TAGS
-                + " WHERE status = 'Inactive'";
+                + " WHERE status = 'Unused'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -675,6 +703,100 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
         // return user
         Log.d(TAG, "Fetching tags from Sqlite: " + list.toString());
+
+        return list;
+    }
+
+    public ArrayList<HashMap<String, String>> getPigs() {
+        ArrayList<HashMap<String, String>> list
+                = new ArrayList<>();
+
+        String selectQuery = "SELECT a.pig_id, a.gender, b.breed_name FROM "
+                + TABLE_PIG + " a JOIN " + TABLE_PB +
+                " b ON(a.breed_id = b.breed_id)";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        cursor.moveToFirst();
+
+        for(int i = 0; i < cursor.getCount();i++) {
+            HashMap<String, String> result = new HashMap<String, String>();
+
+            result.put(KEY_PIGID, cursor.getString(0));
+            result.put(KEY_GENDER, cursor.getString(1));
+            result.put(KEY_BREEDNAME, cursor.getString(2));
+            cursor.moveToNext();
+            list.add(result);
+
+            Log.d(TAG, "Getting result: " + list.toString());
+        }
+
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching pigs from Sqlite: " + list.toString());
+
+        return list;
+    }
+
+    public HashMap<String, String> getThePig(String _id) {
+
+        HashMap<String, String> list = new HashMap<String, String>();
+        String selectQuery = "SELECT a.boar_id, a.sow_id, a.week_farrowed, a.gender, " +
+                "b.breed_name FROM " + TABLE_PIG + " a INNER JOIN "
+                + TABLE_PB + " b ON(a.breed_id = b.breed_id) WHERE a.pig_id = '"
+                + _id + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            list.put(KEY_BOARID, cursor.getString(0));
+            list.put(KEY_SOWID, cursor.getString(1));
+            list.put(KEY_WEEKF, cursor.getString(2));
+            list.put(KEY_GENDER, cursor.getString(3));
+            list.put(KEY_BREEDNAME, cursor.getString(4));
+        }
+
+        Log.d(TAG, "Getting result: " + list.toString());
+
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching pigs from Sqlite: " + list.toString());
+
+        return list;
+    }
+
+    public HashMap<String, String> getPigGroup(String _id) {
+
+        HashMap<String, String> list = new HashMap<String, String>();
+        String selectQuery = "SELECT a.group_name, b.pen_id, b.function FROM "
+                + TABLE_PIG + " a JOIN " + TABLE_PEN
+                + " b ON(a.pen_id = b.pen_id) JOIN "
+                + TABLE_GROUP + " c ON(a.group_name = c.group_name) WHERE a.pig_id = '"
+                + _id + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            list.put(KEY_GNAME, cursor.getString(0));
+            list.put(KEY_PENID, cursor.getString(1));
+            list.put(KEY_FUNCTION, cursor.getString(2));
+        }
+
+        Log.d(TAG, "Getting result: " + list.toString());
+
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching pigs from Sqlite: " + list.toString());
 
         return list;
     }
