@@ -33,6 +33,7 @@ public class LoadSyncAll extends Activity implements Runnable{
     JSONArray locs = null;
     JSONArray houses = null;
     JSONArray hPens = null;
+    JSONArray pigGroups = null;
     JSONArray pPigBreeds = null;
     JSONArray pigs = null;
     JSONArray weightRecord = null;
@@ -58,6 +59,9 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String KEY_PENID = "pen_id";
     private static final String KEY_PENNO = "pen_no";
 
+    // Table Pig Groups
+    private static final String KEY_GNAME= "group_name";
+
     // Table Pig Breeds
     private static final String KEY_BREEDID = "breed_id";
     private static final String KEY_BREEDNAME = "breed_name";
@@ -67,7 +71,7 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String KEY_BOARID = "boar_id";
     private static final String KEY_SOWID = "sow_id";
     private static final String KEY_GENDER = "gender";
-    private static final String KEY_BIRTH = "birth_date";
+    private static final String KEY_WEEKF = "week_farrowed";
     private static final String KEY_PIGSTAT = "pig_status";
 
     // Table Weight Record
@@ -231,6 +235,19 @@ public class LoadSyncAll extends Activity implements Runnable{
                                     db.addPen(pen_id, pen_no, pen_func, house_id);
                                 }
 
+                                pigGroups = new JSONArray();
+                                pigGroups = resp.getJSONArray("pig_groups");
+                                for(int i = 0;i < pigGroups.length();i++)
+                                {
+                                    JSONObject c = pigGroups.getJSONObject(i);
+
+                                    // Now store the user in SQLite
+                                    String group_name = c.getString(KEY_GNAME);
+                                    String pen_id = c.getString(KEY_PENID);
+
+                                    db.addGroup(group_name, pen_id);
+                                }
+
                                 pPigBreeds = new JSONArray();
                                 pPigBreeds = resp.getJSONArray("pig_breeds");
                                 for(int i = 0;i < pPigBreeds.length();i++)
@@ -255,13 +272,14 @@ public class LoadSyncAll extends Activity implements Runnable{
                                     String boar_id = c.getString(KEY_BOARID);
                                     String sow_id = c.getString(KEY_SOWID);
                                     String gender = c.getString(KEY_GENDER);
-                                    String birth_date = c.getString(KEY_BIRTH);
+                                    String week_farrowed = c.getString(KEY_WEEKF);
                                     String pig_status = c.getString(KEY_PIGSTAT);
                                     String pen_id = c.getString(KEY_PENID);
                                     String breed_id = c.getString(KEY_BREEDID);
+                                    String group_name = c.getString(KEY_GNAME);
 
-                                    db.addPig(pig_id, boar_id, sow_id, gender, birth_date,
-                                            pig_status, pen_id, breed_id);
+                                    db.addPig(pig_id, boar_id, sow_id, gender, week_farrowed,
+                                            pig_status, pen_id, breed_id, group_name);
                                 }
 
                                 weightRecord = new JSONArray();
