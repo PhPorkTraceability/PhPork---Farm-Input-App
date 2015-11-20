@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,6 +26,7 @@ import helper.SQLiteHandler;
 public class AddThePig extends AppCompatActivity {
 
     private static final String LOGCAT = AddThePig.class.getSimpleName();
+    private Toolbar toolbar;
     private static final String KEY_PENNO = "pen_no";
     private static final String KEY_FUNC = "function";
 
@@ -61,8 +64,12 @@ public class AddThePig extends AppCompatActivity {
         setContentView(R.layout.activity_addthepig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
@@ -114,10 +121,11 @@ public class AddThePig extends AppCompatActivity {
             public void onClick(View v) {
                 if(et_weight.getText().toString().trim().length() > 0){
                     weight = et_weight.getText().toString();
-                    db.addPig(String.valueOf(curID), boar_id, sow_id, gender, "", "weaning",
-                            pen, breed);
+                    db.addGroup(group_label, pen);
+                    db.addPig(String.valueOf(curID), boar_id, sow_id, gender, week_farrowed,
+                            "weaning", pen, breed, group_label);
                     db.assignPigTag(rfid, pig_id, String.valueOf(curID));
-                    db.updateTag(rfid, "Active");
+                    db.updateTag(rfid, "Used");
                     Intent i = new Intent(AddThePig.this, WeekFarrowedPage.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -144,10 +152,11 @@ public class AddThePig extends AppCompatActivity {
             public void onClick(View v) {
                 if(et_weight.getText().toString().trim().length() > 0) {
                     weight = et_weight.getText().toString();
-                    db.addPig(String.valueOf(curID), boar_id, sow_id, gender, "", "weaning",
-                            pen, breed);
+                    db.addGroup(group_label, pen);
+                    db.addPig(String.valueOf(curID), boar_id, sow_id, gender, week_farrowed,
+                            "weaning", pen, breed, group_label);
                     db.assignPigTag(rfid, pig_id, String.valueOf(curID));
-                    db.updateTag(rfid, "Active");
+                    db.updateTag(rfid, "Used");
                     Intent i = new Intent(AddThePig.this, WeaningPage.class);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -179,13 +188,22 @@ public class AddThePig extends AppCompatActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()) {
+            //noinspection SimplifiableIfStatement
+            case R.id.action_settings:
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.mipmap.ic_phpork:
+                Intent i = new Intent(AddThePig.this, HomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -206,15 +224,14 @@ public class AddThePig extends AppCompatActivity {
 
         int size = _id.length();
         String s = "0";
-        size = 10 - size;
+        size = 6 - size;
         for(int i = 0; i < size;i++){
             s = s + "0";
         }
         s = s + _id;
-        String temp1 = s.substring(0,4);
-        String temp2 = s.substring(5,9);
-        String temp3 = s.substring(9);
-        result = temp1 + "-" + temp2 + "-" +temp3;
+        String temp1 = s.substring(0,2);
+        String temp2 = s.substring(3,7);
+        result = temp1 + "-" + temp2;
         return result;
     }
 

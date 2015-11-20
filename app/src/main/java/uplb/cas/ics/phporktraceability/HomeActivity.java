@@ -40,6 +40,9 @@ public class HomeActivity extends AppCompatActivity
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
@@ -84,6 +87,7 @@ public class HomeActivity extends AppCompatActivity
                 Intent i = getIntent();
                 finish();
                 startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

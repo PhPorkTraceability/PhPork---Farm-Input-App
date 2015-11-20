@@ -5,6 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
@@ -26,6 +27,7 @@ public class LocationPage extends AppCompatActivity
 
     private static final String LOGCAT = LocationPage.class.getSimpleName();
 
+    private Toolbar toolbar;
     LinearLayout ll;
     LinearLayout bl;
     TextView tv_rf11;
@@ -43,9 +45,11 @@ public class LocationPage extends AppCompatActivity
         setContentView(R.layout.activity_location);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         session = new SessionManager(getApplicationContext());
@@ -86,6 +90,14 @@ public class LocationPage extends AppCompatActivity
                 return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.mipmap.ic_phpork:
+                Intent i = new Intent(LocationPage.this, HomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);

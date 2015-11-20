@@ -3,6 +3,7 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -51,8 +52,12 @@ public class ChooseSowPage extends AppCompatActivity
         setContentView(R.layout.activity_choosesow);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
@@ -84,13 +89,22 @@ public class ChooseSowPage extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(item.getItemId()) {
+            //noinspection SimplifiableIfStatement
+            case R.id.action_settings:
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case R.mipmap.ic_phpork:
+                Intent i = new Intent(ChooseSowPage.this, HomeActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
+                return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -99,15 +113,14 @@ public class ChooseSowPage extends AppCompatActivity
 
         int size = _id.length();
         String s = "0";
-        size = 10 - size;
+        size = 6 - size;
         for(int i = 0; i < size;i++){
             s = s + "0";
         }
         s = s + _id;
-        String temp1 = s.substring(0,4);
-        String temp2 = s.substring(5, 9);
-        String temp3 = s.substring(9);
-        result = temp1 + "-" + temp2 + "-" +temp3;
+        String temp1 = s.substring(0,2);
+        String temp2 = s.substring(3,7);
+        result = temp1 + "-" + temp2;
         return result;
     }
 
