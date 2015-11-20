@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PhPorkTraceability</string>
+    <string name="app_name">Android Pork Traceability</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
@@ -39,10 +39,10 @@
     <string-array name="pig_breeds">
         <item>Galore</item>
         <item>Largewhite</item>
-        <item>Landrace</item>
+        <item>Landraise</item>
         <item>Galore-Largewhite</item>
-        <item>Galore-Landrace</item>
-        <item>Largewhite-Landrace</item>
+        <item>Galore-Landraise</item>
+        <item>Largewhite-Landraise</item>
     </string-array>
 
     <string-array name="rfid_status">
