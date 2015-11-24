@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:fitsSystemWindows="true" android:background="@color/white"
+    android:padding="10dp" android:orientation="vertical" tools:context=".AddThePig">
+
+    <LinearLayout
+        android:id="@+id/top_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:background="@color/white">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/db_btn_addAnother"
+            android:tag="add_another"
+            android:text="Add Another"
+            android:background="@drawable/btn_gradient"
+            android:layout_weight=".5"
+            android:layout_margin="20dp"
+            android:textSize="28sp"
+            android:layout_gravity="center" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:id="@+id/db_btn_finishAdd"
+            android:tag="finish"
+            android:text="Finish"
+            android:background="@drawable/btn_gradient"
+            android:layout_gravity="center"
+            android:layout_weight=".5"
+            android:layout_margin="20dp"
+            android:textSize="32sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottom_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="20dp"
+        android:layout_margin="10dp"
+        android:background="@drawable/layout_gradient">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/tv_dragHere"
+            android:gravity="center"
+            android:textSize="32sp"
+            android:textStyle="bold|italic"
+            android:text="Drop your choice here"/>
+
+    </LinearLayout>
+
+</LinearLayout>
