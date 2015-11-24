@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import helper.SessionManager;
@@ -107,14 +108,18 @@ public class HomeActivity extends AppCompatActivity
                 Log.d(LOGCAT, "Drag event exited from " + v.toString());
                 break;
             case DragEvent.ACTION_DROP:
+                TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
+                TextView tv_subs = (TextView) findViewById(R.id.tv_subs);
                 View view = (View) e.getLocalState();
                 ViewGroup from = (ViewGroup) view.getParent();
                 from.removeView(view);
                 view.invalidate();
                 LinearLayout to = (LinearLayout) v;
                 to.addView(view);
-
+                to.removeView(tv_drag);
+                tv_subs.setVisibility(View.VISIBLE);
                 view.setVisibility(View.VISIBLE);
+
                 int id = view.getId();
                 function = findViewById(id).getTag().toString();
                 int vid = to.getId();
@@ -124,6 +129,7 @@ public class HomeActivity extends AppCompatActivity
                     Intent i = new Intent(HomeActivity.this, LocationPage.class);
                     i.putExtra("function", function);
                     startActivity(i);
+                    finish();
                 }
                 Log.d(LOGCAT, "Dropped " + function);
                 break;

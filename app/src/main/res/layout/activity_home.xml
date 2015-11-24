@@ -4,6 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
+    android:fitsSystemWindows="true" android:background="@color/white"
     tools:context=".HomeActivity">
 
     <LinearLayout
@@ -31,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Choose a Function"
-            android:layout_margin="5dp"
+            android:layout_margin="10dp"
             android:textSize="28sp"
             android:textStyle="bold" />
 
@@ -84,20 +85,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/iv_weaning"
-                android:src="@drawable/weaning"
-                android:scaleType="fitXY"
+                android:src="@drawable/ic_weaning"
+                android:scaleType="fitCenter"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="weaning"
-                />
+                android:tag="weaning" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:id="@+id/tv_subs"
+                android:layout_weight=".5" />
 
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitXY"
+                android:scaleType="fitCenter"
                 android:tag="growing"
-                android:src="@drawable/growing"
+                android:src="@drawable/ic_growing"
                 android:id="@+id/iv_growing"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
@@ -110,10 +117,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight=".20"
-            android:gravity="center"
             android:orientation="horizontal"
-            android:padding="10dp"
-            android:background="@color/colorAccent">
+            android:padding="20dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/layout_gradient">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/tv_dragHere"
+                android:gravity="center"
+                android:textSize="32sp"
+                android:textStyle="bold|italic"
+                android:text="Drop your choice here"/>
 
         </LinearLayout>
 

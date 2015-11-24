@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -132,14 +133,18 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 return true;
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.mipmap.ic_phpork:
-                Intent i = new Intent(AssignPenPage.this, HomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
+                i.putExtra("boar_id", boar_id);
+                i.putExtra("sow_id", sow_id);
+                i.putExtra("group_label", group_label);
+                i.putExtra("breed", breed);
+                i.putExtra("week_farrowed", week_farrowed);
+                i.putExtra("gender", gender);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -159,12 +164,14 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 Log.d(LOGCAT, "Drag event exited from " + v.toString());
                 break;
             case DragEvent.ACTION_DROP:
+                TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
                 View view = (View) e.getLocalState();
                 ViewGroup from = (ViewGroup) view.getParent();
                 from.removeView(view);
-                //view.invalidate();
+                view.invalidate();
                 LinearLayout to = (LinearLayout) v;
                 to.addView(view);
+                to.removeView(tv_drag);
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();

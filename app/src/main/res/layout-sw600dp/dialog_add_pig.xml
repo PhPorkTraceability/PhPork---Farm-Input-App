@@ -27,6 +27,13 @@
             android:textSize="36sp"
             android:layout_gravity="center" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/tv_subs"
+            android:layout_weight=".5" />
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="150dp"

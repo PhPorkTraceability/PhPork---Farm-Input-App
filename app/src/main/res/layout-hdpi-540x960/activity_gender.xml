@@ -89,8 +89,14 @@
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="M"
-                />
+                android:tag="M" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:id="@+id/tv_subs"
+                android:layout_weight=".5" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -101,8 +107,7 @@
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="F"
-                />
+                android:tag="F" />
         </LinearLayout>
 
         <LinearLayout

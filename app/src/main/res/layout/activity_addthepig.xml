@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:fitsSystemWindows="true" tools:context=".HomeActivity">
+    android:fitsSystemWindows="true" android:background="@color/white"
+    tools:context=".HomeActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +33,7 @@
             android:text="Finalizing Input"
             android:layout_margin="5dp"
             android:layout_gravity="center"
-            android:textSize="28sp"
+            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
@@ -61,7 +62,7 @@
                 android:text="Group Label: "
                 android:id="@+id/tv_group"
                 android:textStyle="bold|italic"
-                android:textSize="20sp" />
+                android:textSize="22sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -69,7 +70,7 @@
                 android:text="Pig Label: "
                 android:id="@+id/tv_pig"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -78,7 +79,7 @@
                 android:text="Boar Parent: "
                 android:id="@+id/tv_boar"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
 
@@ -88,7 +89,7 @@
                 android:text="Sow ID: "
                 android:id="@+id/tv_sow"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -97,7 +98,7 @@
                 android:text="Breed: "
                 android:id="@+id/tv_breed"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="22sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -106,7 +107,7 @@
                 android:text="Week Farrowed: "
                 android:id="@+id/tv_week"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -115,7 +116,7 @@
                 android:text="Gender: "
                 android:id="@+id/tv_gender"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -124,7 +125,7 @@
                 android:text="RFID: "
                 android:id="@+id/tv_rfid"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -133,7 +134,7 @@
                 android:text="Pen: "
                 android:id="@+id/tv_pen"
                 android:textStyle="bold"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
 
             <EditText
@@ -148,16 +149,9 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_addPig"
                 android:text="Add Pig"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textColor="@color/bg_login" />
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/btn_finish"
-                android:text="Finish Adding"
-                android:textSize="16sp"
-                android:textColor="@color/bg_login" />
         </LinearLayout>
 
     </LinearLayout>

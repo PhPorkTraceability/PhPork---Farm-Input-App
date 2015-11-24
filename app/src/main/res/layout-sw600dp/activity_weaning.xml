@@ -91,6 +91,13 @@
                 android:layout_weight=".5"
                 android:tag="addpig" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:id="@+id/tv_subs"
+                android:layout_weight=".5" />
+
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

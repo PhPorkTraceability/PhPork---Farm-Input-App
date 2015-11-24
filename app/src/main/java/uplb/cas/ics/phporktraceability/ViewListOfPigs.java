@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -136,10 +135,15 @@ public class ViewListOfPigs extends AppCompatActivity {
 
                 // Make dialog box visible.
                 viewD.show();
-
             }
         });
 
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                return false;
+            }
+        });
         loadLists();
     }
 
@@ -160,11 +164,7 @@ public class ViewListOfPigs extends AppCompatActivity {
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.mipmap.ic_phpork:
-                Intent i = new Intent(ViewListOfPigs.this, HomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent i = new Intent(ViewListOfPigs.this, WeaningPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);

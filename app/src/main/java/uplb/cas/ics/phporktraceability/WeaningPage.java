@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import helper.SessionManager;
@@ -80,13 +80,10 @@ public class WeaningPage extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.mipmap.ic_phpork:
-                Intent i = new Intent(WeaningPage.this, HomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent i = new Intent(WeaningPage.this, LocationPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("function", function);
                 startActivity(i);
                 finish();
                 return true;
@@ -108,12 +105,16 @@ public class WeaningPage extends AppCompatActivity
                 Log.d(LOGCAT, "Drag event exited from " + v.toString());
                 break;
             case DragEvent.ACTION_DROP:
+                TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
+                TextView tv_subs = (TextView) findViewById(R.id.tv_subs);
                 View view = (View) e.getLocalState();
                 ViewGroup from = (ViewGroup) view.getParent();
                 from.removeView(view);
                 view.invalidate();
                 LinearLayout to = (LinearLayout) v;
                 to.addView(view);
+                to.removeView(tv_drag);
+                tv_subs.setVisibility(View.VISIBLE);
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
@@ -126,13 +127,14 @@ public class WeaningPage extends AppCompatActivity
                                 Toast.LENGTH_LONG).show();
                         Intent i = new Intent(WeaningPage.this, ChooseBoarPage.class);
                         startActivity(i);
+                        finish();
                     } else if(function.equals("viewpig")) {
                         Toast.makeText(WeaningPage.this, "Chosen " + function.toUpperCase(),
                                 Toast.LENGTH_LONG).show();
                         Intent i = new Intent(WeaningPage.this, ViewListOfPigs.class);
                         startActivity(i);
+                        finish();
                     }
-
                 }
 
                 Log.d(LOGCAT, "Dropped " + function);

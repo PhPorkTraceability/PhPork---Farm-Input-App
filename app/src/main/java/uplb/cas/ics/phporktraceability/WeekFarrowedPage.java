@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -13,6 +12,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,9 +27,9 @@ public class WeekFarrowedPage extends AppCompatActivity
     private Toolbar toolbar;
     LinearLayout ll;
     LinearLayout bl;
-    TextView tv_weekf1;
-    TextView tv_weekf2;
-    TextView tv_weekf3;
+    ImageView iv_weekf1;
+    ImageView iv_weekf2;
+    ImageView iv_weekf3;
 
     String weekf = "";
     String boar_id = "";
@@ -61,13 +61,13 @@ public class WeekFarrowedPage extends AppCompatActivity
         //ll.setOnDragListener(this);
         bl.setOnDragListener(this);
 
-        tv_weekf1 = (TextView) findViewById(R.id.tv_weekF1);
-        tv_weekf2 = (TextView) findViewById(R.id.tv_weekF2);
-        tv_weekf3 = (TextView) findViewById(R.id.tv_weekF3);
+        iv_weekf1 = (ImageView) findViewById(R.id.iv_wf1);
+        iv_weekf2 = (ImageView) findViewById(R.id.iv_wf2);
+        iv_weekf3 = (ImageView) findViewById(R.id.iv_wf3);
 
-        tv_weekf1.setOnTouchListener(this);
-        tv_weekf2.setOnTouchListener(this);
-        tv_weekf3.setOnTouchListener(this);
+        iv_weekf1.setOnTouchListener(this);
+        iv_weekf2.setOnTouchListener(this);
+        iv_weekf3.setOnTouchListener(this);
 
     }
 
@@ -88,17 +88,14 @@ public class WeekFarrowedPage extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
-            case R.mipmap.ic_phpork:
-                Intent i = new Intent(WeekFarrowedPage.this, HomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent i = new Intent(WeekFarrowedPage.this, ChooseBreedPage.class);
+                i.putExtra("boar_id", boar_id);
+                i.putExtra("sow_id", sow_id);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
-
         }
         return super.onOptionsItemSelected(item);
     }
@@ -117,12 +114,14 @@ public class WeekFarrowedPage extends AppCompatActivity
                 Log.d(LOGCAT, "Drag event exited from " + v.toString());
                 break;
             case DragEvent.ACTION_DROP:
+                TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
                 View view = (View) e.getLocalState();
                 ViewGroup from = (ViewGroup) view.getParent();
                 from.removeView(view);
                 view.invalidate();
                 LinearLayout to = (LinearLayout) v;
                 to.addView(view);
+                to.removeView(tv_drag);
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
