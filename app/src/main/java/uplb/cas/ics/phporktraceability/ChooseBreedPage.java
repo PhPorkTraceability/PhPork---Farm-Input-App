@@ -31,20 +31,24 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
+    TextView tv_title;
 
     String breed = "";
     String boar_id = "";
     String sow_id = "";
+    String foster_sow = "";
     String group_label = "";
 
     Resources res;
     String[] arr = {};
+    String[] arr2 = {"", "", "", "", "", ""};
+    String[] arr3 = {"", "", "", "", "", ""};
     String[] ids = {"1", "2", "3", "4", "5", "6"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choosebreed);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -57,6 +61,7 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
 
         res = getResources();
         arr = res.getStringArray(R.array.pig_breeds);
@@ -67,12 +72,14 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter(ChooseBreedPage.this, arr, ids);
+        adapter = new CustomPagerAdapter(ChooseBreedPage.this, arr, arr2, arr3, ids);
         viewPager.setAdapter(adapter);
 
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose Pig Breed";
+        tv_title.setText(title);
+
         group_label = randomChars();
-
-
     }
 
     @Override
@@ -92,8 +99,9 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                Intent i = new Intent(ChooseBreedPage.this, ChooseSowPage.class);
+                Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
                 i.putExtra("boar_id", boar_id);
+                i.putExtra("sow_id", sow_id);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -153,6 +161,7 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
                     i.putExtra("breed", breed);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
+                    i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

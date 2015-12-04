@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -33,26 +32,31 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
+    TextView tv_title;
 
     SQLiteHandler db;
     String rfid = "";
     String gender = "";
     String boar_id = "";
     String sow_id = "";
+    String foster_sow = "";
     String group_label = "";
     String breed = "";
     String week_farrowed = "";
 
     public final static String KEY_TAGID = "tag_id";
     public final static String KEY_TAGRFID = "tag_rfid";
+    public final static String KEY_LABEL = "label";
     ArrayList<HashMap<String, String>> rfid_list;
-    String[] lists;
-    String[] ids;
+    String[] lists = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assignrfid);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -65,6 +69,7 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
         week_farrowed = i.getStringExtra("week_farrowed");
@@ -80,8 +85,13 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         bl.setOnDragListener(this);
         //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new CustomPagerAdapter(AssignRFIDPage.this, lists, ids);
+        adapter = new CustomPagerAdapter(AssignRFIDPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
+
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose RFID";
+        tv_title.setText(title);
+
     }
 
     public void loadRFIDSBySQL(){
@@ -90,12 +100,16 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
 
         rfid_list = new ArrayList<>();
         lists = new String[rfids.size()];
+        lists2 = new String[rfids.size()];
+        lists3 = new String[rfids.size()];
         ids = new String[rfids.size()];
         for(int i = 0;i < rfids.size();i++)
         {
             HashMap<String, String> c = rfids.get(i);
 
-            lists[i] = c.get(KEY_TAGRFID);
+            lists[i] = "Tag: " + c.get(KEY_TAGID);
+            lists2[i] = "RFID: " + c.get(KEY_TAGRFID);
+            lists3[i] = "Tag Label: " + c.get(KEY_LABEL);
             ids[i] = c.get(KEY_TAGID);
 
             rfid_list.add(c);
@@ -119,10 +133,10 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
                 Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
+                i.putExtra("foster_sow", sow_id);
                 i.putExtra("breed", breed);
                 i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("group_label", group_label);
@@ -168,6 +182,7 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                     i.putExtra("rfid", rfid);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
+                    i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
                     i.putExtra("week_farrowed", week_farrowed);

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -41,31 +40,43 @@ public class AddThePig extends AppCompatActivity
     private static final String KEY_FUNC = "function";
 
     EditText et_weight;
+    EditText et_quantity;
     Button btn_addpig;
     TextView tv_subs;
     TextView tv_group;
     TextView tv_boar;
     TextView tv_sow;
+    TextView tv_foster;
     TextView tv_breed;
     TextView tv_weekf;
     TextView tv_gender;
     TextView tv_rfid;
     TextView tv_pen;
+    TextView tv_feed;
+    TextView tv_med;
     TextView tv_pigid;
+
     SQLiteHandler db;
     String pen = "";
     String rfid = "";
     String gender = "";
     String boar_id = "";
     String sow_id = "";
+    String foster_sow = "";
     String group_label = "";
     String breed = "";
     String week_farrowed = "";
+    String feed_id = "";
+    String med_id = "";
     String weight = "";
+    String quantity = "";
+
     String label = "";
     String pen_disp = "";
     String rfid_disp = "";
     String breed_name = "";
+    String feed_name = "";
+    String med_name = "";
     int curID;
 
     DateFormat curDate = new SimpleDateFormat("yyyy-MM-DD");
@@ -88,63 +99,79 @@ public class AddThePig extends AppCompatActivity
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
         week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
         rfid = i.getStringExtra("rfid");
         pen = i.getStringExtra("pen");
+        feed_id = i.getStringExtra("feed_id");
+        med_id = i.getStringExtra("med_id");
 
         db = new SQLiteHandler(getApplicationContext());
 
         curID = db.getMaxPigID();
         curID++;
         label = getLabel(String.valueOf(curID));
+
         tv_group = (TextView) findViewById(R.id.tv_group);
         tv_boar = (TextView) findViewById(R.id.tv_boar);
         tv_sow = (TextView) findViewById(R.id.tv_sow);
+        tv_foster = (TextView) findViewById(R.id.tv_fostersow);
         tv_breed = (TextView) findViewById(R.id.tv_breed);
         tv_weekf = (TextView) findViewById(R.id.tv_week);
         tv_gender = (TextView) findViewById(R.id.tv_gender);
         tv_rfid = (TextView) findViewById(R.id.tv_rfid);
         tv_pen = (TextView) findViewById(R.id.tv_pen);
+        tv_feed = (TextView) findViewById(R.id.tv_feed);
+        tv_med = (TextView) findViewById(R.id.tv_med);
         tv_pigid = (TextView) findViewById(R.id.tv_pig);
 
         Resources res = getResources();
         String[] arr = res.getStringArray(R.array.pig_breeds);
         breed_name = arr[Integer.parseInt(breed) - 1];
         rfid_disp = db.getRFID(rfid);
+        feed_name = db.getFeedName(feed_id);
+        med_name = db.getMedName(med_id);
         displayPen(pen);
 
         tv_group.setText("Group Label: " + group_label);
         tv_boar.setText("Boar Parent: " + getLabel(boar_id));
         tv_sow.setText("Sow Parent: " + getLabel(sow_id));
+        tv_foster.setText("Foster Sow Parent: " + getLabel(foster_sow));
         tv_breed.setText("Breed: " + breed_name);
         tv_weekf.setText("Week Farrowed: " + week_farrowed);
         tv_gender.setText("Gender: " + gender);
-        tv_rfid.setText("RFID: " + rfid_disp);
+        tv_rfid.setText("Tag Label: " + rfid_disp);
         tv_pen.setText(pen_disp);
+        tv_feed.setText("Last Feed Given: " + feed_name);
+        tv_med.setText("Last Vaccine Given: " + med_name);
         tv_pigid.setText("Pig Label: " + label);
 
         btn_addpig = (Button) findViewById(R.id.btn_addPig);
         et_weight = (EditText) findViewById(R.id.et_weight);
+        et_quantity = (EditText) findViewById(R.id.et_quantity);
 
         btn_addpig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_weight.getText().toString().trim().length() > 0){
+                if(et_weight.getText().toString().trim().length() > 0 &&
+                        et_quantity.getText().toString().trim().length() > 0){
 
                     weight = et_weight.getText().toString();
+                    quantity = et_quantity.getText().toString();
                     String pig_id = String.valueOf(curID);
                     String date = curDate.format(dateObj);
                     String time = curTime.format(dateObj);
 
                     db.addGroup(group_label, pen);
-                    db.addPig(pig_id, boar_id, sow_id, gender, week_farrowed,
-                            "weaning", pen, breed, group_label);
-                    db.assignPigTag(rfid, label, String.valueOf(curID));
-                    db.updateTag(rfid, "Used");
+                    db.addPig(pig_id, boar_id, sow_id, foster_sow, week_farrowed,
+                            gender, "weaning", pen, breed, group_label);
+                    db.updateTag(rfid, String.valueOf(curID), "used");
                     db.addWeightRecByAuto(weight, pig_id, date, time);
+                    db.feedPigRecAuto(quantity, date, time, pig_id, feed_id);
+                    db.addMedRecAuto(date, time, pig_id, med_id);
 
                     Toast.makeText(AddThePig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
@@ -169,7 +196,8 @@ public class AddThePig extends AppCompatActivity
 
                 }
                 else{
-                    Toast.makeText(AddThePig.this, "Please Enter the weight before proceeding.",
+                    Toast.makeText(AddThePig.this,
+                            "Please Enter the feed quantity and pig weight before proceeding.",
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -193,15 +221,17 @@ public class AddThePig extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                Intent i = new Intent(AddThePig.this, AssignPenPage.class);
+                Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
                 i.putExtra("rfid", rfid);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
+                i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.putExtra("breed", breed);
                 i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("gender", gender);
+                i.putExtra("feed_id", feed_id);
+                i.putExtra("pen", pen);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -220,7 +250,7 @@ public class AddThePig extends AppCompatActivity
         {
             HashMap<String, String> c = the_list.get(i);
 
-            pen_disp = "Pen: " + c.get(KEY_PENNO) + " -> Function: " + c.get(KEY_FUNC);
+            pen_disp = "Pen No: " + c.get(KEY_PENNO) + " -> Function: " + c.get(KEY_FUNC);
         }
     }
 
@@ -277,6 +307,7 @@ public class AddThePig extends AppCompatActivity
                         i.putExtra("breed", breed);
                         i.putExtra("boar_id", boar_id);
                         i.putExtra("sow_id", sow_id);
+                        i.putExtra("foster_sow", foster_sow);
                         i.putExtra("group_label", group_label);
                         startActivity(i);
                         finish();
@@ -289,7 +320,7 @@ public class AddThePig extends AppCompatActivity
                     }
                 }
 
-                Log.d(LOGCAT, "Dropped " + breed);
+                Log.d(LOGCAT, "Dropped " + choice);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");

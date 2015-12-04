@@ -11,26 +11,31 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Created by marmagno on 11/13/2015.
+ * Created by marmagno on 11/25/2015.
  */
 public class CustomPagerAdapter extends PagerAdapter
         implements  View.OnTouchListener {
 
     private Context mContext;
-    String[] arr = {};
+    String[] arr1 = {};
+    String[] arr2 = {};
+    String[] arr3 = {};
     String[] ids = {};
     LayoutInflater inflater;
 
-    public CustomPagerAdapter(Context context, String[] display, String[] values) {
+    public CustomPagerAdapter(Context context, String[] display1, String[] display2,
+                               String[] display3, String[] values) {
         mContext = context;
-        arr = display;
+        arr1 = display1;
+        arr2 = display2;
+        arr3 = display3;
         ids = values;
     }
 
 
     @Override
     public int getCount() {
-        return arr.length;
+        return arr1.length;
     }
 
     @Override
@@ -43,18 +48,29 @@ public class CustomPagerAdapter extends PagerAdapter
     public Object instantiateItem(ViewGroup container, int position) {
 
         // Declare Variables
-        TextView tv_item;
+        TextView tv_item, tv_item2, tv_item3;
+        LinearLayout tl;
 
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View itemView = inflater.inflate(R.layout.viewpager_item, container,
                 false);
 
         // Locate the TextViews in viewpager_item.xml
-        tv_item = (TextView) itemView.findViewById(R.id.tv_item);
+        tv_item = (TextView) itemView.findViewById(R.id.tv_subitem1);
         // Capture position and set to the TextViews
-        tv_item.setText(arr[position]);
-        tv_item.setTag(ids[position]);
-        tv_item.setOnTouchListener(this);
+        tv_item.setText(arr1[position]);
+        // Locate the TextViews in viewpager_item.xml
+        tv_item2 = (TextView) itemView.findViewById(R.id.tv_subitem2);
+        // Capture position and set to the TextViews
+        tv_item2.setText(arr2[position]);
+        // Locate the TextViews in viewpager_item.xml
+        tv_item3 = (TextView) itemView.findViewById(R.id.tv_subitem3);
+        // Capture position and set to the TextViews
+        tv_item3.setText(arr3[position]);
+
+        tl = (LinearLayout) itemView.findViewById(R.id.whole_item);
+        tl.setTag(ids[position]);
+        tl.setOnTouchListener(this);
         // Add viewpager_item.xml to ViewPager
         ((ViewPager) container).addView(itemView);
         //itemView.setOnTouchListener(this);
@@ -77,5 +93,6 @@ public class CustomPagerAdapter extends PagerAdapter
         }
         else { return false; }
     }
+
 
 }

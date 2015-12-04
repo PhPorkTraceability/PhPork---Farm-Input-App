@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +34,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
+    TextView tv_title;
 
     SQLiteHandler db;
     String pen = "";
@@ -42,6 +42,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     String gender = "";
     String boar_id = "";
     String sow_id = "";
+    String foster_sow = "";
     String group_label = "";
     String breed = "";
     String week_farrowed = "";
@@ -51,14 +52,15 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     public final static String KEY_FUNC = "function";
 
     SessionManager session;
-    ArrayList<HashMap<String, String>> pen_list;
-    String[] lists;
-    String[] ids;
+    String[] lists = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
     String location= "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assignpen);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -75,6 +77,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
         week_farrowed = i.getStringExtra("week_farrowed");
@@ -91,27 +94,30 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter(AssignPenPage.this, lists, ids);
+        adapter = new CustomPagerAdapter(AssignPenPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
-
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose a Pen";
+        tv_title.setText(title);
     }
-
 
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> the_list = db.getPens(location);
 
-        pen_list = new ArrayList<>();
         lists = new String[the_list.size()];
+        lists2 = new String[the_list.size()];
+        lists3 = new String[the_list.size()];
         ids = new String[the_list.size()];
         for(int i = 0;i < the_list.size();i++)
         {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen: " + c.get(KEY_PENNO) + " -> Function: " + c.get(KEY_FUNC);
+            lists[i] = "Pen: " + c.get(KEY_PENNO);
+            lists2[i] = "Function: " + c.get(KEY_FUNC);
+            lists3[i] = "";
             ids[i] = c.get(KEY_PENID);
-            pen_list.add(c);
         }
     }
 
@@ -132,10 +138,10 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
                 Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
+                i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.putExtra("breed", breed);
                 i.putExtra("week_farrowed", week_farrowed);
@@ -181,11 +187,12 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(AssignPenPage.this, "Chosen " + pen,
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(AssignPenPage.this, AddThePig.class);
+                    Intent i = new Intent(AssignPenPage.this, LastFeedGivenPage.class);
                     i.putExtra("pen", pen);
                     i.putExtra("rfid", rfid);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
+                    i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
                     i.putExtra("week_farrowed", week_farrowed);
