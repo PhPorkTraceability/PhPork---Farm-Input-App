@@ -33,7 +33,7 @@
             android:text="Finalizing Input"
             android:layout_margin="5dp"
             android:layout_gravity="center"
-            android:textSize="34sp"
+            android:textSize="38sp"
             android:textStyle="bold" />
 
         <TextView
@@ -42,16 +42,16 @@
             android:text="Please Review Details of New Pig"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:textSize="30sp"
+            android:textSize="34sp"
             android:textStyle="bold" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingLeft="40dp"
-            android:paddingRight="40dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
             android:orientation="vertical"
             android:layout_gravity="center"
             android:gravity="left">
@@ -62,7 +62,7 @@
                 android:text="Group Label: "
                 android:id="@+id/tv_group"
                 android:textStyle="bold|italic"
-                android:textSize="26sp" />
+                android:textSize="32sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -70,7 +70,7 @@
                 android:text="Pig Label: "
                 android:id="@+id/tv_pig"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -79,7 +79,7 @@
                 android:text="Boar Parent: "
                 android:id="@+id/tv_boar"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
 
@@ -89,7 +89,16 @@
                 android:text="Sow ID: "
                 android:id="@+id/tv_sow"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Foster Sow: "
+                android:id="@+id/tv_fostersow"
+                android:textStyle="bold"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -98,7 +107,7 @@
                 android:text="Breed: "
                 android:id="@+id/tv_breed"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -107,7 +116,7 @@
                 android:text="Week Farrowed: "
                 android:id="@+id/tv_week"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -116,7 +125,7 @@
                 android:text="Gender: "
                 android:id="@+id/tv_gender"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -125,7 +134,7 @@
                 android:text="RFID: "
                 android:id="@+id/tv_rfid"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <TextView
@@ -134,15 +143,41 @@
                 android:text="Pen: "
                 android:id="@+id/tv_pen"
                 android:textStyle="bold"
-                android:textSize="24sp"
+                android:textSize="30sp"
+                android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Feed Given: "
+                android:id="@+id/tv_feed"
+                android:textStyle="bold"
+                android:textSize="30sp"
+                android:layout_marginTop="5dp"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_quantity"
+                android:textSize="32sp"
+                android:hint="Feed quantity in kg. ex. 2.4"
+                android:inputType="text|numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Last Med Given: "
+                android:id="@+id/tv_med"
+                android:textStyle="bold"
+                android:textSize="30sp"
                 android:layout_marginTop="5dp"/>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/et_weight"
-                android:hint="Pig Weight in kg. ex. 30"
-                android:textSize="24sp"
+                android:textSize="32sp"
+                android:hint="Pig Weight in kg. ex. 30.6"
                 android:inputType="text|numberDecimal" />
 
             <Button
@@ -150,7 +185,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/btn_addPig"
                 android:text="Add Pig"
-                android:textSize="24sp"
+                android:textSize="32sp"
                 android:textColor="@color/bg_login" />
 
         </LinearLayout>

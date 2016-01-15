@@ -45,6 +45,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight=".29"
@@ -58,7 +59,7 @@
                 android:textSize="26sp"
                 android:gravity="center"
                 android:layout_weight=".5"
-                android:text="Add a Pig" />
+                android:text="Feed Pig" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -66,7 +67,7 @@
                 android:textSize="26sp"
                 android:gravity="center"
                 android:layout_weight=".5"
-                android:text="View List of Pigs" />
+                android:text="Add Medication" />
 
         </LinearLayout>
         <LinearLayout
@@ -83,13 +84,13 @@
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/iv_addpig"
+                android:id="@+id/iv_addfeed"
                 android:src="@drawable/ic_addpig"
                 android:scaleType="fitCenter"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="addpig" />
+                android:tag="addfeed" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -102,13 +103,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitCenter"
-                android:tag="viewpig"
-                android:src="@drawable/ic_viewpig"
-                android:id="@+id/iv_viewpig"
+                android:src="@drawable/ic_addmeds"
+                android:id="@+id/iv_addmeds"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                />
+                android:tag="addmeds" />
         </LinearLayout>
 
         <LinearLayout

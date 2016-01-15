@@ -39,7 +39,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please Review Details of New Pig"
+            android:text="Please Review Details of Feeding"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:textSize="20sp"
@@ -59,80 +59,16 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Group Label: "
-                android:id="@+id/tv_group"
+                android:text="Feed Name: "
+                android:id="@+id/tv_feedname"
                 android:textStyle="bold|italic"
                 android:textSize="22sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pig Label: "
-                android:id="@+id/tv_pig"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Boar Parent: "
-                android:id="@+id/tv_boar"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sow ID: "
-                android:id="@+id/tv_sow"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Breed: "
-                android:id="@+id/tv_breed"
-                android:textStyle="bold"
-                android:textSize="22sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Week Farrowed: "
-                android:id="@+id/tv_week"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Gender: "
-                android:id="@+id/tv_gender"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="RFID: "
-                android:id="@+id/tv_rfid"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pen: "
-                android:id="@+id/tv_pen"
+                android:text="Feed Type: "
+                android:id="@+id/tv_feedtype"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginTop="5dp"/>
@@ -140,15 +76,35 @@
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/et_weight"
-                android:hint="Pig Weight in kg. ex. 30"
-                android:inputType="text|numberDecimal" />
+                android:id="@+id/et_quantity"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"
+                android:hint="Enter quantity in kg. i.e 20.1"
+                android:inputType="numberDecimal" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="List of Pigs to be Fed: "
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginTop="5dp"/>
+
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/listview"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center"
+                android:dividerHeight="3dp" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_addPig"
-                android:text="Add Pig"
+                android:id="@+id/btn_addFeed"
+                android:text="Ok"
                 android:textSize="18sp"
                 android:textColor="@color/bg_login" />
 

@@ -39,10 +39,10 @@
     <string-array name="pig_breeds">
         <item>Galore</item>
         <item>Largewhite</item>
-        <item>Landraise</item>
+        <item>Landrace</item>
         <item>Galore-Largewhite</item>
-        <item>Galore-Landraise</item>
-        <item>Largewhite-Landraise</item>
+        <item>Galore-Landrace</item>
+        <item>Largewhite-Landrace</item>
     </string-array>
 
     <string-array name="rfid_status">
@@ -60,7 +60,7 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string-array name="activities_weaning">
+    <string-array name="activities">
         <item>Home</item>
         <item>Location Page</item>
         <item>Farm Function</item>
@@ -71,6 +71,11 @@
         <item>Gender</item>
         <item>Assign RFID</item>
         <item>Assign Pen</item>
+        <item>Last Feed Given</item>
+        <item>Last Vaccine Given</item>
+        <item>Add The Pig</item>
+        <item>Feeding Pig</item>
+        <item>Weekly Graphical Report</item>
     </string-array>
 
     <string name="home">Home</string>
@@ -78,11 +83,16 @@
     <string name="function">Farm Function</string>
     <string name="boar_parent">Boar Parent</string>
     <string name="sow_parent">Sow Parent</string>
+    <string name="foster_sowparent">Foster Sow Parent</string>
     <string name="breed">Breed</string>
     <string name="week_farrowed">Week Farrowed</string>
     <string name="gender">Gender</string>
     <string name="assign_rfid">Assign RFID</string>
     <string name="assign_pen">Assign Pen</string>
+    <string name="last_feed">Last Feed Given</string>
+    <string name="last_med">Last Vaccine Given</string>
     <string name="add_pig">Add The Pig</string>
+    <string name="feed">Feeding Pig</string>
+    <string name="weight_record">Weekly Graphical Report</string>
 
 </resources>

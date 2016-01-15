@@ -97,6 +97,8 @@
                 android:layout_height="match_parent"
                 android:visibility="gone"
                 android:id="@+id/tv_subs"
+                android:layout_gravity="top"
+                android:layout_margin="5dp"
                 android:layout_weight=".5" />
 
             <ImageView

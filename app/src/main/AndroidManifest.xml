@@ -53,7 +53,6 @@
                 android:value=".LocationPage" />
         </activity>
 
-
         <activity
             android:name=".WeaningPage"
             android:label="@string/function"
@@ -76,6 +75,43 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".WeaningPage" />
+        </activity>
+
+        <activity
+            android:name=".PigWeightRecord"
+            android:label="@string/weight_record"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ViewListOfPigs" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ViewListOfPigs" />
+        </activity>
+
+        <activity
+            android:name="org.achartengine.GraphicalActivity"
+            android:label="@string/weight_record"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".PigWeightRecord" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PigWeightRecord" />
+        </activity>
+
+        <activity
+            android:name=".UpdatePigActivity"
+            android:label="@string/function"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ViewListOfPigs" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ViewListOfPigs" />
         </activity>
 
         <activity
@@ -103,8 +139,8 @@
         </activity>
 
         <activity
-            android:name=".ChooseBreedPage"
-            android:label="@string/breed"
+            android:name=".ChooseFosterSowPage"
+            android:label="@string/foster_sowparent"
             android:launchMode="singleTop"
             android:parentActivityName=".ChooseSowPage" >
 
@@ -112,6 +148,18 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseSowPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseBreedPage"
+            android:label="@string/breed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseFosterSowPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseFosterSowPage" />
         </activity>
 
         <activity
@@ -163,6 +211,30 @@
         </activity>
 
         <activity
+            android:name=".LastFeedGivenPage"
+            android:label="@string/last_feed"
+            android:launchMode="singleTask"
+            android:parentActivityName=".AssignPenPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AssignPenPage" />
+        </activity>
+
+        <activity
+            android:name=".LastMedicationGiven"
+            android:label="@string/last_med"
+            android:launchMode="singleTask"
+            android:parentActivityName=".LastFeedGivenPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LastFeedGivenPage" />
+        </activity>
+
+        <activity
             android:name=".AddThePig"
             android:label="@string/add_pig"
             android:launchMode="singleTask"
@@ -172,6 +244,78 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AssignPenPage" />
+        </activity>
+
+        <activity
+            android:name=".GrowingPage"
+            android:label="@string/function"
+            android:launchMode="singleTop"
+            android:parentActivityName=".LocationPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LocationPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseFeedPage"
+            android:label="@string/feed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".GrowingPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".GrowingPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseFeedHousePage"
+            android:label="@string/feed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseFeedPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseFeedPage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseFeedPenPage"
+            android:label="@string/feed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseFeedHousePage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseFeedHousePage" />
+        </activity>
+
+        <activity
+            android:name=".ChooseFeedPigs"
+            android:label="@string/feed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseFeedPenPage" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseFeedPenPage" />
+        </activity>
+
+        <activity
+            android:name=".AddFeedPig"
+            android:label="@string/feed"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseFeedPigs" >
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseFeedPigs" />
         </activity>
     </application>
 </manifest>

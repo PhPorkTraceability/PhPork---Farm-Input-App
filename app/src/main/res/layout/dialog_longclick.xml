@@ -12,14 +12,14 @@
         android:layout_weight=".5"
         android:gravity="center"
         android:layout_gravity="center"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:background="@color/white">
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:id="@+id/db_btn_weight"
-            android:tag="add_another"
+            android:tag="weight"
             android:text="View Weight Record"
             android:background="@drawable/btn_gradient"
             android:layout_weight=".5"
@@ -27,24 +27,19 @@
             android:textSize="26sp"
             android:layout_gravity="center" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:id="@+id/tv_subs"
-            android:layout_weight=".5" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="150dp"
-            android:id="@+id/db_btn_feed"
-            android:tag="finish"
-            android:text="View Feed Record"
+            android:id="@+id/db_btn_update"
+            android:tag="update"
+            android:text="Update Details"
             android:background="@drawable/btn_gradient"
             android:layout_gravity="center"
             android:layout_weight=".5"
             android:layout_margin="10dp"
             android:textSize="26sp" />
+
     </LinearLayout>
 
     <LinearLayout

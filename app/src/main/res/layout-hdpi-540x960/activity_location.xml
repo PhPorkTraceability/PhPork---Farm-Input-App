@@ -65,7 +65,7 @@
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="RF 11" />
+                android:tag="RF11" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -76,7 +76,7 @@
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="RF 18" />
+                android:tag="RF18" />
 
             <ImageView
                 android:layout_width="match_parent"
@@ -87,7 +87,7 @@
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
-                android:tag="RF 19" />
+                android:tag="RF19" />
         </LinearLayout>
 
         <LinearLayout

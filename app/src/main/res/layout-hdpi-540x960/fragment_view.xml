@@ -30,13 +30,24 @@
         android:textSize="20sp"
         android:layout_marginTop="10dp" />
 
+    <EditText
+        android:id="@+id/et_editText"
+        android:layout_below="@id/tv_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:hint="Enter quantity of feed in kg:"
+        android:inputType="text|numberDecimal" />
+
     <LinearLayout
         android:id="@+id/top_container"
         android:layout_width="match_parent"
         android:layout_height="250dp"
         android:gravity="center"
-        android:layout_marginTop="10dp"
-        android:layout_below="@+id/tv_item"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/et_editText"
         android:orientation="horizontal"
         android:background="@color/white">
 

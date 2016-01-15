@@ -37,9 +37,18 @@
             android:textStyle="bold" />
 
         <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Just Tap on an Item to View Details"
+        android:layout_gravity="center"
+        android:layout_margin="5dp"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Just Click on an Item to View Details"
+            android:text="Long Tap On Item to Do More"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:textSize="20sp"
