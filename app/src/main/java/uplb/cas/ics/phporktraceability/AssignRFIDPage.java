@@ -13,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,32 +28,31 @@ import helper.SQLiteHandler;
  */
 public class AssignRFIDPage extends AppCompatActivity implements View.OnDragListener
 {
+    public final static String KEY_TAGID = "tag_id";
+    public final static String KEY_TAGRFID = "tag_rfid";
+    public final static String KEY_LABEL = "label";
     private static final String LOGCAT = AssignRFIDPage.class.getSimpleName();
-    private Toolbar toolbar;
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
-
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
     String rfid = "";
     String gender = "";
     String boar_id = "";
     String sow_id = "";
     String foster_sow = "";
+    //String week_farrowed = "";
     String group_label = "";
     String breed = "";
-    String week_farrowed = "";
-
-    public final static String KEY_TAGID = "tag_id";
-    public final static String KEY_TAGRFID = "tag_rfid";
-    public final static String KEY_LABEL = "label";
     ArrayList<HashMap<String, String>> rfid_list;
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +73,7 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
 
         db = new SQLiteHandler(getApplicationContext());
@@ -88,9 +89,75 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         adapter = new CustomPagerAdapter(AssignRFIDPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose RFID";
         tv_title.setText(title);
+
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -99,18 +166,23 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         ArrayList<HashMap<String, String>> rfids = db.getInactiveTags();
 
         rfid_list = new ArrayList<>();
-        lists = new String[rfids.size()];
-        lists2 = new String[rfids.size()];
-        lists3 = new String[rfids.size()];
-        ids = new String[rfids.size()];
-        for(int i = 0;i < rfids.size();i++)
-        {
+        lists = new String[rfids.size()+1];
+        lists2 = new String[rfids.size()+1];
+        lists3 = new String[rfids.size()+1];
+        ids = new String[rfids.size()+1];
+
+        lists[0] = "";
+        lists2[0] = "---";
+        lists3[0] = "";
+        ids[0] = "";
+
+        for(int i = 0;i < rfids.size();i++) {
             HashMap<String, String> c = rfids.get(i);
 
-            lists[i] = "Tag: " + c.get(KEY_TAGID);
-            lists2[i] = "RFID: " + c.get(KEY_TAGRFID);
-            lists3[i] = "Tag Label: " + c.get(KEY_LABEL);
-            ids[i] = c.get(KEY_TAGID);
+            lists[i+1] = "Tag: " + c.get(KEY_TAGID);
+            lists2[i+1] = "RFID: " + c.get(KEY_TAGRFID);
+            lists3[i+1] = "Tag Label: " + c.get(KEY_LABEL);
+            ids[i+1] = c.get(KEY_TAGID);
 
             rfid_list.add(c);
         }
@@ -138,7 +210,7 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                 i.putExtra("sow_id", sow_id);
                 i.putExtra("foster_sow", sow_id);
                 i.putExtra("breed", breed);
-                i.putExtra("week_farrowed", week_farrowed);
+                //i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("group_label", group_label);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -176,8 +248,12 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                 int id = view.getId();
                 rfid = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + rfid);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    Toast.makeText(AssignRFIDPage.this, "Chosen " + rfid,
+                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(AssignRFIDPage.this, AssignPenPage.class);
                     i.putExtra("rfid", rfid);
                     i.putExtra("boar_id", boar_id);
@@ -185,15 +261,13 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    i.putExtra("week_farrowed", week_farrowed);
+                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + rfid);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -205,5 +279,18 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", sow_id);
+        i.putExtra("breed", breed);
+        //i.putExtra("week_farrowed", week_farrowed);
+        i.putExtra("group_label", group_label);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

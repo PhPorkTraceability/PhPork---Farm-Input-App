@@ -3,95 +3,44 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.HashMap;
-
-import helper.SQLiteHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by marmagno on 12/9/2015.
+ * Created by marmagno on 12/10/2015.
  */
 public class UpdatePigActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
-
-    public static final String KEY_BOAR = "boar_id";
-    public static final String KEY_SOW = "sow_id";
-    public static final String KEY_FOSTER = "foster_sow";
-    public static final String KEY_WEEKF = "week_farrowed";
-    public static final String KEY_GENDER = "gender";
-    public static final String KEY_BREED = "breed_name";
-    public static final String KEY_WEIGHT = "weight";
-    public static final String KEY_PEN = "pen_id";
-    public static final String KEY_FUNC = "function";
-    public static final String KEY_TAGID = "tag_id";
-    public static final String KEY_TAGRFID = "tag_rfid";
-    public static final String KEY_TAGLABEL = "label";
-
-    SQLiteHandler db;
-    TextView tv_pig;
-    TextView tv_boar;
-    TextView tv_sow;
-    TextView tv_foster;
-    TextView tv_weekfarrowed;
-    TextView tv_gender;
-    TextView tv_breed;
-    TextView tv_weight;
-    TextView tv_pen;
-    TextView tv_rfid;
-
-    ImageView iv_boar;
-    ImageView iv_sow;
-    ImageView iv_foster;
-    ImageView iv_weekfarrowed;
-    ImageView iv_gender;
-    ImageView iv_breed;
-    ImageView iv_weight;
-    ImageView iv_pen;
-    ImageView iv_rfid;
-
     String pig_id = "";
-    String boar_id = "";
-    String sow_id = "";
-    String foster_sow = "";
-    String week_farrowed = "";
-    String gender = "";
-    String breed = "";
-    String weight = "";
+    String house_id = "";
     String pen = "";
-    String function = "";
-    String tag_id = "";
-    String label = "";
-    String tag_rfid = "";
-
-    String pig_disp = "Pig Label: ";
-    String boar_disp = "Boar Parent: ";
-    String sow_disp = "Sow Parent: ";
-    String foster_disp = "Foster Sow: ";
-    String weekf_disp = "Week Farrowed: ";
-    String gender_disp = "Gender: ";
-    String breed_disp = "Breed: ";
-    String weight_disp = "Current Weight: ";
-    String pen_disp = "Pen: ";
-    String rfid = "Tag Label: ";
+    String pig_disp = "Updating Pig: ";
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private TextView tv_pigid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_updatepig);
+        setContentView(R.layout.activity_updatepigmain);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         Intent i = getIntent();
         pig_id = i.getStringExtra("pig_id");
-
-        db = new SQLiteHandler(getApplicationContext());
+        house_id = i.getStringExtra("house_id");
+        pen = i.getStringExtra("pen");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,96 +48,26 @@ public class UpdatePigActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+        setupViewPager(viewPager);
 
-        tv_pig = (TextView) findViewById(R.id.tv_piglabel);
-        tv_boar = (TextView) findViewById(R.id.tv_boarid);
-        tv_sow = (TextView) findViewById(R.id.tv_sowid);
-        tv_foster = (TextView) findViewById(R.id.tv_foster);
-        tv_weekfarrowed = (TextView) findViewById(R.id.tv_weekfarrowed);
-        tv_gender = (TextView) findViewById(R.id.tv_gender);
-        tv_breed = (TextView) findViewById(R.id.tv_breed);
-        tv_weight = (TextView) findViewById(R.id.tv_weight);
-        tv_pen = (TextView) findViewById(R.id.tv_pen);
-        tv_rfid = (TextView) findViewById(R.id.tv_tag);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
-        iv_boar = (ImageView) findViewById(R.id.iv_editboar);
-        iv_sow = (ImageView) findViewById(R.id.iv_editsow);
-        iv_foster = (ImageView) findViewById(R.id.iv_editfoster);
-        iv_weekfarrowed = (ImageView) findViewById(R.id.iv_editweekf);
-        iv_gender = (ImageView) findViewById(R.id.iv_editgender);
-        iv_breed = (ImageView) findViewById(R.id.iv_editbreed);
-        iv_weight = (ImageView) findViewById(R.id.iv_editweight);
-        iv_pen = (ImageView) findViewById(R.id.iv_editpen);
-        iv_rfid = (ImageView) findViewById(R.id.iv_edittag);
-
-        iv_boar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        loadDetails();
-    }
-
-    public void loadDetails()
-    {
-        HashMap<String, String> d = db.getThePig(pig_id);
-        HashMap<String, String> p = db.getPigGroup(pig_id);
-        boar_id = d.get(KEY_BOAR);
-        sow_id = d.get(KEY_SOW);
-        foster_sow = d.get(KEY_FOSTER);
-        week_farrowed= d.get(KEY_WEEKF);
-        gender = d.get(KEY_GENDER);
-        breed = d.get(KEY_BREED);
-        weight = d.get(KEY_WEIGHT);
-        pen = d.get(KEY_PEN);
-        tag_id = d.get(KEY_TAGID);
-        tag_rfid = d.get(KEY_TAGRFID);
-        label = d.get(KEY_TAGLABEL);
-
-        pen = p.get(KEY_PEN);
-        function = p.get(KEY_FUNC);
-
-        if(!boar_id.equals("null"))
-            boar_disp += getLabel(boar_id);
-        if(!sow_id.equals("null"))
-            sow_disp += getLabel(sow_id);
-        if(!foster_sow.equals("null"))
-            foster_disp += getLabel(foster_sow);
+        tv_pigid = (TextView) findViewById(R.id.tv_piglabel);
         pig_disp += getLabel(pig_id);
-        weekf_disp += week_farrowed;
-        gender_disp += gender;
-        breed_disp += breed;
-        weight_disp += weight + " kg";
-        pen_disp += pen + " (" + function + ")";
-        rfid += label + " (" + tag_rfid + ")";
-
-        tv_pig.setText(pig_disp);
-        tv_boar.setText(boar_disp);
-        tv_sow.setText(sow_disp);
-        tv_foster.setText(foster_disp);
-        tv_weekfarrowed.setText(weekf_disp);
-        tv_gender.setText(gender_disp);
-        tv_breed.setText(breed_disp);
-        tv_weight.setText(weight_disp);
-        tv_pen.setText(pen_disp);
-        tv_rfid.setText(rfid);
+        tv_pigid.setText(pig_disp);
     }
 
-    private String getLabel(String _id){
-        String result = "";
-
-        int size = _id.length();
-        String s = "0";
-        size = 6 - size;
-        for(int i = 0; i < size;i++){
-            s = s + "0";
-        }
-        s = s + _id;
-        String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3,7);
-        result = temp1 + "-" + temp2;
-        return result;
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new UpdatePigBoarFrag(), "BOAR");
+        adapter.addFragment(new UpdatePigSowFrag(), "SOW");
+        adapter.addFragment(new UpdatePigFosterSowFrag(), "FOSTER SOW");
+        adapter.addFragment(new UpdatePigPenFrag(), "PEN");
+        adapter.addFragment(new UpdatePigTagFrag(), "TAG");
+        //adapter.addFragment(new UpdatePigFeedFrag(), "FEED");
+        viewPager.setAdapter(adapter);
     }
 
     @Override
@@ -209,6 +88,10 @@ public class UpdatePigActivity extends AppCompatActivity {
                 return true;
             case android.R.id.home:
                 Intent i = new Intent(UpdatePigActivity.this, ViewListOfPigs.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("house_id", house_id);
+                i.putExtra("pen", pen);
                 startActivity(i);
                 finish();
 
@@ -216,5 +99,63 @@ public class UpdatePigActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private String getLabel(String _id){
+        String result = "";
+
+        int size = _id.length();
+        String s = "0";
+        size = 6 - size;
+        for(int i = 0; i < size;i++){
+            s = s + "0";
+        }
+        s = s + _id;
+        String temp1 = s.substring(0,2);
+        String temp2 = s.substring(3,7);
+        result = temp1 + "-" + temp2;
+        return result;
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(UpdatePigActivity.this, ViewListOfPigs.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("house_id", house_id);
+        i.putExtra("pen", pen);
+        startActivity(i);
+        finish();
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
 }
 

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Android Pork Traceability</string>
     <string name="action_settings">Settings</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
     <string name="hint_username">Username</string>
@@ -52,6 +54,12 @@
         <item>Lost</item>
     </string-array>
 
+    <string-array name="units">
+        <item>kg</item>
+        <item>cc</item>
+        <item>mL</item>
+    </string-array>
+
     <string-array name="pen_label">
         <item>Nursery Pen</item>
         <item>Quarantine Pen</item>
@@ -61,21 +69,21 @@
     <string name="drawer_close">Close navigation drawer</string>
 
     <string-array name="activities">
-        <item>Home</item>
-        <item>Location Page</item>
-        <item>Farm Function</item>
-        <item>Boar Parent</item>
-        <item>Sow Parent</item>
-        <item>Breed</item>
-        <item>Week Farrowed</item>
-        <item>Gender</item>
-        <item>Assign RFID</item>
-        <item>Assign Pen</item>
-        <item>Last Feed Given</item>
-        <item>Last Vaccine Given</item>
-        <item>Add The Pig</item>
-        <item>Feeding Pig</item>
-        <item>Weekly Graphical Report</item>
+        <item> Home </item>
+        <item> Location Page </item>
+        <item> Farm Function </item>
+        <item> Boar Parent </item>
+        <item> Sow Parent </item>
+        <item> Breed </item>
+        <item> Week Farrowed </item>
+        <item> Gender </item>
+        <item> Assign RFID </item>
+        <item> Assign Pen </item>
+        <item> Last Feed Given </item>
+        <item> Last Vaccine Given </item>
+        <item> Add The Pig </item>
+        <item> Feeding Pig </item>
+        <item> Weekly Graphical Report </item>
     </string-array>
 
     <string name="home">Home</string>
@@ -93,6 +101,7 @@
     <string name="last_med">Last Vaccine Given</string>
     <string name="add_pig">Add The Pig</string>
     <string name="feed">Feeding Pig</string>
+    <string name="med">Adding Medication</string>
     <string name="weight_record">Weekly Graphical Report</string>
 
 </resources>

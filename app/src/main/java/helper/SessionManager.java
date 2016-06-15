@@ -12,30 +12,25 @@ import android.util.Log;
 
 import java.util.HashMap;
 
+import uplb.cas.ics.phporktraceability.GrowingPage;
 import uplb.cas.ics.phporktraceability.HomeActivity;
 import uplb.cas.ics.phporktraceability.WeaningPage;
 
 
 public class SessionManager {
-    // LogCat tag
-    private static String TAG = SessionManager.class.getSimpleName();
-
-    // Shared Preferences
-    SharedPreferences pref;
-
-    Editor editor;
-    Context _context;
-
-    // Shared pref mode
-    int PRIVATE_MODE = 0;
-
-    // Shared preferences file name
-    private static final String PREF_NAME = "PHPorkLogin";
-
-    private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
-
     public static final String KEY_FUNC = "function";
     public static final String KEY_LOC = "loc_name";
+    // Shared preferences file name
+    private static final String PREF_NAME = "PHPorkLogin";
+    private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
+    // LogCat tag
+    private static String TAG = SessionManager.class.getSimpleName();
+    // Shared Preferences
+    SharedPreferences pref;
+    Editor editor;
+    Context _context;
+    // Shared pref mode
+    int PRIVATE_MODE = 0;
 
     public SessionManager(Context context) {
         this._context = context;
@@ -63,27 +58,28 @@ public class SessionManager {
      * Else won't do anything
      * */
     public void checkLogin(){
-        if(isLoggedIn() == true){
-           if(KEY_FUNC.equals("weaning")){
+        if(isLoggedIn()){
+           if(KEY_FUNC.equals("weaning") && KEY_LOC.equals("RF11")){
                // After logout redirect user to Login Activity
                Intent i = new Intent(_context, WeaningPage.class);
 
                // Closing all the Activities
-               //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                // Add new Flag to start new Activity
-               //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                // Starting Login Activity
                _context.startActivity(i);
-           } else if(KEY_FUNC.equals("growing")){
+           } if(KEY_FUNC.equals("growing") &&
+                    (KEY_LOC.equals("RF18") || KEY_LOC.equals("RF19"))){
                // After logout redirect user to Login Activity
-               Intent i = new Intent(_context, WeaningPage.class);
+               Intent i = new Intent(_context, GrowingPage.class);
                // Closing all the Activities
-               //i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                // Add new Flag to start new Activity
-               //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
                // Starting Login Activity
                _context.startActivity(i);
@@ -94,7 +90,7 @@ public class SessionManager {
      * Get stored session data
      * */
     public HashMap<String, String> getUserSession(){
-        HashMap<String, String> user = new HashMap<String, String>();
+        HashMap<String, String> user = new HashMap<>();
 
         user.put(KEY_FUNC, pref.getString(KEY_FUNC, null));
 

@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,24 +27,23 @@ import java.util.Random;
 public class ChooseBreedPage extends AppCompatActivity implements View.OnDragListener
 {
     private static final String LOGCAT = ChooseBreedPage.class.getSimpleName();
-    private Toolbar toolbar;
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
-
+    ImageView iv_left, iv_right;
     String breed = "";
     String boar_id = "";
     String sow_id = "";
     String foster_sow = "";
     String group_label = "";
-
     Resources res;
     String[] arr = {};
     String[] arr2 = {"", "", "", "", "", ""};
     String[] arr3 = {"", "", "", "", "", ""};
     String[] ids = {"1", "2", "3", "4", "5", "6"};
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +75,77 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         adapter = new CustomPagerAdapter(ChooseBreedPage.this, arr, arr2, arr3, ids);
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == arr.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose Pig Breed";
         tv_title.setText(title);
 
         group_label = randomChars();
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < arr.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override
@@ -151,13 +217,14 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
                 int id = view.getId();
                 breed = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + breed);
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(ChooseBreedPage.this, "Chosen Pig Breed: " +
                                     arr[Integer.parseInt(breed)-1],
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseBreedPage.this, WeekFarrowedPage.class);
+                    Intent i = new Intent(ChooseBreedPage.this, ChooseGender.class);
                     i.putExtra("breed", breed);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
@@ -168,8 +235,6 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + breed);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -181,5 +246,14 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

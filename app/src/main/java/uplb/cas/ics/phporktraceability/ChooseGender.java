@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -25,18 +24,18 @@ public class ChooseGender extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = ChooseGender.class.getSimpleName();
+    String gender = "";
+    String boar_id = "";
+    String sow_id = "";
+    String foster_sow = "";
+    String group_label = "";
+    String breed = "";
     private Toolbar toolbar;
     private ImageView iv_male;
     private ImageView iv_female;
     private LinearLayout top_cont;
     private LinearLayout bot_cont;
-
-    String gender = "";
-    String boar_id = "";
-    String sow_id = "";
-    String group_label = "";
-    String breed = "";
-    String week_farrowed = "";
+    //String week_farrowed = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +53,10 @@ public class ChooseGender extends AppCompatActivity
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
 
         iv_male = (ImageView) findViewById(R.id.iv_male);
         iv_female = (ImageView) findViewById(R.id.iv_female);
@@ -87,11 +87,11 @@ public class ChooseGender extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                Intent i = new Intent(ChooseGender.this, WeekFarrowedPage.class);
-                i.putExtra("breed", breed);
+                Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
+                //i.putExtra("breed", breed);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
+                i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -131,6 +131,8 @@ public class ChooseGender extends AppCompatActivity
                 int id = view.getId();
                 gender = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + gender);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(ChooseGender.this, "Chosen " + gender,
@@ -138,17 +140,16 @@ public class ChooseGender extends AppCompatActivity
                     Intent i = new Intent(ChooseGender.this, AssignRFIDPage.class);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
+                    i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    i.putExtra("week_farrowed", week_farrowed);
+                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + gender);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -171,5 +172,17 @@ public class ChooseGender extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
+        i.putExtra("breed", breed);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", foster_sow);
+        i.putExtra("group_label", group_label);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

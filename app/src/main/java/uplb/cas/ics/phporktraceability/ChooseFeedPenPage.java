@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,43 +22,36 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
-import helper.SessionManager;
 
 /**
- * Created by marmagno on 11/11/2015.
+ * Created by marmagno on 11/25/2015.
  */
-public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragListener
-{
+public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragListener {
+    public final static String KEY_PENID = "pen_id";
+    public final static String KEY_PENNO = "pen_no";
+    public final static String KEY_FUNC = "function";
+    public final static String KEY_GNAME = "group_name";
     private static final String LOGCAT = ChooseFeedPenPage.class.getSimpleName();
-    private Toolbar toolbar;
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
-
+    TextView tv_title;
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
     String pen = "";
-    String rfid = "";
-    String gender = "";
-    String boar_id = "";
-    String sow_id = "";
-    String group_label = "";
-    String breed = "";
-    String week_farrowed = "";
+    String house_id = "";
+    String feed_id = "";
+    String[] lists = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
+    private Toolbar toolbar;
 
-    public final static String KEY_PENID = "pen_id";
-    public final static String KEY_PENNO = "pen_no";
-    public final static String KEY_FUNC = "function";
-
-    SessionManager session;
-    ArrayList<HashMap<String, String>> pen_list;
-    String[] lists;
-    String[] ids;
-    String location= "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assignpen);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -68,18 +61,9 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        session = new SessionManager(getApplicationContext());
-        HashMap<String, String> user = session.getUserSession();
-        location = user.get(SessionManager.KEY_LOC);
-
         Intent i = getIntent();
-        boar_id = i.getStringExtra("boar_id");
-        sow_id = i.getStringExtra("sow_id");
-        group_label = i.getStringExtra("group_label");
-        breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
-        gender = i.getStringExtra("gender");
-        rfid = i.getStringExtra("rfid");
+        feed_id = i.getStringExtra("feed_id");
+        house_id = i.getStringExtra("house_id");
 
         db = new SQLiteHandler(getApplicationContext());
 
@@ -91,27 +75,96 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter(ChooseFeedPenPage.this, lists, ids);
+        adapter = new CustomPagerAdapter(ChooseFeedPenPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose a Pen to be Fed";
+        tv_title.setText(title);
 
     }
 
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
+
+    }
 
     public void loadLists(){
+        ArrayList<HashMap<String, String>> the_list = db.getPensByHouse(house_id);
 
-        ArrayList<HashMap<String, String>> the_list = db.getPens(location);
-
-        pen_list = new ArrayList<>();
         lists = new String[the_list.size()];
+        lists2 = new String[the_list.size()];
+        lists3 = new String[the_list.size()];
         ids = new String[the_list.size()];
-        for(int i = 0;i < the_list.size();i++)
-        {
+
+        for(int i = 0;i < the_list.size();i++) {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen: " + c.get(KEY_PENNO) + " -> Function: " + c.get(KEY_FUNC);
+            lists[i] = "Pen No: " + c.get(KEY_PENNO);
+            lists2[i] = "Function: " + c.get(KEY_FUNC);
+            lists3[i] = "";
             ids[i] = c.get(KEY_PENID);
-            pen_list.add(c);
         }
     }
 
@@ -132,14 +185,8 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                Intent i = new Intent(ChooseFeedPenPage.this, AssignRFIDPage.class);
-                i.putExtra("boar_id", boar_id);
-                i.putExtra("sow_id", sow_id);
-                i.putExtra("group_label", group_label);
-                i.putExtra("breed", breed);
-                i.putExtra("week_farrowed", week_farrowed);
-                i.putExtra("gender", gender);
+                Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
+                i.putExtra("feed_id", feed_id);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -181,15 +228,10 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(ChooseFeedPenPage.this, "Chosen " + pen,
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseFeedPenPage.this, AddThePig.class);
+                    Intent i = new Intent(ChooseFeedPenPage.this, AddFeedPig.class);
                     i.putExtra("pen", pen);
-                    i.putExtra("rfid", rfid);
-                    i.putExtra("boar_id", boar_id);
-                    i.putExtra("sow_id", sow_id);
-                    i.putExtra("group_label", group_label);
-                    i.putExtra("breed", breed);
-                    i.putExtra("week_farrowed", week_farrowed);
-                    i.putExtra("gender", gender);
+                    i.putExtra("feed_id", feed_id);
+                    i.putExtra("house_id", house_id);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
@@ -208,5 +250,12 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
+        i.putExtra("feed_id", feed_id);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
 }

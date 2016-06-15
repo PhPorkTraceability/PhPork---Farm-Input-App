@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,27 +30,27 @@ import helper.SQLiteHandler;
 public class ChooseBoarPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
+    public final static String KEY_PIGID = "pig_id";
+    public final static String KEY_BREED = "breed_name";
     private static final String LOGCAT = ChooseBoarPage.class.getSimpleName();
-    private Toolbar toolbar;
-
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
-
+    TextView tv_title;
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
     String boar_id = "";
-
-    public final static String KEY_PIGID = "pig_id";
-    public final static String KEY_BREED = "breed_name";
-    ArrayList<HashMap<String, String>> boar_list;
-    String[] lists;
-    String[] ids;
+    String[] lists = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chooseboar);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,13 +65,77 @@ public class ChooseBoarPage extends AppCompatActivity
         loadLists();
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        ll = (LinearLayout) findViewById(R.id.bottom_container);
 
         bl.setOnDragListener(this);
         //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new CustomPagerAdapter(ChooseBoarPage.this, lists, ids);
+        adapter = new CustomPagerAdapter(ChooseBoarPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose a Boar Parent";
+        tv_title.setText(title);
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -91,7 +156,7 @@ public class ChooseBoarPage extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                Intent i = new Intent(ChooseBoarPage.this, WeaningPage.class);
+                Intent i = new Intent(ChooseBoarPage.this, ChooseModule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -101,37 +166,91 @@ public class ChooseBoarPage extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private String checkIfNull(String _value){
+        String result = "";
+        if(_value != null && !_value.isEmpty() && !_value.equals("null")) return _value;
+        else return result;
+    }
+
     private String getLabel(String _id){
         String result = "";
 
-        int size = _id.length();
-        String s = "0";
-        size = 6 - size;
-        for(int i = 0; i < size;i++){
-            s = s + "0";
+        if(!checkIfNull(_id).equals("")) {
+            int size = _id.length();
+            String s = "0";
+            size = 6 - size;
+            for (int i = 0; i < size; i++) {
+                s = s + "0";
+            }
+            s = s + _id;
+            String temp1 = s.substring(0, 2);
+            String temp2 = s.substring(3, 7);
+            result = temp1 + "-" + temp2;
         }
-        s = s + _id;
-        String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3,7);
-        result = temp1 + "-" + temp2;
         return result;
     }
 
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> boars = db.getBoars();
+        //int size = boars.size();
+        //if(size > 0) {
 
-        boar_list = new ArrayList<>();
-        lists = new String[boars.size()];
-        ids = new String[boars.size()];
-        for(int i = 0;i < boars.size();i++)
-        {
-            HashMap<String, String> c = boars.get(i);
-            String boar_id = getLabel(c.get(KEY_PIGID));
-            lists[i] = "Boar: " + boar_id + " -> " + c.get(KEY_BREED);
-            ids[i] = c.get(KEY_PIGID);
-            boar_list.add(c);
-        }
+            lists = new String[boars.size()+1];
+            lists2 = new String[boars.size()+1];
+            lists3 = new String[boars.size()+1];
+            ids = new String[boars.size()+1];
+
+            lists[0] = "";
+            lists2[0] = "---";
+            lists3[0] = "";
+            ids[0] = "";
+
+            for (int i = 0; i < boars.size(); i++) {
+                HashMap<String, String> c = boars.get(i);
+                String boar_id = c.get(KEY_PIGID);
+                lists[i+1] = "Boar: " + boar_id;
+                lists2[i+1] = "Breed: " + c.get(KEY_BREED);
+                lists3[i+1] = "";
+                ids[i+1] = c.get(KEY_PIGID);
+            }
+       /* } else{
+
+            final int SPLASH_TIME_OUT = 1500;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No data available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                            new Handler().postDelayed(new Runnable() {
+
+                            /*
+                             * Showing splash screen with a timer. This will be useful when you
+                             * want to show case your app logo / company
+                             */
+                        /*
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(ChooseBoarPage.this, eaningPage.class);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }*/
     }
 
     @Override
@@ -161,6 +280,8 @@ public class ChooseBoarPage extends AppCompatActivity
                 int id = view.getId();
                 boar_id = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + boar_id);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(ChooseBoarPage.this, "Chosen Boar Parent: " +
@@ -171,8 +292,6 @@ public class ChooseBoarPage extends AppCompatActivity
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + boar_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -195,5 +314,14 @@ public class ChooseBoarPage extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+
+        Intent i = new Intent(ChooseBoarPage.this, ChooseModule.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+
+    }
 }

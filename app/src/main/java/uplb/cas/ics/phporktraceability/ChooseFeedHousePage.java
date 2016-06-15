@@ -3,7 +3,6 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,37 +25,37 @@ import helper.SQLiteHandler;
 import helper.SessionManager;
 
 /**
- * Created by marmagno on 11/11/2015.
+ * Created by marmagno on 11/26/2015.
  */
 public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDragListener
 {
+    public final static String KEY_HOUSEID = "house_id";
+    public final static String KEY_HOUSENO = "house_no";
+    public final static String KEY_HOUSENAME = "house_name";
+    public final static String KEY_FUNC = "function";
     private static final String LOGCAT = ChooseFeedHousePage.class.getSimpleName();
-    private Toolbar toolbar;
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
-
+    TextView tv_title;
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
-    String pen = "";
+    String house_id = "";
     String feed_id = "";
-
-    public final static String KEY_PENID = "pen_id";
-    public final static String KEY_PENNO = "pen_no";
-    public final static String KEY_FUNC = "function";
-    public final static String KEY_GNAME = "group_name";
-
     SessionManager session;
-    ArrayList<HashMap<String, String>> pen_list;
-    String[] lists;
-    String[] lists2;
-    String[] lists3;
-    String[] ids;
+    //ArrayList<HashMap<String, String>> pen_list;
+    String[] lists = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
     String location= "";
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assignpen);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -82,17 +82,86 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter2(ChooseFeedHousePage.this, lists, lists2, lists3, ids);
+        adapter = new CustomPagerAdapter(ChooseFeedHousePage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose a House to be Fed";
+        tv_title.setText(title);
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
 
     }
 
 
     public void loadLists(){
 
-        ArrayList<HashMap<String, String>> the_list = db.getFeedPens(location);
+        ArrayList<HashMap<String, String>> the_list = db.getHouses(location);
 
-        pen_list = new ArrayList<>();
+        //pen_list = new ArrayList<>();
         lists = new String[the_list.size()];
         lists2 = new String[the_list.size()];
         lists3 = new String[the_list.size()];
@@ -101,11 +170,11 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
         {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen: " + c.get(KEY_PENNO);
-            lists[i] = "Function: " + c.get(KEY_FUNC);
-            lists[i] = "Group Name: " + c.get(KEY_GNAME);
-            ids[i] = c.get(KEY_PENID);
-            pen_list.add(c);
+            lists[i] = "House No: " + c.get(KEY_HOUSENO);
+            lists2[i] = "House Name: " + c.get(KEY_HOUSENAME);
+            lists3[i] = "Function: " + c.get(KEY_FUNC);
+            ids[i] = c.get(KEY_HOUSEID);
+            //pen_list.add(c);
         }
     }
 
@@ -126,7 +195,6 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
                 Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -163,14 +231,14 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
-                pen = view.findViewById(id).getTag().toString();
+                house_id = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseFeedHousePage.this, "Chosen " + pen,
+                    Toast.makeText(ChooseFeedHousePage.this, "Chosen " + house_id,
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseFeedHousePage.this, AddFeedPig.class);
-                    i.putExtra("pen", pen);
+                    Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPenPage.class);
+                    i.putExtra("house_id", house_id);
                     i.putExtra("feed_id", feed_id);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -178,7 +246,7 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
                     finish();
                 }
 
-                Log.d(LOGCAT, "Dropped " + pen);
+                Log.d(LOGCAT, "Dropped " + house_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -190,5 +258,12 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPage.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

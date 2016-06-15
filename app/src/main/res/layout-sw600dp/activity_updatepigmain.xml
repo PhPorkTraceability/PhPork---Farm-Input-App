@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,28 +27,28 @@
                 android:id="@+id/tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabMode="scrollable"
-                app:tabGravity="fill"/>
+                app:tabGravity="center"
+                app:tabMode="fixed"/>
         </android.support.design.widget.AppBarLayout>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
             android:text="Update Pig Info"
             android:textSize="40sp"
-            android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_margin="10dp" />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tv_piglabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Updating Pig : "
-            android:textStyle="italic"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="Updating Pig : "
             android:textSize="30sp"
-            android:layout_margin="5dp" />
+            android:textStyle="italic" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/main_viewpager"

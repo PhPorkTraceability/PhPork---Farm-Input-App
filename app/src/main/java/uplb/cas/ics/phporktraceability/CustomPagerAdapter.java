@@ -2,11 +2,11 @@ package uplb.cas.ics.phporktraceability;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -16,12 +16,12 @@ import android.widget.TextView;
 public class CustomPagerAdapter extends PagerAdapter
         implements  View.OnTouchListener {
 
-    private Context mContext;
     String[] arr1 = {};
     String[] arr2 = {};
     String[] arr3 = {};
     String[] ids = {};
     LayoutInflater inflater;
+    private Context mContext;
 
     public CustomPagerAdapter(Context context, String[] display1, String[] display2,
                                String[] display3, String[] values) {
@@ -32,7 +32,6 @@ public class CustomPagerAdapter extends PagerAdapter
         ids = values;
     }
 
-
     @Override
     public int getCount() {
         return arr1.length;
@@ -41,7 +40,7 @@ public class CustomPagerAdapter extends PagerAdapter
     @Override
     public boolean isViewFromObject(View view, Object object)
     {
-        return view == ((LinearLayout) object);
+        return view == object;
     }
 
     @Override
@@ -50,10 +49,10 @@ public class CustomPagerAdapter extends PagerAdapter
         // Declare Variables
         TextView tv_item, tv_item2, tv_item3;
         LinearLayout tl;
+        ImageView iv_left, iv_right;
 
         inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View itemView = inflater.inflate(R.layout.viewpager_item, container,
-                false);
+        View itemView = inflater.inflate(R.layout.viewpager_item, container, false);
 
         // Locate the TextViews in viewpager_item.xml
         tv_item = (TextView) itemView.findViewById(R.id.tv_subitem1);
@@ -72,15 +71,16 @@ public class CustomPagerAdapter extends PagerAdapter
         tl.setTag(ids[position]);
         tl.setOnTouchListener(this);
         // Add viewpager_item.xml to ViewPager
-        ((ViewPager) container).addView(itemView);
+        container.addView(itemView);
         //itemView.setOnTouchListener(this);
+
         return itemView;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         // Remove viewpager_item.xml from ViewPager
-        ((ViewPager) container).removeView((LinearLayout) object);
+        container.removeView((LinearLayout) object);
 
     }
 

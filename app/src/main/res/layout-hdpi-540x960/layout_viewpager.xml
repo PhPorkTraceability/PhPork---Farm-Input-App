@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:fitsSystemWindows="true" android:background="@color/white"
-    tools:context=".ChooseSowPage">
+    android:background="@color/white" android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,18 +27,18 @@
         </android.support.design.widget.AppBarLayout>
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:id="@+id/tv_title"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Then Drag and Drop it to the box below"
             android:layout_margin="5dp"
+            android:text="Then Drag and Drop it to the box below"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -48,41 +46,64 @@
             android:id="@+id/top_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp"
             android:layout_marginBottom="10dp"
-            android:background="@color/white">
+            android:layout_weight=".20"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/iv_left"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".20"
+                android:background="@color/colorAccent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/left_arrow"
+                android:tag="left"
+                android:visibility="invisible" />
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fitsSystemWindows="true"
-                android:layout_gravity="center" />
+                android:layout_gravity="center"
+                android:layout_weight=".20" />
+
+            <ImageView
+                android:id="@+id/iv_right"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight=".20"
+                android:background="@color/colorAccent"
+                android:scaleType="fitCenter"
+                android:src="@drawable/right_arrow"
+                android:tag="right"
+                android:visibility="invisible" />
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".20"
-            android:orientation="horizontal"
-            android:padding="20dp"
-            android:layout_margin="20dp"
             android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:layout_weight=".20"
+            android:background="@drawable/layout_gradient"
             android:gravity="center"
-            android:background="@drawable/layout_gradient">
+            android:orientation="horizontal"
+            android:padding="20dp">
 
             <TextView
+                android:id="@+id/tv_dragHere"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/tv_dragHere"
                 android:gravity="center"
+                android:text="Drop your choice here"
                 android:textSize="32sp"
-                android:textStyle="bold|italic"
-                android:text="Drop your choice here"/>
+                android:textStyle="bold|italic"/>
 
         </LinearLayout>
 

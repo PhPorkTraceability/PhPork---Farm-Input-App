@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,32 +30,38 @@ import helper.SQLiteHandler;
 public class LastFeedGivenPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
-    private static final String LOGCAT = LastFeedGivenPage.class.getSimpleName();
-    private Toolbar toolbar;
-
-    ViewPager viewPager;
-    PagerAdapter adapter;
-    LinearLayout ll;
-    LinearLayout bl;
-
-    SQLiteHandler db;
-    String feed_id = "";
-
     public final static String KEY_FEEDID = "feed_id";
     public final static String KEY_FEEDNAME = "feed_name";
     public final static String KEY_FEEDTYPE = "feed_type";
     public final static String KEY_PROD = "prod_date";
-
-    ArrayList<HashMap<String, String>> feed_list;
-    String[] lists1;
-    String[] lists2;
-    String[] lists3;
-    String[] ids;
+    private static final String LOGCAT = LastFeedGivenPage.class.getSimpleName();
+    ViewPager viewPager;
+    PagerAdapter adapter;
+    LinearLayout ll;
+    LinearLayout bl;
+    TextView tv_title;
+    ImageView iv_left, iv_right;
+    SQLiteHandler db;
+    String pen = "";
+    String rfid = "";
+    String gender = "";
+    String boar_id = "";
+    String sow_id = "";
+    String foster_sow = "";
+    String group_label = "";
+    String breed = "";
+    //String week_farrowed = "";
+    String feed_id = "";
+    String[] lists1 = {};
+    String[] lists2 = {};
+    String[] lists3 = {};
+    String[] ids = {};
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choosefeed);
+        setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -63,6 +70,17 @@ public class LastFeedGivenPage extends AppCompatActivity
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        Intent i = getIntent();
+        boar_id = i.getStringExtra("boar_id");
+        sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
+        group_label = i.getStringExtra("group_label");
+        breed = i.getStringExtra("breed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
+        gender = i.getStringExtra("gender");
+        rfid = i.getStringExtra("rfid");
+        pen = i.getStringExtra("pen");
 
         db = new SQLiteHandler(getApplicationContext());
 
@@ -74,8 +92,77 @@ public class LastFeedGivenPage extends AppCompatActivity
         bl.setOnDragListener(this);
         //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        adapter = new CustomPagerAdapter2(LastFeedGivenPage.this, lists1, lists2, lists3, ids);
+        adapter = new CustomPagerAdapter(LastFeedGivenPage.this, lists1, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists1.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
+        tv_title = (TextView) findViewById(R.id.tv_title);
+        String title = "Swipe to Choose Last Feed Given";
+        tv_title.setText(title);
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists1.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -96,7 +183,15 @@ public class LastFeedGivenPage extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                Intent i = new Intent(LastFeedGivenPage.this, GrowingPage.class);
+                Intent i = new Intent(LastFeedGivenPage.this, AssignPenPage.class);
+                i.putExtra("rfid", rfid);
+                i.putExtra("boar_id", boar_id);
+                i.putExtra("sow_id", sow_id);
+                i.putExtra("foster_sow", foster_sow);
+                i.putExtra("group_label", group_label);
+                i.putExtra("breed", breed);
+                //i.putExtra("week_farrowed", week_farrowed);
+                i.putExtra("gender", gender);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -126,19 +221,23 @@ public class LastFeedGivenPage extends AppCompatActivity
 
         ArrayList<HashMap<String, String>> feeds = db.getFeeds();
 
-        feed_list = new ArrayList<>();
-        lists1 = new String[feeds.size()];
-        lists2 = new String[feeds.size()];
-        lists3 = new String[feeds.size()];
-        ids = new String[feeds.size()];
+        lists1 = new String[feeds.size()+1];
+        lists2 = new String[feeds.size()+1];
+        lists3 = new String[feeds.size()+1];
+        ids = new String[feeds.size()+1];
+
+        lists1[0] = "";
+        lists2[0] = "---";
+        lists3[0] = "";
+        ids[0] = "";
+
         for(int i = 0;i < feeds.size();i++)
         {
             HashMap<String, String> c = feeds.get(i);
-            lists1[i] = "Feed Name: " + c.get(KEY_FEEDNAME);
-            lists2[i] = "Feed Type: " + c.get(KEY_FEEDTYPE);
-            lists3[i] = "Production Date: " + c.get(KEY_PROD);
-            ids[i] = c.get(KEY_FEEDID);
-            feed_list.add(c);
+            lists1[i+1] = "Feed Name: " + c.get(KEY_FEEDNAME);
+            lists2[i+1] = "Feed Type: " + c.get(KEY_FEEDTYPE);
+            lists3[i+1] = "";
+            ids[i+1] = c.get(KEY_FEEDID);
         }
     }
 
@@ -169,18 +268,27 @@ public class LastFeedGivenPage extends AppCompatActivity
                 int id = view.getId();
                 feed_id = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + feed_id);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(LastFeedGivenPage.this, "Chosen Feed: " +
                                     getLabel(feed_id),
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(LastFeedGivenPage.this, ChooseFeedHousePage.class);
+                    Intent i = new Intent(LastFeedGivenPage.this, LastMedicationGiven.class);
+                    i.putExtra("pen", pen);
+                    i.putExtra("rfid", rfid);
+                    i.putExtra("boar_id", boar_id);
+                    i.putExtra("sow_id", sow_id);
+                    i.putExtra("foster_sow", foster_sow);
+                    i.putExtra("group_label", group_label);
+                    i.putExtra("breed", breed);
+                    //i.putExtra("week_farrowed", week_farrowed);
+                    i.putExtra("gender", gender);
                     i.putExtra("feed_id", feed_id);
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + feed_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -203,5 +311,20 @@ public class LastFeedGivenPage extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(LastFeedGivenPage.this, AssignPenPage.class);
+        i.putExtra("rfid", rfid);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", foster_sow);
+        i.putExtra("group_label", group_label);
+        i.putExtra("breed", breed);
+        //i.putExtra("week_farrowed", week_farrowed);
+        i.putExtra("gender", gender);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

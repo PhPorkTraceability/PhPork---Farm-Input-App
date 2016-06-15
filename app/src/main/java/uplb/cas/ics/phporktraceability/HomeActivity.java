@@ -17,20 +17,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import helper.SQLiteHandler;
 import helper.SessionManager;
 
 public class HomeActivity extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener {
 
     private static final String LOGCAT = HomeActivity.class.getSimpleName();
+    String function = "";
+    SessionManager session;
+    SQLiteHandler db;
     private Toolbar toolbar;
     private ImageView iv_weaning;
     private ImageView iv_growing;
     private LinearLayout bot_cont;
-    private LinearLayout top_cont;
-    String function = "";
-
-    SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,23 +38,28 @@ public class HomeActivity extends AppCompatActivity
         setContentView(R.layout.activity_home);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        db = new SQLiteHandler(getApplicationContext());
         session = new SessionManager(getApplicationContext());
-        session.checkLogin();
+        //session.checkLogin();
+
+        /* Adding the navdrawer
+        getLayoutInflater().inflate(R.layout.activity_home, frameLayout);
+        mDrawerList.setItemChecked(position, true);
+        setTitle(listArray[position]);
+        */
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         iv_weaning = (ImageView) findViewById(R.id.iv_weaning);
         iv_growing = (ImageView) findViewById(R.id.iv_growing);
-        top_cont = (LinearLayout) findViewById(R.id.top_container);
         bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
 
         iv_weaning.setOnTouchListener(this);
         iv_growing.setOnTouchListener(this);
-        //top_cont.setOnDragListener(this);
         bot_cont.setOnDragListener(this);
 
         /*

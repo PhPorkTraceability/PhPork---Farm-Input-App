@@ -17,6 +17,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 import helper.SessionManager;
 
 /**
@@ -26,15 +28,14 @@ public class WeaningPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = WeaningPage.class.getSimpleName();
+    SessionManager session;
+    String farm_func = "";
+    String function = "";
     private Toolbar toolbar;
     private ImageView iv_addpig;
     private ImageView iv_viewpig;
     private LinearLayout top_cont;
     private LinearLayout bot_cont;
-
-    SessionManager session;
-
-    String function = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +51,8 @@ public class WeaningPage extends AppCompatActivity
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         session = new SessionManager(getApplicationContext());
+        HashMap<String, String> user = session.getUserSession();
+        farm_func = user.get(SessionManager.KEY_FUNC);
 
         iv_addpig = (ImageView) findViewById(R.id.iv_addpig);
         iv_viewpig = (ImageView) findViewById(R.id.iv_viewpig);
@@ -83,7 +86,7 @@ public class WeaningPage extends AppCompatActivity
                 Intent i = new Intent(WeaningPage.this, LocationPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putExtra("function", function);
+                i.putExtra("function", farm_func);
                 startActivity(i);
                 finish();
                 return true;
@@ -160,5 +163,14 @@ public class WeaningPage extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+
+        Intent i = new Intent(WeaningPage.this, LocationPage.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("function", function);
+        startActivity(i);
+        finish();
+    }
 }

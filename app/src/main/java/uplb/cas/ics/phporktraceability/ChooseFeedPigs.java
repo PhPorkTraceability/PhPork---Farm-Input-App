@@ -1,21 +1,16 @@
 package uplb.cas.ics.phporktraceability;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,33 +18,31 @@ import java.util.HashMap;
 import helper.SQLiteHandler;
 
 /**
- * Created by marmagno on 11/19/2015.
+ * Created by marmagno on 11/26/2015.
  */
 
-public class ChooseFeedPigs extends AppCompatActivity {
+public class ChooseFeedPigs extends AppCompatActivity
+        implements View.OnClickListener{
 
-    private static final String LOGCAT = WeaningPage.class.getSimpleName();
-    private Toolbar toolbar;
-    private ListView lv;
-
-    ArrayList<HashMap<String, String>> pig_list;
     public static final String KEY_PIGID = "pig_id";
     public static final String KEY_LABEL = "label";
     public static final String KEY_BREED = "breed_name";
     public static final String KEY_GENDER = "gender";
-    public static final String KEY_GNAME = "group_name";
-    public static final String KEY_BOAR = "boar_id";
-    public static final String KEY_SOW = "sow_id";
-    public static final String KEY_WEEKF = "week_farrowed";
-    public static final String KEY_PENID = "pen_id";
-    public static final String KEY_FUNCTION = "function";
-
+    private static final String LOGCAT = ChooseFeedPigs.class.getSimpleName();
+    ArrayList<HashMap<String, String>> pig_list;
     SQLiteHandler db;
+    String pen = "";
+    String house_id = "";
+    String feed_id = "";
+    private Toolbar toolbar;
+    private ListView lv;
+    //private Button btn_submit;
+    private ListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_list_of_pigs);
+        setContentView(R.layout.activity_choosepig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -59,92 +52,58 @@ public class ChooseFeedPigs extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
+        Intent i = getIntent();
+        pen = i.getStringExtra("pen");
+        house_id = i.getStringExtra("house_id");
+        feed_id = i.getStringExtra("feed_id");
+
         db = new SQLiteHandler(getApplicationContext());
 
-        lv = (ListView)findViewById(R.id.listview);
+        //btn_submit = (Button) findViewById(R.id.btn_submit);
+        lv = (ListView) findViewById(R.id.listview);
 
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String pig_id = ((TextView) view.findViewById(R.id.tv_pig)).getText().toString().trim();
-                String label = ((TextView) view.findViewById(R.id.tv_pig_label)).getText().toString();
-
-                Log.d(LOGCAT, "Pig_id: " + pig_id + " Label: " + label);
-
-                String sow_id = "", boar_id = "", group_name = "",
-                        week_farrowed = "", gender = "", breed = "",
-                        pen_id = "", function = "";
-
-                HashMap<String, String> c = db.getThePig(pig_id);
-                HashMap<String, String> a = db.getPigGroup(pig_id);
-                if(a.get(KEY_GNAME) == null && a.get(KEY_PENID) == null
-                        && a.get(KEY_FUNCTION) == null){
-                    group_name = "Group Label: none";
-                    pen_id = "Pen ID: ";
-                    function = "";
-                } else {
-                    group_name = "Group Label: " + a.get(KEY_GNAME);
-                    pen_id = "Pen ID: " + a.get(KEY_PENID);
-                    function = " -> " + a.get(KEY_FUNCTION);
-                }
-                if(c.get(KEY_BOAR).equals("null")) {
-                    boar_id = "Boar Parent: ";
-                } else {
-                    boar_id = "Boar Parent: " + getLabel(c.get(KEY_BOAR));
-                }
-                if(c.get(KEY_SOW).equals("null")) {
-                    sow_id = "Sow Parent: ";
-                } else {
-                    sow_id = "Sow Parent: " + getLabel(c.get(KEY_SOW));
-                }
-                week_farrowed = "Week Farrowed: " + c.get(KEY_WEEKF);
-                gender = "Gender: " + c.get(KEY_GENDER);
-                breed = "Breed: " + c.get(KEY_BREED);
-
-                // Create Object of Dialog class
-                final Dialog viewD = new Dialog(ChooseFeedPigs.this);
-                // Set GUI of login screen
-                viewD.setContentView(R.layout.dialog_view_pig);
-                viewD.setTitle("Viewing Pig Details");
-
-                // Init button of login GUI
-                Button btn_ok = (Button) viewD.findViewById(R.id.db_btn_ok);
-                TextView tv_group = (TextView) viewD.findViewById(R.id.tv_group);
-                TextView tv_pig = (TextView) viewD.findViewById(R.id.tv_pig);
-                TextView tv_boar = (TextView) viewD.findViewById(R.id.tv_boar);
-                TextView tv_sow = (TextView) viewD.findViewById(R.id.tv_sow);
-                TextView tv_weekf = (TextView) viewD.findViewById(R.id.tv_weekF);
-                TextView tv_gender = (TextView) viewD.findViewById(R.id.tv_gender);
-                TextView tv_breed = (TextView) viewD.findViewById(R.id.tv_breed);
-                TextView tv_pen = (TextView) viewD.findViewById(R.id.tv_pen);
-
-                tv_group.setText(group_name);
-                tv_pig.setText(label);
-                tv_boar.setText(boar_id);
-                tv_sow.setText(sow_id);
-                tv_weekf.setText(week_farrowed);
-                tv_gender.setText(gender);
-                tv_breed.setText(breed);
-                tv_pen.setText(pen_id + function);
-
-                btn_ok.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        viewD.dismiss();
-                    }
-                });
-
-                // Make dialog box visible.
-                viewD.show();
-            }
-        });
-
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                return false;
-            }
-        });
         loadLists();
+
+        /*
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SparseBooleanArray checked = lv.getCheckedItemPositions();
+                ArrayList<String> selectedItems = new ArrayList<String>();
+                for (int i = 0; i < checked.size(); i++) {
+                    // Item position in adapter
+                    int position = checked.keyAt(i);
+
+                    HashMap<String, String> item =
+                            (HashMap<String, String>) adapter.getItem(position);
+                    if (checked.valueAt(i))
+                        selectedItems.add(item.get(KEY_PIGID));
+                }
+
+                if (selectedItems.size() > 0) {
+
+                    String[] selected_pigs = new String[selectedItems.size()];
+
+                    for (int i = 0; i < selectedItems.size(); i++) {
+                        selected_pigs[i] = selectedItems.get(i);
+                    }
+
+                    Intent i = new Intent(ChooseFeedPigs.this, AddFeedPig.class);
+                    i.putExtra("pigs", selected_pigs);
+                    i.putExtra("house_id", house_id);
+                    i.putExtra("pen", pen);
+                    i.putExtra("feed_id", feed_id);
+                    startActivity(i);
+                } else {
+                    Toast.makeText(ChooseFeedPigs.this,
+                            "Please select pigs to feed.",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        */
+
     }
 
     @Override
@@ -164,7 +123,9 @@ public class ChooseFeedPigs extends AppCompatActivity {
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                Intent i = new Intent(ChooseFeedPigs.this, WeaningPage.class);
+                Intent i = new Intent(ChooseFeedPigs.this, ChooseFeedPenPage.class);
+                i.putExtra("feed_id", feed_id);
+                i.putExtra("house_id", house_id);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -176,9 +137,10 @@ public class ChooseFeedPigs extends AppCompatActivity {
 
     public void loadLists(){
 
-        ArrayList<HashMap<String, String>> pigs = db.getPigs();
+        ArrayList<HashMap<String, String>> pigs = db.getPigsByPen(pen);
 
         pig_list = new ArrayList<>();
+
         for(int i = 0;i < pigs.size();i++)
         {
             HashMap<String, String> c = pigs.get(i);
@@ -191,13 +153,14 @@ public class ChooseFeedPigs extends AppCompatActivity {
             pig_list.add(b);
         }
 
-        final ListAdapter adapter = new SimpleAdapter(
+       adapter = new SimpleAdapter(
                 ChooseFeedPigs.this, pig_list,
-                R.layout.pig_list, new String[] {
-                KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[] {
+                R.layout.feedpig_list, new String[]{
+                KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[]{
                 R.id.tv_pig, R.id.tv_pig_label, R.id.tv_breed, R.id.tv_gender});
 
-         lv.setAdapter(adapter);
+        lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        lv.setAdapter(adapter);
     }
 
     private String getLabel(String _id){
@@ -218,4 +181,9 @@ public class ChooseFeedPigs extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){super.onBackPressed(); finish(); }
+
+    @Override
+    public void onClick(View v) {
+
+    }
 }

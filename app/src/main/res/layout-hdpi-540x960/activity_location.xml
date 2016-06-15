@@ -1,12 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true" android:background="@color/white"
-    tools:context=".LocationPage"
-    android:id="@+id/main_content"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_content" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/white" android:fitsSystemWindows="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,16 +28,16 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Choose Location"
             android:layout_margin="10dp"
+            android:text="Choose Location"
             android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Drag and Drop it to the box below"
             android:layout_margin="5dp"
+            android:text="Drag and Drop it to the box below"
             android:textSize="20sp"
             android:textStyle="bold" />
 
@@ -49,44 +45,44 @@
             android:id="@+id/top_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginBottom="10dp"
             android:layout_weight=".20"
+            android:background="@color/white"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="10dp"
-            android:layout_marginBottom="10dp"
-            android:background="@color/white">
+            android:padding="10dp">
 
             <ImageView
+                android:id="@+id/iv_rf11"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/iv_rf11"
-                android:src="@drawable/ic_rf11"
-                android:scaleType="fitCenter"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_rf11"
                 android:tag="RF11" />
 
             <ImageView
+                android:id="@+id/iv_rf18"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/iv_rf18"
-                android:src="@drawable/ic_rf18"
-                android:scaleType="fitCenter"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_rf18"
                 android:tag="RF18" />
 
             <ImageView
+                android:id="@+id/iv_rf19"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/iv_rf19"
-                android:src="@drawable/ic_rf19"
-                android:scaleType="fitCenter"
                 android:layout_gravity="top"
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_rf19"
                 android:tag="RF19" />
         </LinearLayout>
 
@@ -94,20 +90,20 @@
             android:id="@+id/bottom_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="30dp"
             android:layout_weight=".20"
+            android:background="@drawable/layout_gradient"
             android:orientation="horizontal"
-            android:padding="20dp"
-            android:layout_margin="20dp"
-            android:background="@drawable/layout_gradient">
+            android:padding="20dp">
 
             <TextView
+                android:id="@+id/tv_dragHere"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/tv_dragHere"
                 android:gravity="center"
+                android:text="Drop your choice here"
                 android:textSize="32sp"
-                android:textStyle="bold|italic"
-                android:text="Drop your choice here"/>
+                android:textStyle="bold|italic"/>
 
         </LinearLayout>
 

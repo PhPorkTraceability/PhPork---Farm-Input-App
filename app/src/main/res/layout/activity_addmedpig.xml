@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/white" android:fitsSystemWindows="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/appBar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="Finalizing Input"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Please Review Details of Medication"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_medname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv_subtitle"
+            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="15dp"
+            android:text="Med Name: "
+            android:textSize="22sp"
+            android:textStyle="bold|italic" />
+
+        <TextView
+            android:id="@+id/tv_medtype"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_medname"
+            android:layout_alignStart="@id/tv_medname"
+            android:layout_below="@id/tv_medname"
+            android:layout_marginTop="20dp"
+            android:text="Med Type: "
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/tv_pig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_medname"
+            android:layout_alignStart="@id/tv_medname"
+            android:layout_below="@id/tv_medtype"
+            android:layout_marginTop="20dp"
+            android:text="Pig ID: "
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/et_quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tv_pig"
+            android:layout_alignStart="@+id/tv_pig"
+            android:layout_below="@+id/tv_pig"
+            android:layout_marginTop="15dp"
+            android:hint="Enter quantity: "
+            android:inputType="numberDecimal"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/sp_units"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/et_quantity"
+            android:layout_below="@id/tv_pig"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/et_quantity"
+            android:entries="@array/units"
+            android:spinnerMode="dropdown" />
+
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_medname"
+            android:layout_alignStart="@id/tv_medname"
+            android:layout_below="@+id/et_quantity"
+            android:layout_marginTop="20dp"
+            android:text="Date Given: "
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_chooseDate"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_date"
+            android:layout_below="@+id/tv_pig"
+            android:layout_toEndOf="@+id/tv_date"
+            android:layout_toRightOf="@+id/tv_date"
+            android:text="Select" />
+
+        <TextView
+            android:id="@+id/tv_chosenDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btn_chooseDate"
+            android:layout_below="@+id/tv_pig"
+            android:layout_toEndOf="@+id/btn_chooseDate"
+            android:layout_toRightOf="@+id/btn_chooseDate"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/tv_medname"
+            android:layout_alignStart="@id/tv_medname"
+            android:layout_below="@+id/tv_date"
+            android:layout_marginTop="20dp"
+            android:text="Time Given: "
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_chooseTime"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_time"
+            android:layout_below="@+id/tv_date"
+            android:layout_toEndOf="@+id/tv_time"
+            android:layout_toRightOf="@+id/tv_time"
+            android:text="Select" />
+
+        <TextView
+            android:id="@+id/tv_chosenTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/tv_time"
+            android:layout_below="@+id/tv_date"
+            android:layout_toEndOf="@+id/btn_chooseTime"
+            android:layout_toRightOf="@+id/btn_chooseTime"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_addMed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_time"
+            android:layout_margin="30dp"
+            android:background="@color/colorAccent"
+            android:text="Ok"
+            android:textColor="@color/lbl_name"
+            android:textSize="32sp" />
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

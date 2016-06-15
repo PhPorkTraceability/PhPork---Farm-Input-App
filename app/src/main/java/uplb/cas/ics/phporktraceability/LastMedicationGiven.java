@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,15 +30,16 @@ import helper.SQLiteHandler;
 public class LastMedicationGiven extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
+    public final static String KEY_MEDID = "med_id";
+    public final static String KEY_MEDNAME = "med_name";
+    public final static String KEY_MEDTYPE = "med_type";
     private static final String LOGCAT = LastMedicationGiven.class.getSimpleName();
-    private Toolbar toolbar;
-
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
-
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
     String pen = "";
     String rfid = "";
@@ -47,18 +49,14 @@ public class LastMedicationGiven extends AppCompatActivity
     String foster_sow = "";
     String group_label = "";
     String breed = "";
-    String week_farrowed = "";
+    //String week_farrowed = "";
     String feed_id = "";
     String med_id = "";
-
-    public final static String KEY_MEDID = "med_id";
-    public final static String KEY_MEDNAME = "med_name";
-    public final static String KEY_MEDTYPE = "med_type";
-
     String[] lists1 = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +77,7 @@ public class LastMedicationGiven extends AppCompatActivity
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
         rfid = i.getStringExtra("rfid");
         pen = i.getStringExtra("pen");
@@ -90,7 +88,7 @@ public class LastMedicationGiven extends AppCompatActivity
         loadLists();
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        ll = (LinearLayout) findViewById(R.id.bottom_container);
+        //ll = (LinearLayout) findViewById(R.id.bottom_container);
 
         bl.setOnDragListener(this);
         //ll.setOnDragListener(this);
@@ -98,10 +96,76 @@ public class LastMedicationGiven extends AppCompatActivity
         adapter = new CustomPagerAdapter(LastMedicationGiven.this, lists1, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists1.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
         tv_title = (TextView) findViewById(R.id.tv_title);
-        String title = "Swipe to Choose Last Vaccination Given";
+        String title = "Swipe to Choose Last Vaccination";
         tv_title.setText(title);
 
+
+    }
+
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists1.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
 
     }
 
@@ -129,7 +193,7 @@ public class LastMedicationGiven extends AppCompatActivity
                 i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.putExtra("breed", breed);
-                i.putExtra("week_farrowed", week_farrowed);
+                //i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("gender", gender);
                 i.putExtra("pen", pen);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -161,17 +225,23 @@ public class LastMedicationGiven extends AppCompatActivity
 
         ArrayList<HashMap<String, String>> meds = db.getMeds();
 
-        lists1 = new String[meds.size()];
-        lists2 = new String[meds.size()];
-        lists3 = new String[meds.size()];
-        ids = new String[meds.size()];
+        lists1 = new String[meds.size()+1];
+        lists2 = new String[meds.size()+1];
+        lists3 = new String[meds.size()+1];
+        ids = new String[meds.size()+1];
+
+        lists1[0] = "";
+        lists2[0] = "---";
+        lists3[0] = "";
+        ids[0] = "";
+
         for(int i = 0;i < meds.size();i++)
         {
             HashMap<String, String> c = meds.get(i);
-            lists1[i] = "Med Name: " + c.get(KEY_MEDNAME);
-            lists2[i] = "Med Type: " + c.get(KEY_MEDTYPE);
-            lists3[i] = "";
-            ids[i] = c.get(KEY_MEDID);
+            lists1[i+1] = "Med Name: " + c.get(KEY_MEDNAME);
+            lists2[i+1] = "Med Type: " + c.get(KEY_MEDTYPE);
+            lists3[i+1] = "";
+            ids[i+1] = c.get(KEY_MEDID);
         }
     }
 
@@ -202,6 +272,8 @@ public class LastMedicationGiven extends AppCompatActivity
                 int id = view.getId();
                 med_id = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + med_id);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(LastMedicationGiven.this, "Chosen Vaccine: " +
@@ -215,15 +287,13 @@ public class LastMedicationGiven extends AppCompatActivity
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    i.putExtra("week_farrowed", week_farrowed);
+                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.putExtra("feed_id", feed_id);
                     i.putExtra("med_id", med_id);
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + med_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -246,5 +316,21 @@ public class LastMedicationGiven extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
+        i.putExtra("rfid", rfid);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", foster_sow);
+        i.putExtra("group_label", group_label);
+        i.putExtra("breed", breed);
+        //i.putExtra("week_farrowed", week_farrowed);
+        i.putExtra("gender", gender);
+        i.putExtra("pen", pen);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 }

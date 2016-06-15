@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    android:fitsSystemWindows="true" android:background="@color/white"
-    tools:context=".HomeActivity">
+    android:background="@color/white" android:fitsSystemWindows="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,167 +28,341 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Finalizing Input"
-            android:layout_margin="5dp"
             android:layout_gravity="center"
-            android:textSize="38sp"
+            android:layout_margin="5dp"
+            android:text="Finalizing Input"
+            android:textSize="42sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Please Review Details of New Pig"
             android:layout_gravity="center"
             android:layout_margin="5dp"
-            android:textSize="34sp"
+            android:text="Please Review Details of New Pig"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp"
-            android:orientation="vertical"
-            android:layout_gravity="center"
-            android:gravity="left">
+            android:layout_marginTop="40dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Group Label: "
                 android:id="@+id/tv_group"
-                android:textStyle="bold|italic"
-                android:textSize="32sp" />
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pig Label: "
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="10dp"
+                android:text="Group Label: "
+                android:textSize="32sp"
+                android:textStyle="bold|italic" />
+
+            <TextView
                 android:id="@+id/tv_pig"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Boar Parent: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_group"
+                android:layout_marginTop="10dp"
+                android:text="Pig Label: "
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/tv_boar"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sow ID: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pig"
+                android:layout_marginTop="10dp"
+                android:text="Boar Parent: "
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <TextView
                 android:id="@+id/tv_sow"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Foster Sow: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_boar"
+                android:layout_marginTop="10dp"
+                android:text="Sow ID: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_fostersow"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Breed: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_sow"
+                android:layout_marginTop="10dp"
+                android:text="Foster Sow: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_breed"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Week Farrowed: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_fostersow"
+                android:layout_marginTop="10dp"
+                android:text="Breed: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_week"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Gender: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_breed"
+                android:layout_marginTop="10dp"
+                android:text="Week Farrowed: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_gender"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="RFID: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_week"
+                android:layout_marginTop="10dp"
+                android:text="Gender: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_rfid"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pen: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_gender"
+                android:layout_marginTop="10dp"
+                android:text="RFID: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_pen"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last Feed Given: "
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_rfid"
+                android:layout_marginTop="10dp"
+                android:text="Pen: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <TextView
                 android:id="@+id/tv_feed"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/et_quantity"
-                android:textSize="32sp"
-                android:hint="Feed quantity in kg. ex. 2.4"
-                android:inputType="text|numberDecimal" />
-
-            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Last Med Given: "
-                android:id="@+id/tv_med"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:layout_marginTop="5dp"/>
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pen"
+                android:layout_marginTop="10dp"
+                android:text="Last Feed Given: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
 
             <EditText
+                android:id="@+id/et_quantity"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_feed"
+                android:layout_marginTop="10dp"
+                android:hint="Feed quantity in kg. ex. 2.4"
+                android:inputType="text|numberDecimal"
+                android:textSize="28sp"  />
+
+            <TextView
+                android:id="@+id/tv_med"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/et_quantity"
+                android:layout_marginTop="10dp"
+                android:text="Last Med Given: "
+                android:textSize="28sp"
+                android:textStyle="bold"  />
+
+            <EditText
                 android:id="@+id/et_weight"
-                android:textSize="32sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_med"
+                android:layout_marginTop="10dp"
                 android:hint="Pig Weight in kg. ex. 30.6"
-                android:inputType="text|numberDecimal" />
+                android:inputType="text|numberDecimal"
+                android:visibility="gone" />
 
             <Button
+                android:id="@+id/btn_addPig"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/btn_addPig"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/et_weight"
+                android:layout_margin="30dp"
+                android:background="@color/colorAccent"
                 android:text="Add Pig"
-                android:textSize="32sp"
-                android:textColor="@color/bg_login" />
+                android:textColor="@color/lbl_name"
+                android:textSize="42sp"  />
 
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/ic_edit1"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_pig"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit2"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_boar"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit3"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_sow"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit4"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_fostersow"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit5"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_breed"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit6"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_week"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit7"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_gender"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit8"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_rfid"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit9"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/tv_pen"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/ic_edit10"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@+id/et_quantity"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_toLeftOf="@id/tv_pig"
+                android:layout_toStartOf="@id/tv_pig"
+                android:src="@drawable/ic_edit"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
     </LinearLayout>
-
 
 </android.support.design.widget.CoordinatorLayout>

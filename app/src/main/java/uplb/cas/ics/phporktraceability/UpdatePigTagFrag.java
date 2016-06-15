@@ -12,8 +12,10 @@ import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,30 +27,29 @@ import helper.SQLiteHandler;
  */
 public class UpdatePigTagFrag extends Fragment {
 
+    public final static String KEY_TAGID = "tag_id";
+    public final static String KEY_TAGRFID = "tag_rfid";
+    public final static String KEY_LABEL = "label";
     private static final String LOGCAT = UpdatePigTagFrag.class.getSimpleName();
-    ViewPager frag_viewPager;
-    PagerAdapter frag_adapter;
-    LinearLayout ll;
-    LinearLayout bl;
-    TextView tv_item;
-    TextView tv_title;
-
     SQLiteHandler db;
-
-    public final static String KEY_PENID = "pen_id";
-    public final static String KEY_PENNO = "pen_no";
-    public final static String KEY_FUNC = "function";
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
-
     String pig_id = "";
-    String pen_id = "";
-    String pen_no = "";
-    String function = "";
-    String pen_disp = "Current Pen: ";
-    String title = "Update Holding Pen";
+    String pen = "";
+    String house_id = "";
+    String tag_id = "";
+    String tag_rfid = "";
+    String label = "";
+    String title = "Update Pig Tag";
+    private ViewPager frag_viewPager;
+    private PagerAdapter frag_adapter;
+    private LinearLayout ll;
+    private LinearLayout bl;
+    private TextView tv_item;
+    private TextView tv_title;
+    private ImageView iv_left, iv_right;
 
     public UpdatePigTagFrag() {
         // Required empty public constructor
@@ -62,7 +63,12 @@ public class UpdatePigTagFrag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View theView = inflater.inflate(R.layout.fragment_view, container, false);
+        iv_left = (ImageView)theView.findViewById(R.id.iv_left);
+        iv_right = (ImageView)theView.findViewById(R.id.iv_right);
+        tv_item = (TextView) theView.findViewById(R.id.tv_item);
+        tv_title = (TextView) theView.findViewById(R.id.tv_title);
         frag_viewPager = (ViewPager) theView.findViewById(R.id.frag_viewpager);
+        bl = (LinearLayout) theView.findViewById(R.id.bottom_container);
 
         return theView;
     }
@@ -73,23 +79,76 @@ public class UpdatePigTagFrag extends Fragment {
 
         Intent i = getActivity().getIntent();
         pig_id = i.getStringExtra("pig_id");
+        house_id = i.getStringExtra("house_id");
+        pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getActivity());
+        db = new SQLiteHandler(getContext());
 
-        loadLists();
+        HashMap<String, String> b = db.getThePig(pig_id);
+        String tag_disp = "Current Tag: ";
+        tag_rfid = checkIfNull(b.get(KEY_TAGRFID));
+        label = checkIfNull(b.get(KEY_LABEL));
+        tag_disp += label + " (" + tag_rfid + ")";
 
-        tv_item = (TextView) view.findViewById(R.id.tv_item);
-        tv_title = (TextView) view.findViewById(R.id.tv_title);
         tv_title.setText(title);
+        tv_item.setText(tag_disp);
 
-        HashMap<String, String> b = db.getPigGroup(pig_id);
-        pen_id = b.get(KEY_PENID);
-        pen_no = b.get(KEY_PENNO);
-        function = b.get(KEY_FUNC);
-        pen_disp += pen_no + " (" + function + ")";
-        tv_item.setText(pen_disp);
+        loadTags();
 
-        bl = (LinearLayout) view.findViewById(R.id.bottom_container);
+        frag_viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = frag_viewPager.getCurrentItem();
+                frag_viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = frag_viewPager.getCurrentItem();
+                frag_viewPager.setCurrentItem(item + 1);
+
+            }
+        });
 
         bl.setOnDragListener(new View.OnDragListener() {
             @Override
@@ -117,36 +176,42 @@ public class UpdatePigTagFrag extends Fragment {
                         view2.setVisibility(View.VISIBLE);
 
                         int id = view2.getId();
-                        pen_id = view.findViewById(id).getTag().toString();
+                        tag_id = v.findViewById(id).getTag().toString();
+                        Log.d(LOGCAT, "Dropped " + tag_id);
 
                         int vid = to.getId();
                         if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle("Updating Holding Pen...")
-                                    .setMessage("Confirm update?")
-                                    .setCancelable(false)
-                                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            db.updatePigPen(pig_id, pen_id);
-                                            Intent i = new Intent(getActivity(),
-                                                    UpdatePigActivity.class);
-                                            i.putExtra("pig_id", pig_id);
-                                            i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                            getActivity().finish();
-                                            getActivity().startActivity(i);
+                            Toast.makeText(getActivity(), "Chosen " + tag_id,
+                                    Toast.LENGTH_LONG).show();
 
-                                            dialog.cancel();
-                                        }
-
-                                    })
-                                    .setNegativeButton("No", null);
-
-                            AlertDialog alert = builder.create();
-                            alert.show();
                         }
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Updating Pig Tag...")
+                                .setMessage("Confirm update?")
+                                .setCancelable(false)
+                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        String pig_label = getLabel(pig_id);
+                                        db.updateTag(tag_id, pig_id, "active");
+                                        //db.updateTagLabel(tag_id, pig_label);
+                                        Intent i = new Intent(getActivity(),
+                                                UpdatePigActivity.class);
+                                        i.putExtra("pig_id", pig_id);
+                                        i.putExtra("pen", pen);
+                                        i.putExtra("house_id", house_id);
+                                        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                        getActivity().finish();
+                                        getActivity().startActivity(i);
 
-                        Log.d(LOGCAT, "Dropped " + pen_id);
+                                        dialog.cancel();
+                                    }
+
+                                })
+                                .setNegativeButton("No", null);
+
+                        AlertDialog alert = builder.create();
+                        alert.show();
                         break;
                     case DragEvent.ACTION_DRAG_ENDED:
                         Log.d(LOGCAT, "Drag ended");
@@ -158,6 +223,44 @@ public class UpdatePigTagFrag extends Fragment {
 
             }
         });
+
+    }
+
+    public void checkList(){
+        int count = frag_viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
+
+    }
+
+    private String checkIfNull(String _value){
+        String result = "";
+        if(_value != null && !_value.isEmpty() && !_value.equals("null")) return _value;
+        else return result;
+    }
+
+    private void loadTags(){
+
+        ArrayList<HashMap<String, String>> theList = db.getInactiveTags();
+
+        lists = new String[theList.size()];
+        lists2 = new String[theList.size()];
+        lists3 = new String[theList.size()];
+        ids = new String[theList.size()];
+        for(int i = 0;i < theList.size();i++)
+        {
+            HashMap<String, String> c = theList.get(i);
+            String _id = c.get(KEY_TAGID);
+            lists[i] = "Tag id: " + _id;
+            lists2[i] = "RFID: " + c.get(KEY_TAGRFID);
+            lists3[i] = "Tag Label: " + c.get(KEY_LABEL);
+            ids[i] = c.get(KEY_TAGID);
+        }
+
+        frag_adapter = new FragCustomPagerAdapter(getActivity(),
+                lists, lists2, lists3, ids);
+        frag_viewPager.setAdapter(frag_adapter);
     }
 
     private String getLabel(String _id){
@@ -171,40 +274,8 @@ public class UpdatePigTagFrag extends Fragment {
         }
         s = s + _id;
         String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3, 7);
+        String temp2 = s.substring(3,7);
         result = temp1 + "-" + temp2;
         return result;
     }
-
-    public void loadLists(){
-
-        ArrayList<HashMap<String, String>> theList = db.getSows();
-
-        lists = new String[theList.size()];
-        lists2 = new String[theList.size()];
-        lists3 = new String[theList.size()];
-        ids = new String[theList.size()];
-        for(int i = 0;i < theList.size();i++)
-        {
-            HashMap<String, String> c = theList.get(i);
-            String _id = c.get(KEY_PENID);
-            lists[i] = "Pen id: " + _id;
-            lists2[i] = "Pen No: " + c.get(KEY_PENNO);
-            lists3[i] = "Function: " + c.get(KEY_FUNC);
-            ids[i] = c.get(KEY_PENID);
-        }
-
-        frag_adapter = new FragCustomPagerAdapter(getActivity(),
-                lists, lists2, lists3, ids);
-        frag_viewPager.setAdapter(frag_adapter);
-
-    }
-
-    @Override
-    public void onStart(){
-        super.onStart();
-
-        loadLists();
-    }
-
 }

@@ -17,29 +17,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
 import helper.SessionManager;
 
 /**
- * Created by marmagno on 11/11/2015.
+ * Created by marmagno on 11/25/2015.
  */
 public class GrowingPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = GrowingPage.class.getSimpleName();
-    private Toolbar toolbar;
-    private ImageView iv_addpig;
-    private ImageView iv_viewpig;
-    private LinearLayout top_cont;
-    private LinearLayout bot_cont;
-
     SessionManager session;
-
+    String farm_funct = "";
     String function = "";
+    private Toolbar toolbar;
+    private ImageView iv_addfeed;
+    private ImageView iv_addmeds;
+    private ImageView iv_viewpig;
+    private LinearLayout bot_cont;
+    private LinearLayout text_cont;
+    private LinearLayout top_cont;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_weaning);
+        setContentView(R.layout.activity_growing);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -50,13 +53,17 @@ public class GrowingPage extends AppCompatActivity
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         session = new SessionManager(getApplicationContext());
+        HashMap<String, String> user = session.getUserSession();
+        farm_funct = user.get(SessionManager.KEY_FUNC);
 
-        iv_addpig = (ImageView) findViewById(R.id.iv_addpig);
+        iv_addfeed = (ImageView) findViewById(R.id.iv_addfeed);
+        iv_addmeds = (ImageView) findViewById(R.id.iv_addmeds);
         iv_viewpig = (ImageView) findViewById(R.id.iv_viewpig);
-        top_cont = (LinearLayout) findViewById(R.id.top_container);
+        text_cont = (LinearLayout) findViewById(R.id.text_container);
         bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
 
-        iv_addpig.setOnTouchListener(this);
+        iv_addfeed.setOnTouchListener(this);
+        iv_addmeds.setOnTouchListener(this);
         iv_viewpig.setOnTouchListener(this);
         //top_cont.setOnDragListener(this);
         bot_cont.setOnDragListener(this);
@@ -83,7 +90,7 @@ public class GrowingPage extends AppCompatActivity
                 Intent i = new Intent(GrowingPage.this, LocationPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putExtra("function", function);
+                i.putExtra("function", farm_funct);
                 startActivity(i);
                 finish();
                 return true;
@@ -106,7 +113,7 @@ public class GrowingPage extends AppCompatActivity
                 break;
             case DragEvent.ACTION_DROP:
                 TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
-                TextView tv_subs = (TextView) findViewById(R.id.tv_subs);
+                //TextView tv_subs = (TextView) findViewById(R.id.tv_subs);
                 View view = (View) e.getLocalState();
                 ViewGroup from = (ViewGroup) view.getParent();
                 from.removeView(view);
@@ -114,7 +121,7 @@ public class GrowingPage extends AppCompatActivity
                 LinearLayout to = (LinearLayout) v;
                 to.addView(view);
                 to.removeView(tv_drag);
-                tv_subs.setVisibility(View.VISIBLE);
+               // tv_subs.setVisibility(View.VISIBLE);
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
@@ -122,19 +129,35 @@ public class GrowingPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    if(function.equals("addpig")) {
+                    if(function.equals("addfeed")) {
+                        TextView tv_rem = (TextView) findViewById(R.id.tv_cf);
+                        text_cont.removeView(tv_rem);
+                        tv_rem.invalidate();
                         Toast.makeText(GrowingPage.this, "Chosen " + function.toUpperCase(),
                                 Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(GrowingPage.this, ChooseBoarPage.class);
+                        Intent i = new Intent(GrowingPage.this, ChooseFeedPage.class);
+                        startActivity(i);
+                        finish();
+                    } else if(function.equals("addmeds")) {
+                        TextView tv_rem = (TextView) findViewById(R.id.tv_cam);
+                        text_cont.removeView(tv_rem);
+                        tv_rem.invalidate();
+                        Toast.makeText(GrowingPage.this, "Chosen " + function.toUpperCase(),
+                                Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(GrowingPage.this, ChooseMedPage.class);
                         startActivity(i);
                         finish();
                     } else if(function.equals("viewpig")) {
+                        TextView tv_rem = (TextView) findViewById(R.id.tv_cvp);
+                        text_cont.removeView(tv_rem);
+                        tv_rem.invalidate();
                         Toast.makeText(GrowingPage.this, "Chosen " + function.toUpperCase(),
                                 Toast.LENGTH_LONG).show();
                         Intent i = new Intent(GrowingPage.this, ViewListOfPigs.class);
                         startActivity(i);
                         finish();
                     }
+
                 }
 
                 Log.d(LOGCAT, "Dropped " + function);
@@ -160,5 +183,13 @@ public class GrowingPage extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(GrowingPage.this, LocationPage.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("function", function);
+        startActivity(i);
+        finish();
+    }
 }

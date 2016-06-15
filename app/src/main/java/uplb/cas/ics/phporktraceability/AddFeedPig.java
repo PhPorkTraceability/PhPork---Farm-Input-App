@@ -1,11 +1,10 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -15,67 +14,60 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
 
 /**
- * Created by marmagno on 11/14/2015.
+ * Created by marmagno on 11/25/2015.
  */
 public class AddFeedPig extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
     private static final String LOGCAT = AddFeedPig.class.getSimpleName();
-    private Toolbar toolbar;
-    private static final String KEY_PENNO = "pen_no";
-    private static final String KEY_FUNC = "function";
-
-    EditText et_weight;
-    Button btn_addpig;
+    private static final String KEY_FEEDNAME = "feed_name";
+    private static final String KEY_FEEDTYPE = "feed_type";
+    private static final String KEY_PIGID = "pig_id";
+    Button btn_submit;
+    Button btn_chooseDate;
     TextView tv_subs;
-    TextView tv_group;
-    TextView tv_boar;
-    TextView tv_sow;
-    TextView tv_breed;
-    TextView tv_weekf;
-    TextView tv_gender;
-    TextView tv_rfid;
-    TextView tv_pen;
-    TextView tv_pigid;
+    TextView tv_feedname;
+    TextView tv_feedtype;
+    TextView tv_chosenDate;
+    EditText et_quantity;
+    ListView lv;
     SQLiteHandler db;
+    String feed_id = "";
+    String feed_name = "";
+    String feed_type = "";
     String pen = "";
-    String rfid = "";
-    String gender = "";
-    String boar_id = "";
-    String sow_id = "";
-    String group_label = "";
-    String breed = "";
-    String week_farrowed = "";
-    String weight = "";
-    String label = "";
-    String pen_disp = "";
-    String rfid_disp = "";
-    String breed_name = "";
-    int curID;
-
-    DateFormat curDate = new SimpleDateFormat("yyyy-MM-DD");
+    String house_id = "";
+    String[] pigs;
+    DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
     Date dateObj = new Date();
+    Calendar dateAndTime=Calendar.getInstance();
+    private Toolbar toolbar;
+    private int year, month, day;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_addthepig);
+        setContentView(R.layout.activity_addfeedpig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -86,65 +78,64 @@ public class AddFeedPig extends AppCompatActivity
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
-        boar_id = i.getStringExtra("boar_id");
-        sow_id = i.getStringExtra("sow_id");
-        group_label = i.getStringExtra("group_label");
-        breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
-        gender = i.getStringExtra("gender");
-        rfid = i.getStringExtra("rfid");
+        feed_id = i.getStringExtra("feed_id");
         pen = i.getStringExtra("pen");
+        house_id = i.getStringExtra("house_id");
 
         db = new SQLiteHandler(getApplicationContext());
 
-        curID = db.getMaxPigID();
-        curID++;
-        label = getLabel(String.valueOf(curID));
-        tv_group = (TextView) findViewById(R.id.tv_group);
-        tv_boar = (TextView) findViewById(R.id.tv_boar);
-        tv_sow = (TextView) findViewById(R.id.tv_sow);
-        tv_breed = (TextView) findViewById(R.id.tv_breed);
-        tv_weekf = (TextView) findViewById(R.id.tv_week);
-        tv_gender = (TextView) findViewById(R.id.tv_gender);
-        tv_rfid = (TextView) findViewById(R.id.tv_rfid);
-        tv_pen = (TextView) findViewById(R.id.tv_pen);
-        tv_pigid = (TextView) findViewById(R.id.tv_pig);
+        tv_feedname = (TextView) findViewById(R.id.tv_feedname);
+        tv_feedtype = (TextView) findViewById(R.id.tv_feedtype);
+        tv_chosenDate = (TextView) findViewById(R.id.tv_chosenDate);
 
-        Resources res = getResources();
-        String[] arr = res.getStringArray(R.array.pig_breeds);
-        breed_name = arr[Integer.parseInt(breed) - 1];
-        rfid_disp = db.getRFID(rfid);
-        displayPen(pen);
+        et_quantity = (EditText) findViewById(R.id.et_quantity);
+        btn_chooseDate = (Button) findViewById(R.id.btn_chooseDate);
+        btn_submit = (Button) findViewById(R.id.btn_addFeed);
+        lv = (ListView) findViewById(R.id.listview);
 
-        tv_group.setText("Group Label: " + group_label);
-        tv_boar.setText("Boar Parent: " + getLabel(boar_id));
-        tv_sow.setText("Sow Parent: " + getLabel(sow_id));
-        tv_breed.setText("Breed: " + breed_name);
-        tv_weekf.setText("Week Farrowed: " + week_farrowed);
-        tv_gender.setText("Gender: " + gender);
-        tv_rfid.setText("RFID: " + rfid_disp);
-        tv_pen.setText(pen_disp);
-        tv_pigid.setText("Pig Label: " + label);
+        loadList();
 
-        btn_addpig = (Button) findViewById(R.id.btn_addPig);
-        et_weight = (EditText) findViewById(R.id.et_weight);
+        tv_feedname.setText("Feed Name: " + feed_name);
+        tv_feedtype.setText("Feed Type: " + feed_type);
 
-        btn_addpig.setOnClickListener(new View.OnClickListener() {
+        btn_chooseDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_weight.getText().toString().trim().length() > 0){
+                year = dateAndTime.get(Calendar.YEAR);
+                month = dateAndTime.get(Calendar.MONTH);
+                day = dateAndTime.get(Calendar.DAY_OF_MONTH);
 
-                    weight = et_weight.getText().toString();
-                    String pig_id = String.valueOf(curID);
+                // Launch Date Picker Dialog
+                DatePickerDialog dpd = new DatePickerDialog(AddFeedPig.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                // Display Selected date in textbox
+                                tv_chosenDate.setText(year + "-"
+                                        + (monthOfYear + 1) + "-" + dayOfMonth);
+
+                            }
+                        }, year, month, day);
+                dpd.show();
+            }
+        });
+
+        btn_submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (et_quantity.getText().toString().length() > 0) {
+                    String quantity = et_quantity.getText().toString();
+                    String unit = "kg";
                     String date = curDate.format(dateObj);
                     String time = curTime.format(dateObj);
+                    String status = "new";
+                    String prod_date = tv_chosenDate.getText().toString();
 
-                    db.addGroup(group_label, pen);
-                    db.addPig(pig_id, boar_id, sow_id, gender, week_farrowed,
-                            "weaning", pen, breed, group_label);
-                    db.assignPigTag(rfid, label, String.valueOf(curID));
-                    db.updateTag(rfid, "Used");
-                    db.addWeightRecByAuto(weight, pig_id, date, time);
+                    Double kg = Double.parseDouble(quantity) / pigs.length;
+                    quantity = String.valueOf(kg);
+
+                    db.feedPigRecByGroup(quantity, unit, date, time, pigs, feed_id, prod_date, status);
 
                     Toast.makeText(AddFeedPig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
@@ -166,14 +157,36 @@ public class AddFeedPig extends AppCompatActivity
                     btn_finish.setOnTouchListener(AddFeedPig.this);
 
                     addD.show();
-
-                }
-                else{
-                    Toast.makeText(AddFeedPig.this, "Please Enter the weight before proceeding.",
+                } else {
+                    Toast.makeText(AddFeedPig.this, "Please enter quantity of feed to be given.",
                             Toast.LENGTH_LONG).show();
                 }
             }
         });
+
+    }
+
+    public void loadList(){
+
+        HashMap<String, String> feed = db.getFeedNameAndType(feed_id);
+        feed_name = feed.get(KEY_FEEDNAME);
+        feed_type = feed.get(KEY_FEEDTYPE);
+
+        ArrayList<HashMap<String, String>> pig_list = db.getPigsByPen(pen);
+
+        String[] labels = new String[pig_list.size()];
+        pigs = new String[pig_list.size()];
+        for(int j = 0;j < pig_list.size();j++){
+
+            HashMap<String, String> c = pig_list.get(j);
+
+            labels[j] = "Pig ID: " + getLabel(c.get(KEY_PIGID));
+            pigs[j] = c.get(KEY_PIGID);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, labels);
+        lv.setAdapter(adapter);
     }
 
     @Override
@@ -193,15 +206,9 @@ public class AddFeedPig extends AppCompatActivity
             case R.id.action_settings:
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                Intent i = new Intent(AddFeedPig.this, AssignPenPage.class);
-                i.putExtra("rfid", rfid);
-                i.putExtra("boar_id", boar_id);
-                i.putExtra("sow_id", sow_id);
-                i.putExtra("group_label", group_label);
-                i.putExtra("breed", breed);
-                i.putExtra("week_farrowed", week_farrowed);
-                i.putExtra("gender", gender);
+                Intent i = new Intent(AddFeedPig.this, ChooseFeedPenPage.class);
+                i.putExtra("feed_id", feed_id);
+                i.putExtra("house_id", house_id);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -210,18 +217,6 @@ public class AddFeedPig extends AppCompatActivity
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    public void displayPen(String _pen){
-
-        ArrayList<HashMap<String, String>> the_list = db.getPen(_pen);
-
-        for(int i = 0;i < the_list.size();i++)
-        {
-            HashMap<String, String> c = the_list.get(i);
-
-            pen_disp = "Pen: " + c.get(KEY_PENNO) + " -> Function: " + c.get(KEY_FUNC);
-        }
     }
 
     private String getLabel(String _id){
@@ -271,25 +266,20 @@ public class AddFeedPig extends AppCompatActivity
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     if(choice.equals("add_another")){
-                        Intent i = new Intent(AddFeedPig.this, WeekFarrowedPage.class);
+                        Intent i = new Intent(AddFeedPig.this, ChooseFeedPage.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);;
-                        i.putExtra("breed", breed);
-                        i.putExtra("boar_id", boar_id);
-                        i.putExtra("sow_id", sow_id);
-                        i.putExtra("group_label", group_label);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
                         finish();
                     } else if(choice.equals("finish")) {
-                        Intent i = new Intent(AddFeedPig.this, WeaningPage.class);
+                        Intent i = new Intent(AddFeedPig.this, ChooseModule.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
                         finish();
                     }
                 }
-
-                Log.d(LOGCAT, "Dropped " + breed);
+                Log.d(LOGCAT, "Dropped " + choice);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -311,6 +301,15 @@ public class AddFeedPig extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed(){ super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(AddFeedPig.this, ChooseFeedPenPage.class);
+        i.putExtra("feed_id", feed_id);
+        i.putExtra("house_id", house_id);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
+    }
 
 }

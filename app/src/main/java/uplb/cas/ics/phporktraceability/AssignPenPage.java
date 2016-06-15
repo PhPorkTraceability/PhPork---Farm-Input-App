@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,14 +29,16 @@ import helper.SessionManager;
  */
 public class AssignPenPage extends AppCompatActivity implements View.OnDragListener
 {
+    public final static String KEY_PENID = "pen_id";
+    public final static String KEY_PENNO = "pen_no";
+    public final static String KEY_FUNC = "function";
     private static final String LOGCAT = AssignPenPage.class.getSimpleName();
-    private Toolbar toolbar;
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
-
+    ImageView iv_left, iv_right;
     SQLiteHandler db;
     String pen = "";
     String rfid = "";
@@ -43,20 +46,17 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     String boar_id = "";
     String sow_id = "";
     String foster_sow = "";
+    //String week_farrowed = "";
     String group_label = "";
     String breed = "";
-    String week_farrowed = "";
-
-    public final static String KEY_PENID = "pen_id";
-    public final static String KEY_PENNO = "pen_no";
-    public final static String KEY_FUNC = "function";
-
     SessionManager session;
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
     String location= "";
+    private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +80,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        week_farrowed = i.getStringExtra("week_farrowed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
         rfid = i.getStringExtra("rfid");
 
@@ -97,14 +97,80 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         adapter = new CustomPagerAdapter(AssignPenPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                try {
+                    // Log.i("View Pager", "page selected " + position);
+
+                    int currentPage = position + 1;
+                    if (currentPage == 1) {
+                        iv_left.setVisibility(View.INVISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    } else if (currentPage == lists.length) {
+
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.INVISIBLE);
+                    } else {
+                        iv_left.setVisibility(View.VISIBLE);
+                        iv_right.setVisibility(View.VISIBLE);
+                    }
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
+        iv_left = (ImageView)findViewById(R.id.iv_left);
+        iv_right = (ImageView)findViewById(R.id.iv_right);
+
+        checkList();
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
+
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose a Pen";
         tv_title.setText(title);
     }
 
+    public void checkList(){
+        int count = viewPager.getCurrentItem();
+        if(count + 1 < lists.length){
+            iv_right.setVisibility(View.VISIBLE);
+        }
+
+    }
+
     public void loadLists(){
 
-        ArrayList<HashMap<String, String>> the_list = db.getPens(location);
+        ArrayList<HashMap<String, String>> the_list = db.getPensByLocs(location);
 
         lists = new String[the_list.size()];
         lists2 = new String[the_list.size()];
@@ -144,7 +210,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.putExtra("breed", breed);
-                i.putExtra("week_farrowed", week_farrowed);
+                //i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("gender", gender);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -183,6 +249,8 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 int id = view.getId();
                 pen = view.findViewById(id).getTag().toString();
 
+                Log.d(LOGCAT, "Dropped " + pen);
+
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(AssignPenPage.this, "Chosen " + pen,
@@ -195,15 +263,13 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    i.putExtra("week_farrowed", week_farrowed);
+                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
-
-                Log.d(LOGCAT, "Dropped " + pen);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -215,5 +281,18 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", foster_sow);
+        i.putExtra("group_label", group_label);
+        i.putExtra("breed", breed);
+        //i.putExtra("week_farrowed", week_farrowed);
+        i.putExtra("gender", gender);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+    }
 }

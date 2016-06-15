@@ -1,101 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:padding="20dp"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="5dp">
 
     <TextView
+        android:id="@+id/tv_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_group"
         android:textSize="20sp"
         android:textStyle="bold|italic" />
 
     <TextView
+        android:id="@+id/tv_pen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_marginTop="5dp"
-        android:id="@+id/tv_pen" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tv_pig"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold"
         android:layout_marginTop="5dp"
-        android:id="@+id/tv_pig" />
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tv_tagLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/tv_boar"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_sow"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_fostersow"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_weekF"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_gender"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_breed"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_weight"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_feed"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
+
+    <TextView
         android:id="@+id/tv_med"
-        android:textSize="16sp"
-        android:layout_marginTop="5dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:textSize="16sp" />
 
     <Button
+        android:id="@+id/db_btn_ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/db_btn_ok"
+        android:layout_gravity="center"
+        android:layout_margin="20dp"
+        android:background="@color/colorAccent"
         android:text="OK"
-        android:textSize="20sp"
-        android:textColor="@color/btn_login"
-        android:layout_marginTop="5dp" />
+        android:textColor="@color/lbl_name"
+        android:textSize="36sp"/>
 </LinearLayout>
