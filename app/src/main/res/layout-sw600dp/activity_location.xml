@@ -60,7 +60,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_rf11"
                 android:tag="RF11" />
 
             <ImageView
@@ -71,7 +70,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_rf18"
                 android:tag="RF18" />
 
             <ImageView
@@ -82,7 +80,6 @@
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_rf19"
                 android:tag="RF19" />
         </LinearLayout>
 

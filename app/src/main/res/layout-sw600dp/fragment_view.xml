@@ -53,13 +53,12 @@
 
         <ImageView
             android:id="@+id/iv_left"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
             android:layout_weight=".5"
-            android:background="@color/colorAccent"
             android:scaleType="fitCenter"
-            android:src="@drawable/left_arrow"
+            android:src="@mipmap/ic_left"
             android:tag="left"
             android:visibility="invisible" />
 
@@ -73,13 +72,12 @@
 
         <ImageView
             android:id="@+id/iv_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center"
             android:layout_weight=".5"
-            android:background="@color/colorAccent"
             android:scaleType="fitCenter"
-            android:src="@drawable/right_arrow"
+            android:src="@mipmap/ic_right"
             android:tag="right"
             android:visibility="invisible" />
     </LinearLayout>

@@ -44,15 +44,15 @@ public class ChooseModule extends AppCompatActivity
     private Toolbar toolbar;
     private int[] mResources = {
             R.drawable.ic_addpig,
-            R.drawable.ic_feeds2,
-            R.drawable.ic_meds2,
-            R.drawable.ic_viewpig,
-            R.drawable.ic_export };
+            R.drawable.ic_feeds,
+            R.drawable.ic_medications,
+            R.drawable.ic_viewlist,
+            R.drawable.ic_senddata };
     private int[] mResources2 = {
-            R.drawable.ic_feeds2,
-            R.drawable.ic_meds2,
-            R.drawable.ic_viewpig,
-            R.drawable.ic_export };
+            R.drawable.ic_feeds,
+            R.drawable.ic_medications,
+            R.drawable.ic_viewlist,
+            R.drawable.ic_senddata };
     private String[] names = {
             "Add Pig",
             "Feed Pig",

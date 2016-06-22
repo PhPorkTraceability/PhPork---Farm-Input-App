@@ -14,12 +14,12 @@ public class AppConfig {
     public static String URL_GETPENS = "http://10.0.4.56/phpork/android_connect/getPens.php";
 
     public static String URL_GETALLDATA =
-            "http://10.0.3.15/phpork/android_connect/getTablesData.php";
+            "http://192.168.5.173/phpork/android_connect/getTablesData.php";
 
     public static String URL_SENDNEWDATA =
-            "http://10.0.3.15/phpork/android_connect/insertNewData.php";
+            "http://192.168.5.173/phpork/android_connect/insertNewData.php";
 
     public static String URL_SENDUPDATEDDATA =
-            "http://10.0.3.15/phpork/android_connect/updateTablesData.php";
+            "http://192.168.5.173/phpork/android_connect/updateTablesData.php";
 
 }

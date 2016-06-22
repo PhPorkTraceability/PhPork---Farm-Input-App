@@ -64,6 +64,7 @@ public class ViewListOfPigs extends AppCompatActivity
     private ListView lv;
     private TextView tv_drag;
     private EditText et_searchPig;
+    //private RecyclerView lv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,7 @@ public class ViewListOfPigs extends AppCompatActivity
 
         et_searchPig = (EditText) findViewById(R.id.et_searchPig);
         lv = (ListView)findViewById(R.id.listview);
+       // lv = (RecyclerView)findViewById(R.id.listview);
         lv.setTextFilterEnabled(true);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {

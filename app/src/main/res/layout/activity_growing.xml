@@ -113,7 +113,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_addmeds"
+                android:src="@drawable/ic_medications"
                 android:tag="addmeds" />
 
             <ImageView
@@ -124,7 +124,7 @@
                 android:layout_margin="5dp"
                 android:layout_weight=".5"
                 android:scaleType="fitCenter"
-                android:src="@drawable/ic_viewpig"
+                android:src="@drawable/ic_viewlist"
                 android:tag="viewpig" />
         </LinearLayout>
 
