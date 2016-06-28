@@ -169,6 +169,9 @@ public class LocationPage extends AppCompatActivity
             //noinspection SimplifiableIfStatement
             case R.id.action_settings:
                 return true;
+            case R.id.action_help:
+            	 show_help();
+            	 return true;
             case android.R.id.home:
                 Intent i = new Intent(LocationPage.this, HomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -319,7 +322,14 @@ public class LocationPage extends AppCompatActivity
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
+    }
+    
+    
 
+    public void show_help(){
+        Intent intent = new Intent(this,HelpPage.class);
+        intent.putExtra("help_page", 2);
+        startActivity(intent);
     }
 
     /*

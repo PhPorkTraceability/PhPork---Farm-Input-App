@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Android Pork Traceability</string>
     <string name="action_settings">Settings</string>
+    <string name="action_help">Help</string>
     <string name="action_export">Export</string>
     <string name="action_import">Import</string>
     <string name="section_format">Hello World from section: %1$d</string>
@@ -103,5 +104,49 @@
     <string name="feed">Feeding Pig</string>
     <string name="med">Adding Medication</string>
     <string name="weight_record">Weekly Graphical Report</string>
+    <string name="title_activity_intro_slider"> </string>
 
+    <string name="prev_name">Previous</string>
+    <string name="next_name">Next</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="drag_drop_text">Drop your choice here</string>
+
+    <!-- String for Help -->
+    <string name="help">Help</string>
+    <string name="actions_help">HELP!</string>
+    <string name="tap_me_to_close">TAP TO CLOSE</string>
+    <!-- HOME HELP -->
+    <string name="choose_pig">HOW?</string>
+    <string name="choose_pig_desc">Press and hold on your selection and drag it to the drop box to proceed to the options screen!</string>
+
+    <!-- SELECT FARM HELP -->
+    <string name="choose_farm">WHERE?</string>
+    <string name="choose_farm_desc">Choose the location of YOUR farm. Choose and drag your selection to the drop box.</string>
+    <!-- CHOOSE MODULE HELP -->
+    <string name="add_pig_title">Add Pig</string>
+    <string name="add_pig_desc">Select this option to add another pig and give its details to the list.</string>
+
+    <string name="feed_pig_title">Feed Pig</string>
+    <string name="add_feed_desc">Select this option to determine what type and amount of feed is to be given to the pigs.</string>
+
+    <string name="add_med_title">Add Medicine</string>
+    <string name="add_med_desc">Select this option to indicate the type and amount of medicine to be given to the pigs.</string>
+
+    <string name="view_pig_title">View list of pigs</string>
+    <string name="view_pig_desc">Select this option to view the list of existing pigs. The details of the pigs are also shown.</string>
+
+    <string name="upload_data_title"> Upload to Server</string>
+    <string name="upload_data_desc">Upload the data to the server. Use this to update the server with new information.</string>
+    <string name="note">*Some options may not be available depending on chosen function.</string>
+
+        <!-- ADD PIG HELP -->
+    <string name="who">WHO?</string>
+    <string name="choose_boar_desc">Choose the father of this pig.</string>
+    <string name="choose_sow_desc">Choose the mother of this pig.</string>
+    <string name="choose_foster_desc">Choose a foster parent for this pig</string>
+
+    <string name="choose_breed">What kind?</string>
+    <string name="choose_breed_desc">Choose the breed of this pig, make sure it matches with the breed of the parents!</string>
 </resources>

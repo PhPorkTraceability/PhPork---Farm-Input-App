@@ -120,7 +120,8 @@ public class LoadSyncAll extends Activity implements Runnable{
         if(status == 0){
             Toast.makeText(LoadSyncAll.this, "Not connected to internet.",
                     Toast.LENGTH_LONG).show();
-            Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+            //Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+            Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
             startActivity(i);
             finish();
 
@@ -389,6 +390,9 @@ public class LoadSyncAll extends Activity implements Runnable{
                             e.printStackTrace();
                             Toast.makeText(LoadSyncAll.this, "Json error: " + e.getMessage(),
                                     Toast.LENGTH_LONG).show();
+                            try {
+                                Log.e(TAG, "Response in string:\n" + resp.toString(3));
+                            } catch(Exception ex) {}
                         }
 
                     }
@@ -398,7 +402,7 @@ public class LoadSyncAll extends Activity implements Runnable{
             @Override
             public void onErrorResponse(VolleyError error) {
                 try{
-                    Log.d(TAG, "Response error: " + error.getMessage());
+                    Log.e(TAG, "Response error: " + error.getMessage());
                     Toast.makeText(LoadSyncAll.this, error.getMessage(),
                             Toast.LENGTH_LONG).show();
 
@@ -455,11 +459,10 @@ public class LoadSyncAll extends Activity implements Runnable{
             {
                 //Close the progress dialog
                 progressDialog.hide();
-
-                Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+                //Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+                Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
                 startActivity(i);
                 finish();
-
             }
         });
 

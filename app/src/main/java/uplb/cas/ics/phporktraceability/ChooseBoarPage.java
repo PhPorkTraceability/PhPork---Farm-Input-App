@@ -196,24 +196,24 @@ public class ChooseBoarPage extends AppCompatActivity
         //int size = boars.size();
         //if(size > 0) {
 
-            lists = new String[boars.size()+1];
-            lists2 = new String[boars.size()+1];
-            lists3 = new String[boars.size()+1];
-            ids = new String[boars.size()+1];
+        lists = new String[boars.size()+1];
+        lists2 = new String[boars.size()+1];
+        lists3 = new String[boars.size()+1];
+        ids = new String[boars.size()+1];
 
-            lists[0] = "";
-            lists2[0] = "---";
-            lists3[0] = "";
-            ids[0] = "";
+        lists[0] = "";
+        lists2[0] = "---";
+        lists3[0] = "";
+        ids[0] = "";
 
-            for (int i = 0; i < boars.size(); i++) {
-                HashMap<String, String> c = boars.get(i);
-                String boar_id = c.get(KEY_PIGID);
-                lists[i+1] = "Boar: " + boar_id;
-                lists2[i+1] = "Breed: " + c.get(KEY_BREED);
-                lists3[i+1] = "";
-                ids[i+1] = c.get(KEY_PIGID);
-            }
+        for (int i = 0; i < boars.size(); i++) {
+            HashMap<String, String> c = boars.get(i);
+            String boar_id = c.get(KEY_PIGID);
+            lists[i+1] = "Boar: " + boar_id;
+            lists2[i+1] = "Breed: " + c.get(KEY_BREED);
+            lists3[i+1] = "";
+            ids[i+1] = c.get(KEY_PIGID);
+        }
        /* } else{
 
             final int SPLASH_TIME_OUT = 1500;

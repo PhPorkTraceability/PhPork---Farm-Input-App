@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <color name="white">#FFF</color>
     <color name="black">#000</color>
+    <color name="grey">#BBB</color>
     <color name="lbl_name">#333333</color>
 
     <color name="colorPrimary">#bb1d24</color>
     <color name="colorPrimaryDark">#570000</color>
-    <color name="colorAccent">#8fb786</color>
+    <color name="colorAccent">#9ecf95</color>
     <color name="myGraph">#EFE8BD</color>
-
+    <color name="transparent">#00ffffff</color>
+    <color name="transparent_white">#22ffffff</color>
 </resources>
 

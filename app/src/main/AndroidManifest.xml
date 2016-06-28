@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="uplb.cas.ics.phporktraceability" >
+    package="uplb.cas.ics.phporktraceability">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,19 +14,21 @@
         android:icon="@mipmap/ic_phpork"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <receiver
             android:name="helper.NetworkChangeReceiver"
-            android:label="NetworkChangeReceiver" >
+            android:label="NetworkChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
@@ -37,77 +39,74 @@
             android:name=".LoadSyncAll"
             android:label="@string/home"
             android:launchMode="singleTask" />
-
         <activity
             android:name=".HomeActivity"
             android:label="@string/home"
             android:launchMode="singleTop" />
-
+        <activity
+            android:name=".HelpPage"
+            android:label="@string/help"
+            android:launchMode="singleTop" />
         <activity
             android:name=".LocationPage"
             android:label="@string/location"
             android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage" >
+            android:parentActivityName=".LocationPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocationPage" />
         </activity>
-
         <activity
             android:name=".WeaningPage"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage" >
+            android:parentActivityName=".LocationPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocationPage" />
         </activity>
-
         <activity
             android:name=".ChooseModule"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage" >
+            android:parentActivityName=".LocationPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocationPage" />
         </activity>
-
         <activity
             android:name=".ChooseViewHouse"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseModule" >
+            android:parentActivityName=".ChooseModule">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-
         <activity
             android:name=".ChooseViewPen"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseViewHouse" >
+            android:parentActivityName=".ChooseViewHouse">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseViewHouse" />
         </activity>
-
         <activity
             android:name=".ViewListOfPigs"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseViewPen" >
+            android:parentActivityName=".ChooseViewPen">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -116,309 +115,302 @@
         </activity>
 
         <activity
+            android:name=".ViewListOfPigs_v2"
+            android:label="@string/function"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ChooseViewPen">
+
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ChooseViewPen" />
+        </activity>
+
+
+        <activity
             android:name=".PigWeightRecord"
             android:label="@string/weight_record"
             android:launchMode="singleTop"
-            android:parentActivityName=".ViewListOfPigs" >
+            android:parentActivityName=".ViewListOfPigs">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ViewListOfPigs" />
         </activity>
-
         <activity
             android:name="org.achartengine.GraphicalActivity"
             android:label="@string/weight_record"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait" >
-        </activity>
-
+            android:screenOrientation="portrait" />
         <activity
             android:name=".UpdatePigActivity"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".ViewListOfPigs" >
+            android:parentActivityName=".ViewListOfPigs">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ViewListOfPigs" />
         </activity>
-
         <activity
             android:name=".ExportData"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseModule" >
+            android:parentActivityName=".ChooseModule">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-
         <activity
             android:name=".ChooseBoarPage"
             android:label="@string/boar_parent"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseModule" >
+            android:parentActivityName=".ChooseModule">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-
         <activity
             android:name=".ChooseSowPage"
             android:label="@string/sow_parent"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseBoarPage" >
+            android:parentActivityName=".ChooseBoarPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseBoarPage" />
         </activity>
-
         <activity
             android:name=".ChooseFosterSowPage"
             android:label="@string/foster_sowparent"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseSowPage" >
+            android:parentActivityName=".ChooseSowPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseSowPage" />
         </activity>
-
         <activity
             android:name=".ChooseBreedPage"
             android:label="@string/breed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFosterSowPage" >
+            android:parentActivityName=".ChooseFosterSowPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseFosterSowPage" />
         </activity>
-
         <activity
             android:name=".WeekFarrowedPage"
             android:label="@string/week_farrowed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseBreedPage" >
+            android:parentActivityName=".ChooseBreedPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseBreedPage" />
         </activity>
-
         <activity
             android:name=".ChooseGender"
             android:label="@string/gender"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseBreedPage" >
+            android:parentActivityName=".ChooseBreedPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseBreedPage" />
         </activity>
-
         <activity
             android:name=".AssignRFIDPage"
             android:label="@string/assign_rfid"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseGender" >
+            android:parentActivityName=".ChooseGender">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseGender" />
         </activity>
-
         <activity
             android:name=".AssignPenPage"
             android:label="@string/assign_pen"
             android:launchMode="singleTop"
-            android:parentActivityName=".AssignRFIDPage" >
+            android:parentActivityName=".AssignRFIDPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AssignRFIDPage" />
         </activity>
-
         <activity
             android:name=".LastFeedGivenPage"
             android:label="@string/last_feed"
             android:launchMode="singleTask"
-            android:parentActivityName=".AssignPenPage" >
+            android:parentActivityName=".AssignPenPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AssignPenPage" />
         </activity>
-
         <activity
             android:name=".LastMedicationGiven"
             android:label="@string/last_med"
             android:launchMode="singleTask"
-            android:parentActivityName=".LastFeedGivenPage" >
+            android:parentActivityName=".LastFeedGivenPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LastFeedGivenPage" />
         </activity>
-
         <activity
             android:name=".AddThePig"
             android:label="@string/add_pig"
             android:launchMode="singleTask"
-            android:parentActivityName=".AssignPenPage" >
+            android:parentActivityName=".AssignPenPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".AssignPenPage" />
         </activity>
-
         <activity
             android:name=".GrowingPage"
             android:label="@string/function"
             android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage" >
+            android:parentActivityName=".LocationPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocationPage" />
         </activity>
-
         <activity
             android:name=".ChooseFeedPage"
             android:label="@string/feed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseModule" >
+            android:parentActivityName=".ChooseModule">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-
         <activity
             android:name=".ChooseFeedHousePage"
             android:label="@string/feed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedPage" >
+            android:parentActivityName=".ChooseFeedPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseFeedPage" />
         </activity>
-
         <activity
             android:name=".ChooseFeedPenPage"
             android:label="@string/feed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedHousePage" >
+            android:parentActivityName=".ChooseFeedHousePage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseFeedHousePage" />
         </activity>
-
         <activity
             android:name=".ChooseFeedPigs"
             android:label="@string/feed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedPenPage" >
+            android:parentActivityName=".ChooseFeedPenPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseFeedPenPage" />
         </activity>
-
         <activity
             android:name=".AddFeedPig"
             android:label="@string/feed"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedPigs" >
+            android:parentActivityName=".ChooseFeedPigs">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseFeedPigs" />
         </activity>
-
         <activity
             android:name=".ChooseMedPage"
             android:label="@string/med"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseModule" >
+            android:parentActivityName=".ChooseModule">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-
         <activity
             android:name=".ChooseMedHousePage"
             android:label="@string/med"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPage" >
+            android:parentActivityName=".ChooseMedPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseMedPage" />
         </activity>
-
         <activity
             android:name=".ChooseMedPenPage"
             android:label="@string/med"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedHousePage" >
+            android:parentActivityName=".ChooseMedHousePage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseMedHousePage" />
         </activity>
-
         <activity
             android:name=".ChooseMedPig"
             android:label="@string/med"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPenPage" >
+            android:parentActivityName=".ChooseMedPenPage">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseMedPenPage" />
         </activity>
-
         <activity
             android:name=".AddMedPig"
             android:label="@string/med"
             android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPig" >
+            android:parentActivityName=".ChooseMedPig">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseMedPig" />
         </activity>
+        <activity
+            android:name=".IntroSliderActivity"
+            android:label="@string/title_activity_intro_slider"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
     </application>
+
 </manifest>

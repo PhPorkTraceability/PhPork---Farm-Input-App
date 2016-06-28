@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/colorAccent"
+                >
+    <!-- Add Pig Help Description -->
+    <ImageView
+        android:id="@+id/iv_addpig_help"
+        android:layout_width="@dimen/img_width_height_sm"
+        android:layout_height="@dimen/img_width_height_sm"
+        android:layout_alignParentLeft="true"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="29dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="42dp"
+        android:src="@drawable/ic_addpig"/>
+    <TextView
+        android:id="@+id/tv_add_pig_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_add_pig_desc"
+        android:layout_alignLeft="@+id/tv_add_feed_title"
+        android:layout_alignStart="@+id/tv_add_feed_title"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_pig_title"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title_sm"/>
+
+    <TextView
+        android:id="@+id/tv_add_pig_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iv_addpig_help"
+        android:layout_toEndOf="@id/iv_addpig_help"
+        android:layout_toRightOf="@id/iv_addpig_help"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/add_pig_desc"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc_sm"/>
+
+
+
+    <!-- Add Feed Help Description -->
+    <ImageView
+        android:id="@+id/iv_addfeed_help"
+        android:layout_width="@dimen/img_width_height_sm"
+        android:layout_height="@dimen/img_width_height_sm"
+        android:layout_below="@+id/iv_addpig_help"
+        android:layout_marginTop="30dp"
+        android:layout_toLeftOf="@+id/tv_add_pig_desc"
+        android:layout_toStartOf="@+id/tv_add_pig_desc"
+        android:src="@drawable/ic_feeds"
+        />
+    <TextView
+        android:id="@+id/tv_add_feed_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_add_feed_desc"
+        android:layout_alignLeft="@+id/tv_add_feed_desc"
+        android:layout_alignStart="@+id/tv_add_feed_desc"
+        android:layout_marginLeft="48dp"
+        android:layout_marginStart="48dp"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/feed_pig_title"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title_sm"/>
+
+    <TextView
+        android:id="@+id/tv_add_feed_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/iv_addfeed_help"
+        android:layout_toEndOf="@id/iv_addfeed_help"
+        android:layout_toRightOf="@id/iv_addfeed_help"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/add_feed_desc"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc_sm"/>
+
+    <!-- Add Med Help Description -->
+    <ImageView
+        android:id="@+id/iv_addmed_help"
+        android:layout_width="@dimen/img_width_height_sm"
+        android:layout_height="@dimen/img_width_height_sm"
+        android:layout_below="@+id/iv_addfeed_help"
+        android:layout_marginTop="30dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_medications"
+        />
+    <TextView
+        android:id="@+id/tv_add_med_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_add_med_desc"
+        android:layout_alignEnd="@+id/tv_view_pig_title"
+        android:layout_alignRight="@+id/tv_view_pig_title"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_med_title"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title_sm"/>
+
+    <TextView
+        android:id="@+id/tv_add_med_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_addmed_help"
+        android:layout_alignLeft="@+id/tv_add_feed_desc"
+        android:layout_alignStart="@+id/tv_add_feed_desc"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_med_desc"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc_sm"/>
+
+    <!-- View Pig Help Description -->
+    <ImageView
+        android:id="@+id/iv_viewpig_help"
+        android:layout_width="@dimen/img_width_height_sm"
+        android:layout_height="@dimen/img_width_height_sm"
+        android:layout_below="@+id/iv_addmed_help"
+        android:layout_marginTop="30dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_viewlist"
+        />
+    <TextView
+        android:id="@+id/tv_view_pig_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_view_pig_desc"
+        android:layout_alignLeft="@+id/tv_add_pig_title"
+        android:layout_alignStart="@+id/tv_add_pig_title"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding_sm"
+        android:paddingRight="@dimen/desc_padding_sm"
+
+        android:text="@string/view_pig_title"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title_sm"/>
+
+    <TextView
+        android:id="@+id/tv_view_pig_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_viewpig_help"
+        android:layout_alignLeft="@+id/tv_add_feed_desc"
+        android:layout_alignStart="@+id/tv_add_feed_desc"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/view_pig_desc"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc_sm"/>
+
+    <!-- Update Server Help Description -->
+    <ImageView
+        android:id="@+id/iv_update_server_help"
+        android:layout_width="@dimen/img_width_height_sm"
+        android:layout_height="@dimen/img_width_height_sm"
+        android:layout_below="@+id/iv_viewpig_help"
+        android:layout_marginTop="30dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_upload"
+        />
+    <TextView
+        android:id="@+id/tv_update_server_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tv_update_server_desc"
+        android:layout_alignEnd="@+id/tv_view_pig_title"
+        android:layout_alignRight="@+id/tv_view_pig_title"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding_xsm"
+        android:paddingRight="@dimen/desc_padding_xsm"
+
+        android:text="@string/upload_data_title"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_title_sm"/>
+
+    <TextView
+        android:id="@+id/tv_update_server_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/iv_update_server_help"
+        android:layout_alignLeft="@+id/tv_add_feed_desc"
+        android:layout_alignStart="@+id/tv_add_feed_desc"
+        android:fontFamily="Bebas Neue"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/upload_data_desc"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/slide_desc_sm"/>
+
+
+
+    <!-- Close Button -->
+    <Button
+        android:id="@+id/close_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:onClick="close_page"
+        android:text="@string/tap_me_to_close"/>
+
+    <TextView
+        android:id="@+id/note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/iv_update_server_help"
+        android:text="@string/note"
+        android:textColor="#000000"
+        android:textSize="10sp"/>
+
+</RelativeLayout>
