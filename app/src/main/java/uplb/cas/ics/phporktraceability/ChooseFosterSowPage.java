@@ -30,8 +30,8 @@ import helper.SQLiteHandler;
 public class ChooseFosterSowPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
-    public final static String KEY_PIGID = "pig_id";
-    public final static String KEY_BREED = "breed_name";
+    public final static String KEY_PARENTID= "parent_id";
+    public final static String KEY_LABELID = "label_id";
     private static final String LOGCAT = ChooseFosterSowPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
@@ -66,7 +66,7 @@ public class ChooseFosterSowPage extends AppCompatActivity
         boar_id = i.getStringExtra("boar_id");
         sow_id = i.getStringExtra("sow_id");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -150,12 +150,13 @@ public class ChooseFosterSowPage extends AppCompatActivity
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -164,8 +165,6 @@ public class ChooseFosterSowPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseFosterSowPage.this, ChooseSowPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -173,8 +172,9 @@ public class ChooseFosterSowPage extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String checkIfNull(String _value){
@@ -218,11 +218,11 @@ public class ChooseFosterSowPage extends AppCompatActivity
         for(int i = 0;i < sows.size();i++)
         {
             HashMap<String, String> c = sows.get(i);
-            String sow_id = c.get(KEY_PIGID);
-            lists[i+1] = "Sow: " + sow_id;
-            lists2[i+1] = "Breed: " + c.get(KEY_BREED);
+            String sow_id = c.get(KEY_PARENTID);
+            lists[i+1] = "Label ID: " + c.get(KEY_LABELID);
+            lists2[i+1] = "Sow: " + getLabel(sow_id);
             lists3[i+1] = "";
-            ids[i+1] = c.get(KEY_PIGID);
+            ids[i+1] = c.get(KEY_PARENTID);
         }
     }
 

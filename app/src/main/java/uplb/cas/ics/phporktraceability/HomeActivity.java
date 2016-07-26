@@ -17,8 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 public class HomeActivity extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener {
@@ -32,13 +37,29 @@ public class HomeActivity extends AppCompatActivity
     private ImageView iv_growing;
     private LinearLayout bot_cont;
 
+    /**
+     * For Testing only
+     * Delete when done
+     */
+    TestSessionManager test;
+    DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
+    Date dateObj = new Date();
+    int testID;
+    String time;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
+
+        time = curTime.format(dateObj);
+        testID = db.getMaxTestID() + 1;
+
+        test = new TestSessionManager(getApplicationContext());
+
         session = new SessionManager(getApplicationContext());
         //session.checkLogin();
 
@@ -74,6 +95,7 @@ public class HomeActivity extends AppCompatActivity
         */
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -88,17 +110,15 @@ public class HomeActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
 
         switch(item.getItemId()){
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = getIntent();
                 finish();
                 startActivity(i);
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
-    }
+    } */
 
     @Override
     public boolean onDrag(View v, DragEvent e) {
@@ -130,6 +150,10 @@ public class HomeActivity extends AppCompatActivity
                 function = findViewById(id).getTag().toString();
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    test.userStart(String.valueOf(testID));
+
+                    db.insertNewTest(String.valueOf(testID), time);
+
                     Toast.makeText(HomeActivity.this, "Chosen " + function.toUpperCase(),
                             Toast.LENGTH_LONG).show();
                     Intent i = new Intent(HomeActivity.this, LocationPage.class);

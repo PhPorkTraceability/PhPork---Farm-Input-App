@@ -1,18 +1,23 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,6 +53,9 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
     String[] ids = {};
     private Toolbar toolbar;
 
+    String selection = "selection";
+    String module = "module";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,8 +72,10 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         Intent i = getIntent();
         feed_id = i.getStringExtra("feed_id");
         house_id = i.getStringExtra("house_id");
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -140,6 +150,19 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         String title = "Swipe to Choose a Pen to be Fed";
         tv_title.setText(title);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(fab != null) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    add_pen();
+                }
+            });
+        } else {
+            Log.e(LOGCAT, "fab is null.");
+        }
+
     }
 
     public void checkList(){
@@ -182,19 +205,19 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
                 i.putExtra("feed_id", feed_id);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
-
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -226,12 +249,15 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    /*
                     Toast.makeText(ChooseFeedPenPage.this, "Chosen " + pen,
-                            Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseFeedPenPage.this, AddFeedPig.class);
+                            Toast.LENGTH_LONG).show(); */
+                    Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedPigs.class);
                     i.putExtra("pen", pen);
                     i.putExtra("feed_id", feed_id);
                     i.putExtra("house_id", house_id);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
@@ -254,8 +280,84 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         super.onBackPressed();
         Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
         i.putExtra("feed_id", feed_id);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+        finish();
+    }
+
+    public void add_pen(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View subView = inflater.inflate(R.layout.add_pen_fragment,null);
+
+        final EditText et_penid = (EditText) subView.findViewById(R.id.et_pen_id);
+        final EditText et_penno= (EditText) subView.findViewById(R.id.et_pen_no);
+        final EditText et_penfunc= (EditText) subView.findViewById(R.id.et_pen_function);
+        final EditText et_penhouseid= (EditText) subView.findViewById(R.id.et_pen_house_id);
+
+        builder.setTitle("Add a House");
+        builder.setView(subView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+
+                verifier.setMessage("Are you sure all entries are correct?");
+                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String pen_id=et_penid.getText().toString();
+                        String pen_no=et_penno.getText().toString();
+                        String pen_function=et_penfunc.getText().toString().trim().toLowerCase();
+                        String pen_penhouseid=et_penhouseid.getText().toString();
+                        try{
+                            Toast.makeText(ChooseFeedPenPage.this, "Pen Added", Toast.LENGTH_SHORT).show();
+                            db.addPen(pen_id,pen_no,pen_function,pen_penhouseid);
+                            refresh();
+                        }
+                        catch(Exception e){
+
+                            Toast.makeText(ChooseFeedPenPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog verify_prompt = verifier.create();
+                verify_prompt.show();
+
+            }
+
+
+
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ChooseFeedPenPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog contact_prompt = builder.create();
+        contact_prompt.show();
+
+
+    }
+
+    public void refresh() {
+        loadLists();
+        adapter = new CustomPagerAdapter(ChooseFeedPenPage.this, lists, lists2, lists3, ids);
+        viewPager.setAdapter(adapter);
     }
 }

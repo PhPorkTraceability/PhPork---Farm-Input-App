@@ -2,6 +2,7 @@
     <string name="app_name">Android Pork Traceability</string>
     <string name="action_settings">Settings</string>
     <string name="action_help">Help</string>
+    <string name="action_edit">Edit</string>
     <string name="action_export">Export</string>
     <string name="action_import">Import</string>
     <string name="section_format">Hello World from section: %1$d</string>
@@ -69,45 +70,42 @@
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
 
-    <string-array name="activities">
-        <item> Home </item>
-        <item> Location Page </item>
-        <item> Farm Function </item>
-        <item> Boar Parent </item>
-        <item> Sow Parent </item>
-        <item> Breed </item>
-        <item> Week Farrowed </item>
-        <item> Gender </item>
-        <item> Assign RFID </item>
-        <item> Assign Pen </item>
-        <item> Last Feed Given </item>
-        <item> Last Vaccine Given </item>
-        <item> Add The Pig </item>
-        <item> Feeding Pig </item>
-        <item> Weekly Graphical Report </item>
-    </string-array>
-
     <string name="home">Home</string>
     <string name="location">Location Page</string>
     <string name="function">Farm Function</string>
     <string name="boar_parent">Boar Parent</string>
+    <string name="boar_parent_edit">Edit Boar Parent</string>
     <string name="sow_parent">Sow Parent</string>
+    <string name="sow_parent_edit">Edit Sow Parent</string>
     <string name="foster_sowparent">Foster Sow Parent</string>
+    <string name="foster_sowparent_edit">Edit Foster Sow Parent</string>
     <string name="breed">Breed</string>
+    <string name="breed_edit">Edit Breed</string>
     <string name="week_farrowed">Week Farrowed</string>
     <string name="gender">Gender</string>
+    <string name="gender_edit">Edit Gender</string>
     <string name="assign_rfid">Assign RFID</string>
+    <string name="assign_rfid_edit">Edit Assigned RFID</string>
     <string name="assign_pen">Assign Pen</string>
+    <string name="assign_pen_edit">Edit Assigned Pen</string>
     <string name="last_feed">Last Feed Given</string>
+    <string name="last_feed_edit">Edit Last Feed Given</string>
     <string name="last_med">Last Vaccine Given</string>
+    <string name="last_med_edit"> Edit Last Vaccine Given</string>
     <string name="add_pig">Add The Pig</string>
+    <string name="choose_sel">Choose Selection</string>
     <string name="feed">Feeding Pig</string>
-    <string name="med">Adding Medication</string>
+    <string name="med">Medicate Pig</string>
     <string name="weight_record">Weekly Graphical Report</string>
     <string name="title_activity_intro_slider"> </string>
 
     <string name="prev_name">Previous</string>
     <string name="next_name">Next</string>
+
+    <!-- Subtitles -->
+    <string name="subtitle_1">Drag and Drop it to the box below</string>
+
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -117,13 +115,15 @@
     <string name="help">Help</string>
     <string name="actions_help">HELP!</string>
     <string name="tap_me_to_close">TAP TO CLOSE</string>
+
     <!-- HOME HELP -->
     <string name="choose_pig">HOW?</string>
     <string name="choose_pig_desc">Press and hold on your selection and drag it to the drop box to proceed to the options screen!</string>
 
     <!-- SELECT FARM HELP -->
     <string name="choose_farm">WHERE?</string>
-    <string name="choose_farm_desc">Choose the location of YOUR farm. Choose and drag your selection to the drop box.</string>
+    <string name="choose_farm_desc"> Choose your farm location and drag your selection to the drop box.</string>
+
     <!-- CHOOSE MODULE HELP -->
     <string name="add_pig_title">Add Pig</string>
     <string name="add_pig_desc">Select this option to add another pig and give its details to the list.</string>
@@ -131,22 +131,75 @@
     <string name="feed_pig_title">Feed Pig</string>
     <string name="add_feed_desc">Select this option to determine what type and amount of feed is to be given to the pigs.</string>
 
-    <string name="add_med_title">Add Medicine</string>
+    <string name="add_med_title">Medicate Pig</string>
     <string name="add_med_desc">Select this option to indicate the type and amount of medicine to be given to the pigs.</string>
 
     <string name="view_pig_title">View list of pigs</string>
-    <string name="view_pig_desc">Select this option to view the list of existing pigs. The details of the pigs are also shown.</string>
+    <string name="view_pig_desc">Select this option to view the list of existing pigs.
+                                The details of the pigs are also shown.</string>
 
     <string name="upload_data_title"> Upload to Server</string>
-    <string name="upload_data_desc">Upload the data to the server. Use this to update the server with new information.</string>
+    <string name="upload_data_desc">Upload the data to the server.
+                                Use this to update the server with new information.</string>
     <string name="note">*Some options may not be available depending on chosen function.</string>
 
-        <!-- ADD PIG HELP -->
+    <!-- ADD PIG HELP -->
     <string name="who">WHO?</string>
     <string name="choose_boar_desc">Choose the father of this pig.</string>
     <string name="choose_sow_desc">Choose the mother of this pig.</string>
     <string name="choose_foster_desc">Choose a foster parent for this pig</string>
 
     <string name="choose_breed">What kind?</string>
-    <string name="choose_breed_desc">Choose the breed of this pig, make sure it matches with the breed of the parents!</string>
+    <string name="choose_breed_desc">Choose the breed of this pig,
+                        make sure it matches with the breed of the parents!</string>
+
+    <!-- Edit Input Help -->
+    <string name="edit">Edit Inputs Before Adding</string>
+    <string name="edit2">Tap on the Edit icon beside ? to open the dialogue box</string>
+    <string name="edit3">Tap on a particular item you want to edit</string>
+
+    <!-- Intro Slider -->
+    <string name="welcome_txt">Welcome to PHPork Farm Traceability App</string>
+    <string name="introduction">This tutorial will help you learn the basics when using the App</string>
+    <string name="how_to_part1">How To Use(1/3)</string>
+    <string name="how_to_part2">How To Use(2/3)</string>
+    <string name="how_to_part3">How To Use(3/3)</string>
+    <string name="how_to_part4">Need additional help?</string>
+    <string name="how_to_part5">Let us Get Started!</string>
+    <string name="how_to_1">Touch and drag your choice and drop it to the green box below</string>
+    <string name="how_to_2">When dropped, the app will go to the next page</string>
+    <string name="how_to_3">When the arrows are present, just tap them or you can swipe
+                            to the left or right to explore more choices</string>
+    <string name="how_to_4">Just tap on the ? icon located at the right of the toolbar if present</string>"
+    <string name="how_to_5">To review again just tap on the PREVIOUS button or tap Go! to start using the app</string>
+    <!-- Intro Slider -->
+
+    <!-- Add Farm -->
+    <string name="add_farm">Add Farm</string>
+    <string name="farm_name">Farm name</string>
+    <string name="farm_add">Farm Address</string>
+    <string name="farm_id">Farm ID</string>
+
+
+    <!-- Add House-->
+    <string name="add_House">Add House</string>
+    <string name="house_name">House name</string>
+    <string name="house_add">House Location ID</string>
+    <string name="house_id">House ID</string>
+    <string name="house_no">House number</string>
+    <string name="house_function">Function</string>
+
+    <!-- Add Feed -->
+    <string name="feed_name">Feed name</string>
+    <string name="feed_type">Feed type</string>
+    <string name="feed_id">Feed ID</string>
+
+    <!-- Add Med -->
+    <string name="med_name">Medicine name</string>
+    <string name="med_type">Medicine type</string>
+    <string name="med_id">Medicine ID</string>
+
+    <!-- Add Pen -->
+    <string name="pen_id">Pen ID</string>
+    <string name="pen_no">Pen number</string>
 </resources>

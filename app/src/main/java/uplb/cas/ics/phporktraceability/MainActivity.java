@@ -5,17 +5,26 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 
-public class MainActivity extends Activity {
+import helper.SQLiteHandler;
+
+public class MainActivity extends AppCompatActivity {
 
     // Splash screen timer
-    private static int SPLASH_TIME_OUT = 4000;
+    private static int SPLASH_TIME_OUT = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        SQLiteHandler.initializeDB(this);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
 
         new Handler().postDelayed(new Runnable() {
 
@@ -35,5 +44,6 @@ public class MainActivity extends Activity {
                 finish();
             }
         }, SPLASH_TIME_OUT);
+
     }
 }

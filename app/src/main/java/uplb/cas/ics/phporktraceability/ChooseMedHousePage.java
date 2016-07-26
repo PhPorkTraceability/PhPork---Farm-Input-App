@@ -51,6 +51,9 @@ public class ChooseMedHousePage extends AppCompatActivity implements View.OnDrag
     String location= "";
     private Toolbar toolbar;
 
+    String selection = "";
+    String module = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +73,10 @@ public class ChooseMedHousePage extends AppCompatActivity implements View.OnDrag
 
         Intent i = getIntent();
         med_id = i.getStringExtra("med_id");
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -189,18 +194,18 @@ public class ChooseMedHousePage extends AppCompatActivity implements View.OnDrag
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseMedHousePage.this, ChooseMedPage.class);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
-
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -232,15 +237,30 @@ public class ChooseMedHousePage extends AppCompatActivity implements View.OnDrag
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    /*
                     Toast.makeText(ChooseMedHousePage.this, "Chosen " + house_id,
-                            Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseMedHousePage.this, ChooseMedPenPage.class);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("med_id", med_id);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
+                            Toast.LENGTH_LONG).show(); */
+                    if(selection.equals("by_pig")) {
+                        Intent i = new Intent(ChooseMedHousePage.this, ChooseMedPenPage.class);
+                        i.putExtra("house_id", house_id);
+                        i.putExtra("med_id", med_id);
+                        i.putExtra("selection", selection);
+                        i.putExtra("module", module);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Intent i = new Intent(ChooseMedHousePage.this, ChoosePens.class);
+                        i.putExtra("house_id", house_id);
+                        i.putExtra("med_id", med_id);
+                        i.putExtra("selection", selection);
+                        i.putExtra("module", module);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                        finish();
+                    }
                 }
 
                 Log.d(LOGCAT, "Dropped " + house_id);
@@ -258,6 +278,8 @@ public class ChooseMedHousePage extends AppCompatActivity implements View.OnDrag
     public void onBackPressed(){
         super.onBackPressed();
         Intent i = new Intent(ChooseMedHousePage.this, ChooseMedPage.class);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);

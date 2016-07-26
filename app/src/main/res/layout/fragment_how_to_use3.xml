@@ -11,8 +11,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:text="How To Use (3/3)"
+        android:layout_marginTop="30dp"
+        android:textSize="24sp"
+        android:text="@string/how_to_part3"
+        android:textColor="@color/white"
         android:textAppearance="?android:attr/textAppearanceLarge" />
     <TextView
         android:id="@+id/textView2"
@@ -26,11 +28,14 @@
         android:gravity="center_horizontal"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="Click left and right arrows (if applicable) to explore more choices." />
+        android:textColor="@color/white"
+        android:text="@string/how_to_3" />
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="150dp"
-        android:layout_height="250dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:scaleType="fitCenter"
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center_horizontal"

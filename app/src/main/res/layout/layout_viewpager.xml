@@ -26,19 +26,20 @@
 
         </android.support.design.widget.AppBarLayout>
 
+
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
+            android:layout_marginTop="15dp"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Then Drag and Drop it to the box below"
+            android:layout_margin="2dp"
+            android:text="@string/subtitle_1"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -58,6 +59,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_weight=".20"
+                android:background="@color/colorAccent"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/ic_left"
                 android:tag="left"
@@ -76,6 +78,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_weight=".20"
+                android:background="@color/colorAccent"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/ic_right"
                 android:tag="right"
@@ -99,12 +102,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Drop your choice here"
-                android:textSize="32sp"
+                android:text="@string/drag_drop_text"
+                android:textSize="26sp"
                 android:textStyle="bold|italic"/>
 
         </LinearLayout>
-
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
+        android:src="@mipmap/ic_fab"
+        android:id="@+id/fab"
+        android:visibility="gone" />
 </android.support.design.widget.CoordinatorLayout>

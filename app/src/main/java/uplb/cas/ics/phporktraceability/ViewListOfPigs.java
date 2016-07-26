@@ -3,8 +3,10 @@ package uplb.cas.ics.phporktraceability;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -40,6 +43,7 @@ public class ViewListOfPigs extends AppCompatActivity
     public static final String KEY_PIGID = "pig_id";
     public static final String KEY_LABEL = "label";
     public static final String KEY_BREED = "breed_name";
+    public static final String KEY_LABELID = "label_id";
     public static final String KEY_GENDER = "gender";
     public static final String KEY_GNAME = "group_name";
     public static final String KEY_BOAR = "boar_id";
@@ -83,7 +87,7 @@ public class ViewListOfPigs extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         et_searchPig = (EditText) findViewById(R.id.et_searchPig);
         lv = (ListView)findViewById(R.id.listview);
@@ -108,11 +112,13 @@ public class ViewListOfPigs extends AppCompatActivity
                 HashMap<String, String> d = db.getPigMed(itempig_id);
                 HashMap<String, String> e = db.getPigWeight(itempig_id);
                 HashMap<String, String> a = db.getPigGroup(itempig_id);
-
+                HashMap<String, String> p1 = db.getParentLabel(c.get(KEY_BOAR), "boar");
+                HashMap<String, String> p2 = db.getParentLabel(c.get(KEY_SOW), "sow");
+                HashMap<String, String> p3 = db.getParentLabel(c.get(KEY_FOSTER), "sow");
                 group_name = "Group Label: " + checkIfNull(a.get(KEY_GNAME));
-                boar_id = "Boar Parent: " + checkIfNull(c.get(KEY_BOAR));
-                sow_id = "Sow Parent: " + checkIfNull(c.get(KEY_SOW));
-                foster_sow = "Foster Sow Parent: " + c.get(KEY_FOSTER);
+                boar_id = "Boar Parent: " + checkIfNull(p1.get(KEY_LABELID));
+                sow_id = "Sow Parent: " + checkIfNull(p2.get(KEY_LABELID));
+                foster_sow = "Foster Sow Parent: " + checkIfNull(p3.get(KEY_LABELID));
                 pen_id = "Pen No: " + a.get(KEY_PENID) + " (" + a.get(KEY_FUNCTION) + ")";
                 week_farrowed = "Week Farrowed: " + c.get(KEY_WEEKF);
                 gender = "Gender: " + c.get(KEY_GENDER);
@@ -187,14 +193,14 @@ public class ViewListOfPigs extends AppCompatActivity
                 longViewD.setCancelable(false);
 
                 // Init button of login GUI
-                Button btn_weight = (Button) longViewD.findViewById(R.id.db_btn_weight);
-                Button btn_update = (Button) longViewD.findViewById(R.id.db_btn_update);
+                ImageView iv_weight = (ImageView) longViewD.findViewById(R.id.iv_weight);
+                ImageView iv_update = (ImageView) longViewD.findViewById(R.id.iv_update);
                 LinearLayout bl = (LinearLayout) longViewD.findViewById(R.id.bottom_container);
                 tv_drag = (TextView) longViewD.findViewById(R.id.tv_dragHere);
                 bl.setOnDragListener(ViewListOfPigs.this);
 
-                btn_weight.setOnTouchListener(ViewListOfPigs.this);
-                btn_update.setOnTouchListener(ViewListOfPigs.this);
+                iv_weight.setOnTouchListener(ViewListOfPigs.this);
+                iv_update.setOnTouchListener(ViewListOfPigs.this);
 
                 longViewD.show();
 
@@ -219,8 +225,6 @@ public class ViewListOfPigs extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ViewListOfPigs.this, ChooseViewPen.class);
                 i.putExtra("house_id", house_id);
@@ -229,8 +233,9 @@ public class ViewListOfPigs extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadLists(){

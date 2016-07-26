@@ -15,30 +15,28 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/db_btn_weight"
+        <ImageView
+            android:id="@+id/iv_weight"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:scaleType="fitCenter"
             android:layout_margin="10dp"
             android:layout_weight=".5"
-            android:background="@drawable/btn_gradient"
-            android:tag="weight"
-            android:text="View Weight Record"
-            android:textSize="26sp" />
+            android:src="@drawable/ic_viewweight"
+            android:tag="weight" />
 
 
-        <Button
-            android:id="@+id/db_btn_update"
+        <ImageView
+            android:id="@+id/iv_update"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
+            android:scaleType="fitCenter"
             android:layout_margin="10dp"
             android:layout_weight=".5"
-            android:background="@drawable/btn_gradient"
-            android:tag="update"
-            android:text="Update Details"
-            android:textSize="26sp" />
+            android:src="@drawable/ic_updateinfo"
+            android:tag="update" />
 
     </LinearLayout>
 

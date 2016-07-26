@@ -1,10 +1,14 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -19,8 +23,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+
 import app.AppConfig;
 import app.AppController;
+import helper.IntroSliderSession;
 import helper.NetworkUtil;
 import helper.SQLiteHandler;
 
@@ -43,10 +53,13 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String KEY_PENID = "pen_id";
     private static final String KEY_PENNO = "pen_no";
     // Table Pig Groups
-    private static final String KEY_GNAME = "group_name";
+    private static final String KEY_GNAME = "pig_batch";
     // Table Pig Breeds
     private static final String KEY_BREEDID = "breed_id";
     private static final String KEY_BREEDNAME = "breed_name";
+    // Table Pig Parents
+    private static final String KEY_PARENTID = "parent_id";
+    private static final String KEY_LABELID = "label_id";
     // Table Pig
     private static final String KEY_PIGID = "pig_id";
     private static final String KEY_BOARID = "boar_id";
@@ -56,6 +69,7 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String KEY_GENDER = "gender";
     private static final String KEY_FDATE = "farrowing_date";
     private static final String KEY_PIGSTAT = "pig_status";
+    private static final String KEY_USER = "user";
     // Table Weight Record
     private static final String KEY_WRID = "record_id";
     private static final String KEY_RECDATE = "record_date";
@@ -89,6 +103,7 @@ public class LoadSyncAll extends Activity implements Runnable{
     JSONArray hPens = null;
     JSONArray pigGroups = null;
     JSONArray pPigBreeds = null;
+    JSONArray pigParents = null;
     JSONArray pigs = null;
     JSONArray weightRecord = null;
     JSONArray tags = null;
@@ -107,23 +122,32 @@ public class LoadSyncAll extends Activity implements Runnable{
     //Create a Thread handler to queue code execution on a thread
     private Handler handler;
 
+    IntroSliderSession introSession;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.loading_syncall);
+        setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
         //db.deleteTables();
+
+        introSession = new IntroSliderSession(getApplicationContext());
 
         int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
         if(status == 0){
-            Toast.makeText(LoadSyncAll.this, "Not connected to internet.",
-                    Toast.LENGTH_LONG).show();
-            //Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
-            Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
-            startActivity(i);
-            finish();
+            importTables();
+
+            if(introSession.isLoggedIn()){
+                Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+                startActivity(i);
+                finish();
+            } else {
+                Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
+                startActivity(i);
+                finish();
+            }
 
             return;
         }
@@ -158,8 +182,7 @@ public class LoadSyncAll extends Activity implements Runnable{
 
     }
 
-    public void getAllDataByNet()
-    {
+    public void getAllDataByNet() {
         final String tag_string_req = "req_alldata";
 
         // Request a string response from the provided URL.
@@ -254,6 +277,20 @@ public class LoadSyncAll extends Activity implements Runnable{
                                     db.addBreed(breed_id, breed_name);
                                 }
 
+                                pigParents = new JSONArray();
+                                pigParents = resp.getJSONArray("parents");
+                                for(int i = 0;i < pigParents.length();i++)
+                                {
+                                    JSONObject c = pigParents.getJSONObject(i);
+
+                                    // Now store the user in SQLite
+                                    String parent_id = c.getString(KEY_PARENTID);
+                                    String label = c.getString(KEY_LABEL);
+                                    String label_id = c.getString(KEY_LABELID);
+
+                                    db.addParent(parent_id, label, label_id);
+                                }
+
                                 pigs = new JSONArray();
                                 pigs = resp.getJSONArray("pig");
                                 for(int i = 0;i < pigs.length();i++)
@@ -271,11 +308,12 @@ public class LoadSyncAll extends Activity implements Runnable{
                                     String pig_status = c.getString(KEY_PIGSTAT);
                                     String pen_id = c.getString(KEY_PENID);
                                     String breed_id = c.getString(KEY_BREEDID);
+                                    String user = c.getString(KEY_USER);
                                     String group_name = c.getString(KEY_GNAME);
 
                                     db.addPig(pig_id, boar_id, sow_id, foster_sow, week_farrowed,
                                             gender, farrowing_date, pig_status, pen_id, breed_id,
-                                            group_name, sync_status);
+                                            user, group_name, sync_status);
                                 }
 
                                 weightRecord = new JSONArray();
@@ -399,22 +437,92 @@ public class LoadSyncAll extends Activity implements Runnable{
 
                 }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                try{
-                    Log.e(TAG, "Response error: " + error.getMessage());
-                    Toast.makeText(LoadSyncAll.this, error.getMessage(),
-                            Toast.LENGTH_LONG).show();
-
-                }catch (NullPointerException ex){}
-            }
-        });
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        try{
+                            Log.d(TAG, "Response error: " + error.getMessage());
+                            Toast.makeText(LoadSyncAll.this, error.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                            new AlertDialog.Builder(LoadSyncAll.this)
+                                    .setTitle("Connection Failed")
+                                    .setMessage("Your phone cannot establish a connection to the server. " +
+                                            "Want to store the database content on your phone?")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            //TODO: Do intense testing on this part
+                                            importTables();
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {}
+                                    }).show();
+                        }catch (NullPointerException ex){}
+                    }
+                });
 
         _request.setRetryPolicy(new DefaultRetryPolicy(
                 0, -1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(_request);//, tag_string_req);
 
+    }
+
+    public void importTables() {
+        String line1;
+        String line2;
+        int errors = 0;
+
+        try {
+            final String dbFileName = "phpork_in.sql";
+
+            File dbFile = new File(Environment.getExternalStorageDirectory() , dbFileName);
+            BufferedReader reader = new BufferedReader(new FileReader(dbFile));
+            SQLiteDatabase load_db;
+
+            db.deleteTables();
+
+            load_db = db.getWritableDatabase();
+
+            while((line1=reader.readLine()) != null){
+                if(line1.startsWith("INSERT")) {
+                    while (true) {
+                        boolean stop;
+
+                        line2 = reader.readLine();
+                        while (line2.startsWith("--")) {
+                            line2 = reader.readLine();
+                        }
+
+                        stop = line2.endsWith(";");
+                        line2 = line1 + line2.substring(0, line2.length()-1) + ";";
+
+                        try {
+                            load_db.execSQL(line2);
+                        } catch(Exception ex) {
+                            errors++;
+                        }
+
+                        if(stop) {
+                            break;
+                        }
+                    }
+                }
+            }
+            load_db.close();
+
+            if(errors > 0) {
+                Log.d(TAG, errors + " statements skipped.");
+            }
+            Toast.makeText(LoadSyncAll.this, "Successfully imported database", Toast.LENGTH_SHORT).show();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "Filename to import not found.");
+            Toast.makeText(LoadSyncAll.this, "Filename to import not found.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in importing tables", e);
+            Toast.makeText(LoadSyncAll.this, "Something went wrong on importing database", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -426,10 +534,10 @@ public class LoadSyncAll extends Activity implements Runnable{
             synchronized (thread)
             {
                 //While the counter is smaller than four
-                while(counter <= 10)
+                while(counter <= 5)
                 {
                     //Wait 1000 milliseconds
-                    thread.wait(2000);
+                    thread.wait(1000);
                     //Increment the counter
                     counter++;
 
@@ -440,7 +548,7 @@ public class LoadSyncAll extends Activity implements Runnable{
                         public void run()
                         {
                             //Set the current progress.
-                            progressDialog.setProgress(counter*10);
+                            progressDialog.setProgress(counter*20);
                         }
                     });
                 }
@@ -459,10 +567,15 @@ public class LoadSyncAll extends Activity implements Runnable{
             {
                 //Close the progress dialog
                 progressDialog.hide();
-                //Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
-                Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
-                startActivity(i);
-                finish();
+                if(introSession.isLoggedIn()){
+                    Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+                    startActivity(i);
+                    finish();
+                } else {
+                    Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
+                    startActivity(i);
+                    finish();
+                }
             }
         });
 

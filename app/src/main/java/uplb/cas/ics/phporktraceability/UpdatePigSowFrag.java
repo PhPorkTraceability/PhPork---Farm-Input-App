@@ -28,8 +28,9 @@ import helper.SQLiteHandler;
 public class UpdatePigSowFrag extends Fragment {
 
     public final static String KEY_PIGID = "pig_id";
-    public final static String KEY_BREED = "breed_name";
     public final static String KEY_SOW = "sow_id";
+    public final static String KEY_PARENTID = "parent_id";
+    public final static String KEY_LABELID = "label_id";
     private static final String LOGCAT = UpdatePigSowFrag.class.getSimpleName();
     SQLiteHandler db;
     String[] lists = {};
@@ -81,12 +82,13 @@ public class UpdatePigSowFrag extends Fragment {
         house_id = i.getStringExtra("house_id");
         pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getContext());
+        db = SQLiteHandler.getInstance();
 
         HashMap<String, String> b = db.getThePig(pig_id);
         String sow_disp = "Current Sow Parent: ";
         cur_sow = checkIfNull(b.get(KEY_SOW));
-        sow_disp += cur_sow;
+        HashMap<String, String> c = db.getParentLabel(cur_sow, "sow");
+        sow_disp += checkIfNull(c.get(KEY_LABELID));
 
         tv_title.setText(title);
         tv_item.setText(sow_disp);
@@ -264,11 +266,11 @@ public class UpdatePigSowFrag extends Fragment {
         for(int i = 0;i < sows.size();i++)
         {
             HashMap<String, String> c = sows.get(i);
-            String _id = c.get(KEY_PIGID);
-            lists[i] = "Sow: " + _id;
-            lists2[i] = "Breed: " + c.get(KEY_BREED);
+            String _id = c.get(KEY_PARENTID);
+            lists[i] = "Label ID: " + c.get(KEY_LABELID);
+            lists2[i] = "Sow: " + getLabel(_id);
             lists3[i] = "";
-            ids[i] = c.get(KEY_PIGID);
+            ids[i] = c.get(KEY_PARENTID);
         }
 
         frag_adapter = new FragCustomPagerAdapter(getActivity(),

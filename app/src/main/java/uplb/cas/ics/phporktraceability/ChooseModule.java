@@ -56,12 +56,12 @@ public class ChooseModule extends AppCompatActivity
     private String[] names = {
             "Add Pig",
             "Feed Pig",
-            "Add Medication",
+            "Medicate Pig",
             "View List of Pigs",
             "Send Data to Server" };
     private String[] names2 = {
             "Feed Pig",
-            "Add Medication",
+            "Medicate Pig",
             "View List of Pigs",
             "Send Data to Server" };
     private int[] list;
@@ -175,7 +175,7 @@ public class ChooseModule extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_help, menu);
         return true;
     }
 
@@ -186,8 +186,6 @@ public class ChooseModule extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case R.id.action_help:
             	 show_help();
             	 return true;
@@ -199,8 +197,9 @@ public class ChooseModule extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -240,15 +239,18 @@ public class ChooseModule extends AppCompatActivity
                         startActivity(i);
                         finish();
                     } else if(module.equals(names[1])) {
-                        Intent i = new Intent(ChooseModule.this, ChooseFeedPage.class);
+                        Intent i = new Intent(ChooseModule.this, ChooseSelection.class);
+                        i.putExtra("module", module);
                         startActivity(i);
                         finish();
                     } else if(module.equals(names[2])) {
-                        Intent i = new Intent(ChooseModule.this, ChooseMedPage.class);
+                        Intent i = new Intent(ChooseModule.this, ChooseSelection.class);
+                        i.putExtra("module", module);
                         startActivity(i);
                         finish();
                     } else if(module.equals(names[3])){
                         Intent i = new Intent(ChooseModule.this, ChooseViewHouse.class);
+                        i.putExtra("function", function);
                         startActivity(i);
                         finish();
                     } else if(module.equals(names[4])) {
@@ -284,7 +286,7 @@ public class ChooseModule extends AppCompatActivity
     }
 
     public void show_help(){
-        Intent intent = new Intent(this,HelpPage.class);
+        Intent intent = new Intent(this, HelpPage.class);
         intent.putExtra("help_page", 3);
         startActivity(intent);
     }

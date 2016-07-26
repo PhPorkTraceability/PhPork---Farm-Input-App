@@ -6,6 +6,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+import helper.TypefaceUtil;
+
 /**
  * Created by marmagno on 11/10/2015.
  */
@@ -23,6 +25,7 @@ public class AppController extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         mInstance = this;
     }
 

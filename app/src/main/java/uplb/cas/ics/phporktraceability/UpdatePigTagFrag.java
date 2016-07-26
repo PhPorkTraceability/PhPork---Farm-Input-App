@@ -82,7 +82,7 @@ public class UpdatePigTagFrag extends Fragment {
         house_id = i.getStringExtra("house_id");
         pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getContext());
+        db = SQLiteHandler.getInstance();
 
         HashMap<String, String> b = db.getThePig(pig_id);
         String tag_disp = "Current Tag: ";

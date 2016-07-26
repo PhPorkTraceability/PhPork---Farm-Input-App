@@ -64,7 +64,7 @@ public class ChooseMedPig extends AppCompatActivity {
         house_id = i.getStringExtra("house_id");
         med_id = i.getStringExtra("med_id");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         et_searchPig = (EditText) findViewById(R.id.et_searchPig);
         lv = (ListView) findViewById(R.id.listview);
@@ -124,8 +124,6 @@ public class ChooseMedPig extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseMedPig.this, ChooseMedPenPage.class);
                 i.putExtra("med_id", med_id);
@@ -135,8 +133,9 @@ public class ChooseMedPig extends AppCompatActivity {
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadLists(){

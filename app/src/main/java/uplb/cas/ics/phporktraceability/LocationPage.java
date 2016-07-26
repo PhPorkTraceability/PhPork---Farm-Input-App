@@ -6,27 +6,35 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -55,6 +63,7 @@ public class LocationPage extends AppCompatActivity
     String function = "";
     String location = "";
     private Toolbar toolbar;
+    private ActionBar actionBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,11 +74,16 @@ public class LocationPage extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+        toolbar.setLogo(R.mipmap.ic_phpork);
+        toolbar.setLogoDescription(R.string.home);
 
-        db = new SQLiteHandler(getApplicationContext());
+        actionBar = getSupportActionBar();
+        actionBar.setHomeButtonEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        db = SQLiteHandler.getInstance();
 
         session = new SessionManager(getApplicationContext());
 
@@ -143,6 +157,18 @@ public class LocationPage extends AppCompatActivity
         String title = "Swipe to Choose a Farm";
         tv_title.setText(title);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(fab != null) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addFarm();
+                }
+            });
+        } else {
+            Log.e(LOGCAT, "fab is null.");
+        }
     }
 
     public void checkList(){
@@ -156,7 +182,7 @@ public class LocationPage extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_help, menu);
         return true;
     }
 
@@ -167,8 +193,6 @@ public class LocationPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case R.id.action_help:
             	 show_help();
             	 return true;
@@ -179,8 +203,9 @@ public class LocationPage extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadLists(){
@@ -331,6 +356,53 @@ public class LocationPage extends AppCompatActivity
         intent.putExtra("help_page", 2);
         startActivity(intent);
     }
+
+    public void addFarm(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = this.getLayoutInflater();
+        View subView = inflater.inflate(R.layout.add_farm_fragment,null);
+        final EditText et_farmname = (EditText) subView.findViewById(R.id.et_farm_name);
+        final EditText et_farmid = (EditText) subView.findViewById(R.id.et_farm_id);
+
+        builder.setTitle("Add a farm");
+        builder.setView(subView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+
+                String farm_name = et_farmname.getText().toString();
+                String farm_add = (function.equals("weaning"))? "Weaning Farm": "Growing Farm";
+                String farm_id = et_farmid.getText().toString();
+                try {
+                    db.addLoc(farm_id, farm_name, farm_add);
+                    Toast.makeText(LocationPage.this, "Farm Added", Toast.LENGTH_SHORT).show();
+                    refresh();
+                } catch (Exception e) {
+                    Toast.makeText(LocationPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog contact_prompt = builder.create();
+        contact_prompt.show();
+
+
+    }
+
+    public void refresh() {
+        loadLists();
+        adapter = new CustomPagerAdapter(LocationPage.this, lists, lists2, lists3, ids);
+        viewPager.setAdapter(adapter);
+    }
+
+
 
     /*
     ImageView iv_rf11;

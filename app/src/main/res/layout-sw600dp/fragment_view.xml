@@ -19,7 +19,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="5dp"
         android:text="Swipe to choose and Drag and drop it below"
-        android:textSize="22sp"
+        android:textSize="26sp"
         android:textStyle="bold" />
 
     <TextView
@@ -58,6 +58,7 @@
             android:layout_gravity="center"
             android:layout_weight=".5"
             android:scaleType="fitCenter"
+            android:background="@color/colorAccent"
             android:src="@mipmap/ic_left"
             android:tag="left"
             android:visibility="invisible" />
@@ -77,6 +78,7 @@
             android:layout_gravity="center"
             android:layout_weight=".5"
             android:scaleType="fitCenter"
+            android:background="@color/colorAccent"
             android:src="@mipmap/ic_right"
             android:tag="right"
             android:visibility="invisible" />
@@ -85,10 +87,10 @@
     <LinearLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="match_parent"
         android:layout_below="@+id/top_container"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"
+        android:layout_margin="30dp"
         android:background="@drawable/layout_gradient"
         android:gravity="center"
         android:orientation="horizontal"

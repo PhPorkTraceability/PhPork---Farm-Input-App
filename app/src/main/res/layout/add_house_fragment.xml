@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    android:padding="15dp">
+
+
+
+
+    <EditText
+        android:id="@+id/et_house_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_id"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/et_house_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_add"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/et_house_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_name"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        android:inputType="textCapWords" />
+
+    <EditText
+        android:id="@+id/et_house_loc_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_no"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        />
+    <EditText
+        android:id="@+id/et_house_function"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_function"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        />
+
+
+</LinearLayout>

@@ -1,67 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/white" android:fitsSystemWindows="true">
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fitsSystemWindows="true">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            <include layout="@layout/toolbar" />
 
         </android.support.design.widget.AppBarLayout>
 
-        <TextView
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/appBar"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:text="Finalizing Input"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:paddingLeft="@dimen/container"
+            android:paddingRight="@dimen/container">
 
-        <TextView
-            android:id="@+id/tv_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tv_title"
-            android:layout_centerHorizontal="true"
-            android:layout_gravity="center"
-            android:layout_margin="2dp"
-            android:text="Please Review Details of Feeding"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="@dimen/mg_title"
+                android:text="Finalizing Input"
+                android:textSize="@dimen/fs_title"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_title"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:layout_marginTop="@dimen/mg_subtitle"
+                android:text="Please Review Details of Feeding"
+                android:textSize="@dimen/fs_subtitle"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_feedname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_subtitle"
-                android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="@dimen/mgt_big_item"
                 android:text="Feed Name: "
-                android:textSize="22sp"
+                android:textSize="@dimen/fs_first_item"
                 android:textStyle="bold|italic" />
 
             <TextView
@@ -69,99 +66,153 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tv_feedname"
-                android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="@dimen/mgt_reg_items"
                 android:text="Feed Type: "
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/et_quantity"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/tv_feedtype"
-                android:layout_alignStart="@+id/tv_feedtype"
-                android:layout_below="@id/tv_feedtype"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="5dp"
-                android:hint="Enter quantity in kg. i.e 20.1"
-                android:inputType="numberDecimal"
-                android:textSize="18sp"
+                android:textSize="@dimen/fs_reg_items"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tv_date"
+                android:id="@+id/tv_proddate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/et_quantity"
-                android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="10dp"
+                android:layout_below="@+id/tv_feedtype"
+                android:layout_marginTop="@dimen/mgt_reg_items"
                 android:text="Production Date: "
-                android:textSize="18sp"
+                android:textSize="@dimen/fs_reg_items"
                 android:textStyle="bold" />
 
             <Button
-                android:id="@+id/btn_chooseDate"
-                style="?android:attr/buttonStyleSmall"
+                android:id="@+id/btn_proddate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/et_quantity"
-                android:layout_toEndOf="@+id/tv_date"
-                android:layout_toRightOf="@+id/tv_date"
+                android:layout_below="@+id/tv_feedtype"
+                android:layout_alignBaseline="@id/tv_proddate"
+                android:layout_toEndOf="@+id/tv_proddate"
+                android:layout_toRightOf="@+id/tv_proddate"
                 android:text="Select" />
 
             <TextView
                 android:id="@+id/tv_chosenDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBaseline="@+id/btn_chooseDate"
+                android:layout_alignBaseline="@+id/btn_proddate"
+                android:layout_below="@+id/tv_feedtype"
+                android:layout_toEndOf="@+id/btn_proddate"
+                android:layout_toRightOf="@+id/btn_proddate" />
+
+            <TextView
+                android:id="@+id/tv_dateGiven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_proddate"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="@dimen/mgt_big_item"
+                android:text="Date Given: "
+                android:textSize="@dimen/fs_reg_items"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_dateGiven"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_proddate"
+                android:layout_alignBaseline="@id/tv_dateGiven"
+                android:layout_toEndOf="@+id/tv_dateGiven"
+                android:layout_toRightOf="@+id/tv_dateGiven"
+                android:text="Select" />
+
+            <TextView
+                android:id="@+id/tv_chosenDate2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_dateGiven"
+                android:layout_below="@+id/tv_proddate"
+                android:layout_toEndOf="@+id/btn_dateGiven"
+                android:layout_toRightOf="@+id/btn_dateGiven" />
+
+            <TextView
+                android:id="@+id/tv_timeGiven"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_dateGiven"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="@dimen/mgt_big_item"
+                android:text="Time Given: "
+                android:textSize="@dimen/fs_reg_items"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_timeGiven"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_below="@+id/et_quantity"
-                android:layout_toEndOf="@+id/btn_chooseDate"
-                android:layout_toRightOf="@+id/btn_chooseDate" />
+                android:layout_alignBaseline="@id/tv_timeGiven"
+                android:layout_toEndOf="@+id/tv_timeGiven"
+                android:layout_toRightOf="@+id/tv_timeGiven"
+                android:text="Select" />
+
+            <TextView
+                android:id="@+id/tv_chosenDate3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_timeGiven"
+                android:layout_below="@+id/tv_dateGiven"
+                android:layout_toEndOf="@+id/btn_timeGiven"
+                android:layout_toRightOf="@+id/btn_timeGiven" />
+
+            <EditText
+                android:id="@+id/et_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_feedtype"
+                android:layout_alignStart="@+id/tv_feedtype"
+                android:layout_below="@id/tv_timeGiven"
+                android:layout_marginTop="@dimen/mgt_reg_items"
+                android:hint="Enter quantity in kg. i.e 20.1"
+                android:inputType="numberDecimal"
+                android:textSize="@dimen/fs_reg_items"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_section"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_date"
-                android:layout_marginLeft="30dp"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
+                android:layout_below="@id/et_quantity"
                 android:text="List of Pigs to be Fed: "
-                android:textSize="18sp"
+                android:textSize="@dimen/fs_subtitle"
                 android:textStyle="bold" />
 
             <ListView
                 android:id="@+id/listview"
                 android:layout_width="match_parent"
-                android:layout_height="175dp"
-                android:layout_alignLeft="@+id/tv_feedtype"
-                android:layout_alignStart="@+id/tv_feedtype"
-                android:layout_below="@id/tv_section"
-                android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="10dp"
-                android:dividerHeight="3dp" />
-
-            <Button
-                android:id="@+id/btn_addFeed"
-                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_feedtype"
                 android:layout_alignStart="@+id/tv_feedtype"
-                android:layout_below="@id/listview"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                android:background="@color/colorAccent"
-                android:text="Ok"
-                android:textColor="@color/lbl_name"
-                android:textSize="24sp" />
+                android:scrollbars="vertical"
+                android:layout_below="@id/tv_section"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/mgt_reg_items"
+                android:dividerHeight="3dp" />
 
-    </RelativeLayout>
+        </RelativeLayout>
+
+        <Button
+            android:layout_weight=".1"
+            android:layout_gravity="center"
+            android:id="@+id/btn_addFeed"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/btn_height"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorAccent"
+            android:ems="6"
+            android:text="Ok"
+            android:textColor="@color/lbl_name"
+            android:textSize="@dimen/fs_button" />
+
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

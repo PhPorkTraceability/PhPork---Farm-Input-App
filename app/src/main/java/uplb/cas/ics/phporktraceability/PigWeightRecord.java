@@ -67,7 +67,7 @@ public class PigWeightRecord extends AppCompatActivity {
         house_id = i.getStringExtra("house_id");
         pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -224,8 +224,6 @@ public class PigWeightRecord extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(PigWeightRecord.this, ViewListOfPigs.class);
                 i.putExtra("house_id", house_id);
@@ -235,8 +233,9 @@ public class PigWeightRecord extends AppCompatActivity {
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

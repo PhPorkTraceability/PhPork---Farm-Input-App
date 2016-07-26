@@ -137,8 +137,6 @@ public class WeekFarrowedPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(WeekFarrowedPage.this, ChooseBreedPage.class);
                 i.putExtra("boar_id", boar_id);
@@ -149,8 +147,9 @@ public class WeekFarrowedPage extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

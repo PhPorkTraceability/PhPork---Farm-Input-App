@@ -1,19 +1,24 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -48,11 +53,19 @@ public class ChooseMedPage extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
+
+    String selection = "";
+    String module = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        Intent i = getIntent();
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -61,7 +74,7 @@ public class ChooseMedPage extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -73,7 +86,6 @@ public class ChooseMedPage extends AppCompatActivity
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new CustomPagerAdapter(ChooseMedPage.this, lists1, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
-
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -135,6 +147,19 @@ public class ChooseMedPage extends AppCompatActivity
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose a Medication";
         tv_title.setText(title);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(fab != null) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    add_med();
+                }
+            });
+        } else {
+            Log.e(LOGCAT, "fab is null.");
+        }
     }
 
     public void checkList(){
@@ -159,17 +184,16 @@ public class ChooseMedPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
-                Intent i = new Intent(ChooseMedPage.this, ChooseModule.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Intent i = new Intent(ChooseMedPage.this, ChooseSelection.class);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String getLabel(String _id){
@@ -242,9 +266,12 @@ public class ChooseMedPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    /*
                     Toast.makeText(ChooseMedPage.this, "Chosen Med: " + getLabel(med_id),
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_LONG).show(); */
                     Intent i = new Intent(ChooseMedPage.this, ChooseMedHousePage.class);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
                     i.putExtra("med_id", med_id);
                     startActivity(i);
                     finish();
@@ -273,10 +300,84 @@ public class ChooseMedPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(ChooseMedPage.this, ChooseModule.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent i = new Intent(ChooseMedPage.this, ChooseSelection.class);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
         startActivity(i);
         finish();
+    }
+
+    public void add_med(){
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View subView = inflater.inflate(R.layout.add_med_fragment,null);
+        final EditText et_med_id = (EditText) subView.findViewById(R.id.et_med_id);
+        final EditText et_med_name = (EditText) subView.findViewById(R.id.et_med_name);
+        final EditText et_med_type = (EditText) subView.findViewById(R.id.et_med_type);
+
+
+        builder.setTitle("Add a new Medicine");
+        builder.setView(subView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+
+                verifier.setMessage("Are you sure all entries are correct?");
+                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        String med_id=et_med_id.getText().toString();
+                        String med_name=et_med_name.getText().toString();
+                        String med_type=et_med_type.getText().toString();
+                        try{
+                            Toast.makeText(ChooseMedPage.this, "New Med Added", Toast.LENGTH_SHORT).show();
+                            db.addMeds(med_id,med_name,med_type);
+                            refresh();
+                        }
+                        catch(Exception e){
+
+                            Toast.makeText(ChooseMedPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog verify_prompt = verifier.create();
+                verify_prompt.show();
+
+            }
+
+
+
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ChooseMedPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+
+        });
+
+        AlertDialog contact_prompt = builder.create();
+        contact_prompt.show();
+
+
+    }
+
+    public void refresh() {
+        loadLists();
+        adapter = new CustomPagerAdapter(ChooseMedPage.this, lists1, lists2, lists3, ids);
+        viewPager.setAdapter(adapter);
     }
 }

@@ -30,16 +30,16 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:textSize="20sp"
+            android:layout_marginTop="15dp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
-            android:text="Then Drag and Drop it to the box below"
-            android:textSize="20sp"
+            android:text="@string/subtitle_1"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -55,9 +55,10 @@
             <ImageView
                 android:id="@+id/iv_left"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_weight=".20"
+                android:background="@color/colorAccent"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/ic_left"
                 android:tag="left"
@@ -73,9 +74,10 @@
             <ImageView
                 android:id="@+id/iv_right"
                 android:layout_width="100dp"
-                android:layout_height="wrap_content"
+                android:layout_height="100dp"
                 android:layout_gravity="center"
                 android:layout_weight=".20"
+                android:background="@color/colorAccent"
                 android:scaleType="fitCenter"
                 android:src="@mipmap/ic_right"
                 android:tag="right"
@@ -99,12 +101,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Drop your choice here"
+                android:text="@string/drag_drop_text"
                 android:textSize="32sp"
                 android:textStyle="bold|italic"/>
 
         </LinearLayout>
 
     </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:backgroundTint="@color/colorPrimary"
+        android:src="@mipmap/ic_fab"
+        android:id="@+id/fab"
+        android:visibility="gone" />
 
 </android.support.design.widget.CoordinatorLayout>

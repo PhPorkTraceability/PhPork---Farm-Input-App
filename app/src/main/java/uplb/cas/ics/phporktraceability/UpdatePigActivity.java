@@ -84,8 +84,6 @@ public class UpdatePigActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(UpdatePigActivity.this, ViewListOfPigs.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -94,10 +92,10 @@ public class UpdatePigActivity extends AppCompatActivity {
                 i.putExtra("pen", pen);
                 startActivity(i);
                 finish();
-
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String getLabel(String _id){

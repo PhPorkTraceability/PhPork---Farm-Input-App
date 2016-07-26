@@ -20,7 +20,8 @@
             android:layout_centerVertical="true"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="5dp"
-            android:text="Now you are ready!"
+            android:text="@string/how_to_part5"
+            android:textColor="@color/white"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -32,6 +33,7 @@
             android:gravity="center_horizontal"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="Click previous to review some parts of the slider. Click go! to start using the application." />
+            android:text="@string/how_to_5"
+            android:textColor="@color/white"/>
     </LinearLayout>
 </RelativeLayout>

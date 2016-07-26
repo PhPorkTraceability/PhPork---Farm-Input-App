@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    >
+
+
+
+
+    <EditText
+        android:id="@+id/et_med_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/med_id"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:inputType="number"
+        android:padding="5dp"
+        />
+
+    <EditText
+        android:id="@+id/et_med_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/med_name"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        />
+
+    <EditText
+        android:id="@+id/et_med_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/med_type"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        />
+
+</LinearLayout>

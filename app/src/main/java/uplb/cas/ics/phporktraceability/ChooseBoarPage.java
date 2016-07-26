@@ -30,8 +30,8 @@ import helper.SQLiteHandler;
 public class ChooseBoarPage extends AppCompatActivity
         implements View.OnTouchListener, View.OnDragListener{
 
-    public final static String KEY_PIGID = "pig_id";
-    public final static String KEY_BREED = "breed_name";
+    public final static String KEY_PARENTID= "parent_id";
+    public final static String KEY_LABELID = "label_id";
     private static final String LOGCAT = ChooseBoarPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
@@ -60,7 +60,7 @@ public class ChooseBoarPage extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -139,12 +139,13 @@ public class ChooseBoarPage extends AppCompatActivity
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -153,8 +154,6 @@ public class ChooseBoarPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseBoarPage.this, ChooseModule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -162,8 +161,9 @@ public class ChooseBoarPage extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String checkIfNull(String _value){
@@ -208,11 +208,11 @@ public class ChooseBoarPage extends AppCompatActivity
 
         for (int i = 0; i < boars.size(); i++) {
             HashMap<String, String> c = boars.get(i);
-            String boar_id = c.get(KEY_PIGID);
-            lists[i+1] = "Boar: " + boar_id;
-            lists2[i+1] = "Breed: " + c.get(KEY_BREED);
+            String boar_id = c.get(KEY_PARENTID);
+            lists[i+1] = "Label ID: " + c.get(KEY_LABELID);
+            lists2[i+1] = "Boar: " + getLabel(boar_id);
             lists3[i+1] = "";
-            ids[i+1] = c.get(KEY_PIGID);
+            ids[i+1] = c.get(KEY_PARENTID);
         }
        /* } else{
 

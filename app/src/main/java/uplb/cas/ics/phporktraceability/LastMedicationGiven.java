@@ -83,7 +83,7 @@ public class LastMedicationGiven extends AppCompatActivity
         pen = i.getStringExtra("pen");
         feed_id = i.getStringExtra("feed_id");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -169,12 +169,13 @@ public class LastMedicationGiven extends AppCompatActivity
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -183,8 +184,6 @@ public class LastMedicationGiven extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
                 i.putExtra("rfid", rfid);
@@ -201,8 +200,9 @@ public class LastMedicationGiven extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String getLabel(String _id){

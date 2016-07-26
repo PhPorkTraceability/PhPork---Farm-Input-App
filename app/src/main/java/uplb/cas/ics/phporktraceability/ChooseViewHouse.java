@@ -1,18 +1,23 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -68,7 +73,7 @@ public class ChooseViewHouse extends AppCompatActivity implements View.OnDragLis
         HashMap<String, String> user = session.getUserSession();
         location = user.get(SessionManager.KEY_LOC);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -142,6 +147,19 @@ public class ChooseViewHouse extends AppCompatActivity implements View.OnDragLis
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose a House to View";
         tv_title.setText(title);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(fab != null) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addHouse();
+                }
+            });
+        } else {
+            Log.e(LOGCAT, "fab is null.");
+        }
     }
 
     public void checkList(){
@@ -188,18 +206,16 @@ public class ChooseViewHouse extends AppCompatActivity implements View.OnDragLis
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseViewHouse.this, ChooseModule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
-
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -260,6 +276,85 @@ public class ChooseViewHouse extends AppCompatActivity implements View.OnDragLis
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
+    }
+
+    public void addHouse(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View subView = inflater.inflate(R.layout.add_house_fragment,null);
+        final EditText et_housename = (EditText) subView.findViewById(R.id.et_house_name);
+        final EditText et_houselocid = (EditText) subView.findViewById(R.id.et_house_loc_id);
+        final EditText et_houseid = (EditText) subView.findViewById(R.id.et_house_id);
+        final EditText et_houseno= (EditText) subView.findViewById(R.id.et_house_no);
+        final EditText et_housefunc= (EditText) subView.findViewById(R.id.et_house_function);
+
+        builder.setTitle("Add a House");
+        builder.setView(subView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+
+                verifier.setMessage("Are you sure all entries are correct?");
+                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String house_loc_id = et_houselocid.getText().toString();
+                        String house_id=et_houseid.getText().toString();
+                        String house_name=et_housename.getText().toString();
+                        String house_no=et_houseno.getText().toString();
+                        String house_function=et_housefunc.getText().toString().trim().toLowerCase();
+                        try{
+                            Toast.makeText(ChooseViewHouse.this, "House Added", Toast.LENGTH_SHORT).show();
+
+                            db.addHouse(house_id,house_no,house_name,house_function,house_loc_id);
+
+                            refresh();
+                        }
+                        catch(Exception e){
+
+                            Toast.makeText(ChooseViewHouse.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                    }
+                });
+
+                AlertDialog verify_prompt = verifier.create();
+                verify_prompt.show();
+
+            }
+
+
+
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ChooseViewHouse.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog contact_prompt = builder.create();
+        contact_prompt.show();
+
+
+    }
+
+    public void refresh() {
+        loadLists();
+        adapter = new CustomPagerAdapter(ChooseViewHouse.this, lists, lists2, lists3, ids);
+        viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(0);
+        iv_left.setVisibility(View.INVISIBLE);
+        iv_right.setVisibility(View.VISIBLE);
     }
 }
 

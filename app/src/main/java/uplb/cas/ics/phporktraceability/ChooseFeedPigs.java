@@ -4,16 +4,27 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceHolder;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import helper.SQLiteHandler;
 
@@ -21,23 +32,27 @@ import helper.SQLiteHandler;
  * Created by marmagno on 11/26/2015.
  */
 
-public class ChooseFeedPigs extends AppCompatActivity
-        implements View.OnClickListener{
+public class ChooseFeedPigs extends AppCompatActivity {
+
+    private static final String LOGCAT = ChooseFeedPigs.class.getSimpleName();
 
     public static final String KEY_PIGID = "pig_id";
     public static final String KEY_LABEL = "label";
     public static final String KEY_BREED = "breed_name";
-    public static final String KEY_GENDER = "gender";
-    private static final String LOGCAT = ChooseFeedPigs.class.getSimpleName();
-    ArrayList<HashMap<String, String>> pig_list;
+
     SQLiteHandler db;
     String pen = "";
     String house_id = "";
     String feed_id = "";
     private Toolbar toolbar;
-    private ListView lv;
-    //private Button btn_submit;
-    private ListAdapter adapter;
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+    private Button btn_submit;
+
+    private List<CheckItemModel> chklist;
+
+    String selection = "selection";
+    String module = "module";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,28 +71,29 @@ public class ChooseFeedPigs extends AppCompatActivity
         pen = i.getStringExtra("pen");
         house_id = i.getStringExtra("house_id");
         feed_id = i.getStringExtra("feed_id");
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
-        //btn_submit = (Button) findViewById(R.id.btn_submit);
-        lv = (ListView) findViewById(R.id.listview);
+        btn_submit = (Button) findViewById(R.id.btn_submit);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadLists();
 
-        /*
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SparseBooleanArray checked = lv.getCheckedItemPositions();
-                ArrayList<String> selectedItems = new ArrayList<String>();
-                for (int i = 0; i < checked.size(); i++) {
-                    // Item position in adapter
-                    int position = checked.keyAt(i);
+                List<CheckItemModel> checkItemModel =
+                        ((RecyclerAdapterWithCheckBox) adapter).getCheckList();
 
-                    HashMap<String, String> item =
-                            (HashMap<String, String>) adapter.getItem(position);
-                    if (checked.valueAt(i))
-                        selectedItems.add(item.get(KEY_PIGID));
+                ArrayList<String> selectedItems = new ArrayList<>();
+                for(int i = 0;i < checkItemModel.size();i++){
+                    CheckItemModel item = checkItemModel.get(i);
+                    if(item.isSelected()){
+                        selectedItems.add(item.getID());
+                    }
                 }
 
                 if (selectedItems.size() > 0) {
@@ -89,20 +105,20 @@ public class ChooseFeedPigs extends AppCompatActivity
                     }
 
                     Intent i = new Intent(ChooseFeedPigs.this, AddFeedPig.class);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
                     i.putExtra("pigs", selected_pigs);
                     i.putExtra("house_id", house_id);
                     i.putExtra("pen", pen);
                     i.putExtra("feed_id", feed_id);
                     startActivity(i);
+                    finish();
                 } else {
-                    Toast.makeText(ChooseFeedPigs.this,
-                            "Please select pigs to feed.",
+                    Toast.makeText(ChooseFeedPigs.this, "Please select pigs to feed.",
                             Toast.LENGTH_LONG).show();
                 }
             }
         });
-
-        */
 
     }
 
@@ -120,70 +136,57 @@ public class ChooseFeedPigs extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseFeedPigs.this, ChooseFeedPenPage.class);
                 i.putExtra("feed_id", feed_id);
                 i.putExtra("house_id", house_id);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> pigs = db.getPigsByPen(pen);
-
-        pig_list = new ArrayList<>();
+        chklist = new ArrayList<>();
 
         for(int i = 0;i < pigs.size();i++)
         {
             HashMap<String, String> c = pigs.get(i);
-            HashMap<String, String> b = new HashMap<>();
-            b.put(KEY_LABEL, "Pig ID: " + getLabel(c.get(KEY_PIGID)));
-            b.put(KEY_PIGID, c.get(KEY_PIGID));
-            b.put(KEY_BREED, "Breed: " + c.get(KEY_BREED));
-            b.put(KEY_GENDER, "Gender: " + c.get(KEY_GENDER));
 
-            pig_list.add(b);
+            CheckItemModel chkitem =
+                    new CheckItemModel(
+                            c.get(KEY_PIGID),
+                            "Pig Label: " + c.get(KEY_LABEL),
+                            "Breed: " + c.get(KEY_BREED),
+                            false);
+            chklist.add(chkitem);
         }
 
-       adapter = new SimpleAdapter(
-                ChooseFeedPigs.this, pig_list,
-                R.layout.feedpig_list, new String[]{
-                KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[]{
-                R.id.tv_pig, R.id.tv_pig_label, R.id.tv_breed, R.id.tv_gender});
+        adapter = new RecyclerAdapterWithCheckBox(chklist);
+        recyclerView.setAdapter(adapter);
 
-        lv.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        lv.setAdapter(adapter);
-    }
-
-    private String getLabel(String _id){
-        String result = "";
-
-        int size = _id.length();
-        String s = "0";
-        size = 6 - size;
-        for(int i = 0; i < size;i++){
-            s = s + "0";
-        }
-        s = s + _id;
-        String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3,7);
-        result = temp1 + "-" + temp2;
-        return result;
     }
 
     @Override
-    public void onBackPressed(){super.onBackPressed(); finish(); }
-
-    @Override
-    public void onClick(View v) {
-
+    public void onBackPressed(){
+        super.onBackPressed();
+        Intent i = new Intent(ChooseFeedPigs.this, ChooseFeedPenPage.class);
+        i.putExtra("feed_id", feed_id);
+        i.putExtra("house_id", house_id);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
     }
 }
+

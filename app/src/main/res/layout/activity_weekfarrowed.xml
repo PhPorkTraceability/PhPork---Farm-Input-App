@@ -1,156 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main_content"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="@color/white" android:fitsSystemWindows="true"
-    tools:context=".WeekFarrowedPage">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_content" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="@color/white"
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <include layout="@layout/toolbar" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
-
-        <android.support.design.widget.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
-        </android.support.design.widget.AppBarLayout>
+        android:layout_marginTop="60dp"
+        android:padding="10dp" >
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Choose Week Farrowed"
-            android:textSize="28sp"
+            android:layout_centerHorizontal="true"
+            android:text="Choose Farrowed Date"
+            android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tv_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:text="Then Drag and Drop it to the box below"
-            android:textSize="18sp"
+            android:layout_below="@+id/tv_title"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Also Enter Week Farrowed"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:id="@+id/top_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:layout_weight=".20"
-            android:background="@color/white"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="10dp">
 
-            <TextView
-                android:id="@+id/tv_curweek"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:background="@drawable/btn_gradient"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_week1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:background="@drawable/btn_gradient"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/tv_week2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:background="@drawable/btn_gradient"
-                android:gravity="center"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <!--
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/iv_wf1"
-                android:src="@drawable/ic_wf1"
-                android:scaleType="fitCenter"
-                android:layout_gravity="top"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:tag="Week 4 Oct 2015" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/iv_wf2"
-                android:src="@drawable/ic_wf2"
-                android:scaleType="fitCenter"
-                android:layout_gravity="top"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:tag="Week 1 Nov 2015" />
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/iv_wf3"
-                android:src="@drawable/ic_wf3"
-                android:scaleType="fitCenter"
-                android:layout_gravity="top"
-                android:layout_margin="5dp"
-                android:layout_weight=".5"
-                android:tag="Week 2 Nov 2015" />
-
-                -->
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="20dp"
-            android:layout_weight=".20"
-            android:background="@drawable/layout_gradient"
-            android:orientation="horizontal"
-            android:padding="20dp">
-
-            <TextView
-                android:id="@+id/tv_dragHere"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="Drop your choice here"
-                android:textSize="32sp"
-                android:textStyle="bold|italic"/>
-
-        </LinearLayout>
-
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>

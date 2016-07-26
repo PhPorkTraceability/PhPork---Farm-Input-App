@@ -148,12 +148,13 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -162,8 +163,6 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
                 i.putExtra("boar_id", boar_id);
@@ -173,8 +172,9 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String randomChars(){

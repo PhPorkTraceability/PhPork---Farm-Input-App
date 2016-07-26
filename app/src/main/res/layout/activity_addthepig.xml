@@ -58,7 +58,8 @@
                 android:layout_marginTop="30dp"
                 android:text="Group Label: "
                 android:textSize="20sp"
-                android:textStyle="bold|italic" />
+                android:textStyle="bold|italic"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_pig"
@@ -67,9 +68,9 @@
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
                 android:layout_below="@+id/tv_group"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="10dp"
                 android:text="Pig Label: "
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -130,7 +131,8 @@
                 android:layout_marginTop="2dp"
                 android:text="Week Farrowed: "
                 android:textSize="16sp"
-                android:textStyle="bold"  />
+                android:textStyle="bold"
+                android:visibility="gone"/>
 
             <TextView
                 android:id="@+id/tv_gender"
@@ -204,16 +206,38 @@
                 android:textStyle="bold"  />
 
             <EditText
+                android:id="@+id/et_quantity2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_med"
+                android:layout_alignStart="@+id/tv_med"
+                android:layout_below="@+id/tv_med"
+                android:layout_marginTop="10dp"
+                android:hint="Enter quantity: "
+                android:inputType="numberDecimal" />
+
+            <Spinner
+                android:id="@+id/sp_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/et_quantity2"
+                android:layout_below="@id/tv_pig"
+                android:layout_toRightOf="@+id/et_quantity2"
+                android:layout_toEndOf="@+id/et_quantity2"
+                android:layout_marginLeft="10dp"
+                android:entries="@array/units"
+                android:spinnerMode="dropdown" />
+
+            <EditText
                 android:id="@+id/et_weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
-                android:layout_below="@+id/tv_med"
+                android:layout_below="@+id/et_quantity2"
                 android:layout_marginTop="2dp"
                 android:hint="Pig Weight in kg. ex. 30.6"
-                android:inputType="text|numberDecimal"
-                android:visibility="gone"  />
+                android:inputType="text|numberDecimal" />
 
             <Button
                 android:id="@+id/btn_addPig"
@@ -227,136 +251,6 @@
                 android:text="Add Pig"
                 android:textColor="@color/lbl_name"
                 android:textSize="24sp"  />
-
-            <ImageView
-                android:id="@+id/ic_edit1"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_pig"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit2"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_boar"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit3"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_sow"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit4"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_fostersow"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit5"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_breed"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit6"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_week"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit7"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_gender"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit8"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_rfid"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit9"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/tv_pen"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/ic_edit10"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_below="@+id/et_quantity"
-                android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_toLeftOf="@id/tv_pig"
-                android:layout_toStartOf="@id/tv_pig"
-                android:src="@drawable/ic_edit"
-                android:visibility="gone" />
 
         </RelativeLayout>
 

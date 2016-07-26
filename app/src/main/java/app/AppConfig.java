@@ -5,7 +5,7 @@ package app;
  */
 public class AppConfig {
     // Server user login url
-    public static String IP = "10.0.5.114";
+    public static String IP = "192.168.5.173";
 
     public static String URL_LOGIN = "http://" + IP + "/phpork/android_connect/login.php";
 

@@ -54,10 +54,11 @@
         <ImageView
             android:id="@+id/iv_left"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="75dp"
             android:layout_gravity="center"
             android:layout_weight=".50"
             android:scaleType="fitCenter"
+            android:background="@color/colorAccent"
             android:src="@mipmap/ic_left"
             android:tag="left"
             android:visibility="invisible" />
@@ -73,10 +74,11 @@
         <ImageView
             android:id="@+id/iv_right"
             android:layout_width="100dp"
-            android:layout_height="wrap_content"
+            android:layout_height="75dp"
             android:layout_gravity="center"
             android:layout_weight=".50"
             android:scaleType="fitCenter"
+            android:background="@color/colorAccent"
             android:src="@mipmap/ic_right"
             android:tag="right"
             android:visibility="invisible" />
@@ -85,14 +87,14 @@
     <LinearLayout
         android:id="@+id/bottom_container"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="match_parent"
         android:layout_below="@+id/top_container"
         android:layout_gravity="center"
-        android:layout_marginTop="20dp"
+        android:layout_margin="20dp"
         android:background="@drawable/layout_gradient"
         android:gravity="center"
         android:orientation="horizontal"
-        android:padding="20dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/tv_dragHere"

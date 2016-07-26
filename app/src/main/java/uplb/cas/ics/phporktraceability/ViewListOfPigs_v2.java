@@ -1,20 +1,29 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -65,6 +74,7 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
+    private RecyclerView.ViewHolder viewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +93,7 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         et_searchPig = (EditText) findViewById(R.id.et_searchPig);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -94,14 +104,12 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
 
         adapter = new RecyclerAdapter(lists, lists2, lists3, ids);
         recyclerView.setAdapter(adapter);
-
-        /*
-        lv = (ListView)findViewById(R.id.listview);
-        lv.setTextFilterEnabled(true);
-
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getApplicationContext(),
+                recyclerView, new ClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onClick(View view, int position) {
+
                 String itempig_id = ((TextView)
                         view.findViewById(R.id.tv_pig)).getText().toString().trim();
                 String label = ((TextView)
@@ -180,11 +188,9 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
                 // Make dialog box visible.
                 viewD.show();
             }
-        });
 
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onLongClick(View view, int position) {
                 pig_id = ((TextView)
                         view.findViewById(R.id.tv_pig)).getText().toString().trim();
 
@@ -196,23 +202,70 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
                 longViewD.setCancelable(false);
 
                 // Init button of login GUI
-                Button btn_weight = (Button) longViewD.findViewById(R.id.db_btn_weight);
-                Button btn_update = (Button) longViewD.findViewById(R.id.db_btn_update);
+                ImageView iv_weight = (ImageView) longViewD.findViewById(R.id.iv_weight);
+                ImageView iv_update = (ImageView) longViewD.findViewById(R.id.iv_update);
                 LinearLayout bl = (LinearLayout) longViewD.findViewById(R.id.bottom_container);
                 tv_drag = (TextView) longViewD.findViewById(R.id.tv_dragHere);
                 bl.setOnDragListener(ViewListOfPigs_v2.this);
 
-                btn_weight.setOnTouchListener(ViewListOfPigs_v2.this);
-                btn_update.setOnTouchListener(ViewListOfPigs_v2.this);
+                iv_weight.setOnTouchListener(ViewListOfPigs_v2.this);
+                iv_update.setOnTouchListener(ViewListOfPigs_v2.this);
 
                 longViewD.show();
-
-                return true;
             }
-        });
-        */
+        }));
 
 
+    }
+
+    public interface ClickListener {
+        void onClick(View view, int position);
+
+        void onLongClick(View view, int position);
+    }
+
+    public static class RecyclerTouchListener implements RecyclerView.OnItemTouchListener {
+
+        private GestureDetector gestureDetector;
+        private ViewListOfPigs_v2.ClickListener clickListener;
+
+        public RecyclerTouchListener(Context context, final RecyclerView recyclerView,
+                                     final ViewListOfPigs_v2.ClickListener clickListener) {
+            this.clickListener = clickListener;
+            gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
+                @Override
+                public boolean onSingleTapUp(MotionEvent e) {
+                    return true;
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
+                    if (child != null && clickListener != null) {
+                        clickListener.onLongClick(child, recyclerView.indexOfChild(child));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+
+            View child = rv.findChildViewUnder(e.getX(), e.getY());
+            if (child != null && clickListener != null && gestureDetector.onTouchEvent(e)) {
+                clickListener.onClick(child, rv.indexOfChild(child));
+            }
+            return false;
+        }
+
+        @Override
+        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+        }
+
+        @Override
+        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+        }
     }
 
     @Override
@@ -229,8 +282,6 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ViewListOfPigs_v2.this, ChooseViewPen.class);
                 i.putExtra("house_id", house_id);
@@ -239,8 +290,9 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     public void loadLists(){
@@ -279,7 +331,7 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
                 KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[] {
                 R.id.tv_pig, R.id.tv_pig_label, R.id.tv_breed, R.id.tv_gender});
 
-         lv.setAdapter(adapter);
+         lv.setAdapter(adapter); */
 
         et_searchPig.addTextChangedListener(new TextWatcher() {
 
@@ -304,7 +356,7 @@ public class ViewListOfPigs_v2 extends AppCompatActivity
             }
 
         });
-        */
+
     }
 
     private String checkIfNull(String _value){

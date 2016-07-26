@@ -6,8 +6,8 @@ package uplb.cas.ics.phporktraceability;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,29 +29,34 @@ import android.widget.Toast;
 public class NavDrawerBaseActivity extends AppCompatActivity {
 
     /**
-     * Static variable for selected item position. Which can be used in child activity to know which item is selected from the list.
-     * */
-    protected static int position;
-    /**
-     *  This flag is used just to check that launcher activity is called first time
-     *  so that we can open appropriate Activity on launch and make list item position selected accordingly.
-     * */
-    private static boolean isLaunch = true;
-    /**
      *  Frame layout: Which is going to be used as parent layout for child activity layout.
      *  This layout is protected so that child activity can access this
      *  */
     protected FrameLayout frameLayout;
+
     /**
      * ListView to add navigation drawer item in it.
      * We have made it protected to access it in child class. We will just use it in child class to make item selected according to activity opened.
      */
 
     protected ListView mDrawerList;
+
     /**
      * List item array for navigation drawer items.
      * */
     protected String[] listArray = { "Home", "Location"};
+
+    /**
+     * Static variable for selected item position. Which can be used in child activity to know which item is selected from the list.
+     * */
+    protected static int position;
+
+    /**
+     *  This flag is used just to check that launcher activity is called first time
+     *  so that we can open appropriate Activity on launch and make list item position selected accordingly.
+     * */
+    private static boolean isLaunch = true;
+
     /**
      *  Base layout node of this Activity.
      * */
@@ -187,9 +192,6 @@ public class NavDrawerBaseActivity extends AppCompatActivity {
         }
 
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
-
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -200,7 +202,7 @@ public class NavDrawerBaseActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
+        //menu.findItem(R.id.action_settings).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 

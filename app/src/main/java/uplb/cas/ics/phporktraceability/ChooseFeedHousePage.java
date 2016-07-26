@@ -52,6 +52,9 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
     String location= "";
     private Toolbar toolbar;
 
+    String selection = "";
+    String module = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,8 +74,10 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
 
         Intent i = getIntent();
         feed_id = i.getStringExtra("feed_id");
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -192,18 +197,18 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPage.class);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
-
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -235,15 +240,30 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    /*
                     Toast.makeText(ChooseFeedHousePage.this, "Chosen " + house_id,
-                            Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPenPage.class);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("feed_id", feed_id);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
+                            Toast.LENGTH_LONG).show(); */
+                    if(selection.equals("by_pig")) {
+                        Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPenPage.class);
+                        i.putExtra("house_id", house_id);
+                        i.putExtra("feed_id", feed_id);
+                        i.putExtra("selection", selection);
+                        i.putExtra("module", module);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                        finish();
+                    } else {
+                        Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPens.class);
+                        i.putExtra("house_id", house_id);
+                        i.putExtra("feed_id", feed_id);
+                        i.putExtra("selection", selection);
+                        i.putExtra("module", module);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);
+                        finish();
+                    }
                 }
 
                 Log.d(LOGCAT, "Dropped " + house_id);
@@ -261,6 +281,8 @@ public class ChooseFeedHousePage extends AppCompatActivity implements View.OnDra
     public void onBackPressed(){
         super.onBackPressed();
         Intent i = new Intent(ChooseFeedHousePage.this, ChooseFeedPage.class);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);

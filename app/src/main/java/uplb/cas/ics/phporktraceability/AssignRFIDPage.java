@@ -76,7 +76,7 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadRFIDSBySQL();
 
@@ -188,12 +188,13 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         }
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -202,8 +203,6 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
                 i.putExtra("boar_id", boar_id);
@@ -217,8 +216,9 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

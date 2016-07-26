@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    >
+
+    <EditText
+        android:id="@+id/et_pen_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pen_id"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:inputType="number"
+        android:padding="5dp"
+        />
+
+    <EditText
+        android:id="@+id/et_pen_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pen_no"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:inputType="number"
+        android:padding="5dp"
+        />
+
+    <EditText
+        android:id="@+id/et_pen_function"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/house_function"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:padding="5dp"
+        />
+
+    <EditText
+        android:id="@+id/et_pen_house_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/pen_no"
+        android:textStyle="italic"
+        android:layout_margin="15dp"
+        android:inputType="number"
+        android:padding="5dp"
+        />
+
+
+</LinearLayout>

@@ -18,4 +18,27 @@
     <dimen name="desc_padding">40dp</dimen>
     <dimen name="desc_padding_sm">20dp</dimen>
     <dimen name="desc_padding_xsm">10dp</dimen>
+
+    <!-- Font Sizes -->
+    <dimen name="fs_title">24sp</dimen>
+    <dimen name="fs_subtitle">16sp</dimen>
+    <dimen name="fs_first_item">18sp</dimen>
+    <dimen name="fs_reg_items">16sp</dimen>
+
+    <!-- Margins between items -->
+    <dimen name="mg_title">5dp</dimen>
+    <dimen name="mg_subtitle">3dp</dimen>
+
+    <!-- Margin Tops -->
+    <dimen name="mgt_section">15dp</dimen>
+    <dimen name="mgt_big_item">10dp</dimen>
+    <dimen name="mgt_reg_items">5dp</dimen>
+
+    <!-- Padding Left and Right -->
+    <dimen name="container">25dp</dimen>
+
+    <!-- Button -->
+    <dimen name="btn_height">35dp</dimen>
+    <dimen name="fs_button">28sp</dimen>
+
 </resources>

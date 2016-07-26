@@ -82,7 +82,7 @@ public class LastFeedGivenPage extends AppCompatActivity
         rfid = i.getStringExtra("rfid");
         pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -166,12 +166,13 @@ public class LastFeedGivenPage extends AppCompatActivity
 
     }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
-    }
+    } */
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -180,8 +181,6 @@ public class LastFeedGivenPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
                 Intent i = new Intent(LastFeedGivenPage.this, AssignPenPage.class);
                 i.putExtra("rfid", rfid);
@@ -197,8 +196,9 @@ public class LastFeedGivenPage extends AppCompatActivity
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String getLabel(String _id){

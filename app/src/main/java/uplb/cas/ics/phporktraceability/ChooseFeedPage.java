@@ -1,19 +1,24 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -49,11 +54,18 @@ public class ChooseFeedPage extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
+    String selection = "";
+    String module = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        Intent i = getIntent();
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,7 +74,7 @@ public class ChooseFeedPage extends AppCompatActivity
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         loadLists();
 
@@ -135,6 +147,19 @@ public class ChooseFeedPage extends AppCompatActivity
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose what to Feed";
         tv_title.setText(title);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(fab != null) {
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    add_feed();
+                }
+            });
+            fab.setVisibility(View.VISIBLE);
+        } else {
+            Log.e(LOGCAT, "fab is null.");
+        }
     }
 
     public void checkList(){
@@ -159,17 +184,18 @@ public class ChooseFeedPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
-                Intent i = new Intent(ChooseFeedPage.this, ChooseModule.class);
+                Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private String getLabel(String _id){
@@ -242,9 +268,11 @@ public class ChooseFeedPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseFeedPage.this, "Chosen Feed: " + getLabel(feed_id),
-                            Toast.LENGTH_LONG).show();
+                   /*Toast.makeText(ChooseFeedPage.this, "Chosen Feed: " + getLabel(feed_id),
+                            Toast.LENGTH_LONG).show(); */
                     Intent i = new Intent(ChooseFeedPage.this, ChooseFeedHousePage.class);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
                     i.putExtra("feed_id", feed_id);
                     startActivity(i);
                     finish();
@@ -273,10 +301,86 @@ public class ChooseFeedPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(ChooseFeedPage.this, ChooseModule.class);
+        Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
+    }
+
+
+    public void add_feed(){
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View subView = inflater.inflate(R.layout.add_feed_fragment,null);
+        final EditText et_feed_id = (EditText) subView.findViewById(R.id.et_feed_id);
+        final EditText et_feed_name = (EditText) subView.findViewById(R.id.et_feed_name);
+        final EditText et_feed_type = (EditText) subView.findViewById(R.id.et_feed_type);
+
+
+        builder.setTitle("Add a new Feed");
+        builder.setView(subView);
+        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int id){
+
+                verifier.setMessage("Are you sure all entries are correct?");
+                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        String feed_id=et_feed_id.getText().toString();
+                        String feed_name=et_feed_name.getText().toString();
+                        String feed_type=et_feed_type.getText().toString();
+                        try{
+                            Toast.makeText(ChooseFeedPage.this, "New Feed Added", Toast.LENGTH_SHORT).show();
+                            db.addFeeds(feed_id,feed_name,feed_type);
+                            refresh();
+                        }
+                        catch(Exception e){
+
+                            Toast.makeText(ChooseFeedPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog verify_prompt = verifier.create();
+                verify_prompt.show();
+
+            }
+
+
+
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(ChooseFeedPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog contact_prompt = builder.create();
+        contact_prompt.show();
+
+
+    }
+
+    public void refresh() {
+        loadLists();
+        adapter = new CustomPagerAdapter(ChooseFeedPage.this, lists1, lists2, lists3, ids);
+        viewPager.setAdapter(adapter);
     }
 }

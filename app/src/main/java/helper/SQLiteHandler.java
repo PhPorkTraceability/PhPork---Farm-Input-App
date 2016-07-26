@@ -10,13 +10,20 @@ package helper;
  * Created by marmagno on 10/12/2015.
  */
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.MediaScannerConnection;
+import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -38,6 +45,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String TABLE_HOUSE = "house";
     private static final String TABLE_PEN = "pen";
     private static final String TABLE_GROUP = "pig_groups";
+    private static final String TABLE_PARENT = "parents";
     private static final String TABLE_PIG = "pig";
     private static final String TABLE_RFID_TAGS = "rfid_tags";
     private static final String TABLE_WEIGHT = "weight_record";
@@ -46,6 +54,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String TABLE_MEDS = "medication";
     private static final String TABLE_MR = "med_record";
     private static final String TABLE_PB = "pig_breeds";
+
+    // For Survey of user mistakes
+    private static final String TABLE_TEST = "test";
+    private static final String KEY_ID = "test_id";
+    private static final String KEY_START = "start_time";
+    private static final String KEY_END = "end_time";
+    private static final String KEY_BACKCOUNT = "back_count";
 
     // Table Employee Columns names
     /*
@@ -76,11 +91,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_PENNO = "pen_no";
 
     // Table Pig Groups
-    private static final String KEY_GNAME = "group_name";
+    private static final String KEY_GNAME = "pig_batch";
 
     // Table Pig Breeds
     private static final String KEY_BREEDID = "breed_id";
     private static final String KEY_BREEDNAME = "breed_name";
+
+    // Table Pig Parents
+    private static final String KEY_PARENTID = "parent_id";
+    private static final String KEY_LABELID = "label_id";
 
     // Table Pig
     private static final String KEY_PIGID = "pig_id";
@@ -91,6 +110,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_GENDER = "gender";
     private static final String KEY_FDATE = "farrowing_date";
     private static final String KEY_PIGSTAT = "pig_status";
+    private static final String KEY_USER = "user";
 
     // Table Weight Record
     private static final String KEY_WRID = "record_id";
@@ -128,8 +148,18 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     private static final String KEY_SYNCSTAT = "sync_status";
 
-    public SQLiteHandler(Context context) {
+    private static SQLiteHandler instance;
+
+    private SQLiteHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static void initializeDB(Context c) {
+        instance = new SQLiteHandler(c);
+    }
+
+    public static SQLiteHandler getInstance(){
+        return instance;
     }
 
     // Creating Tables
@@ -148,6 +178,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + TABLE_EMP + "(" + KEY_EMPID + ")" + ")";
         db.execSQL(CREATE_USER_TABLE);
         */
+
+        String CREATE_TEST_TABLE = "CREATE TABLE " + TABLE_TEST + "("
+                + KEY_ID + " INTEGER PRIMARY KEY,"
+                + KEY_START + " TIME,"
+                + KEY_END + " TIME,"
+                + KEY_BACKCOUNT + " INTEGER" + ")";
+        db.execSQL(CREATE_TEST_TABLE);
 
         String CREATE_LOC_TABLE = "CREATE TABLE " + TABLE_LOC + "("
                 + KEY_LOCID + " INTEGER PRIMARY KEY,"
@@ -186,6 +223,12 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_BREEDNAME + " TEXT" + ")";
         db.execSQL(CREATE_BREED_TABLE);
 
+        String CREATE_PARENT_TABLE = "CREATE TABLE " + TABLE_PARENT + "("
+                + KEY_PARENTID + " INTEGER PRIMARY KEY,"
+                + KEY_LABEL + " TEXT,"
+                + KEY_LABELID  + " TEXT" + ")";
+        db.execSQL(CREATE_PARENT_TABLE);
+
         String CREATE_PIG_TABLE = "CREATE TABLE " + TABLE_PIG + "("
                 + KEY_PIGID + " INTEGER PRIMARY KEY,"
                 + KEY_BOARID + " TEXT,"
@@ -197,16 +240,15 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_PIGSTAT + " TEXT,"
                 + KEY_PENID + " INTEGER,"
                 + KEY_BREEDID + " INTEGER,"
+                + KEY_USER + " TEXT,"
                 + KEY_GNAME + " TEXT,"
                 + KEY_SYNCSTAT + " TEXT,"
-                /*
                 + "FOREIGN KEY(" + KEY_BOARID + ") REFERENCES "
-                + TABLE_PIG + "(" + KEY_PIGID + "),"
+                + TABLE_PARENT + "(" + KEY_LABELID + "),"
                 + "FOREIGN KEY(" + KEY_SOWID + ") REFERENCES "
-                + TABLE_PIG + "(" + KEY_PIGID + "),"
+                + TABLE_PARENT + "(" + KEY_LABELID + "),"
                 + "FOREIGN KEY(" + KEY_FOSTER + ") REFERENCES "
-                + TABLE_PIG + "(" + KEY_PIGID + "),"
-                */
+                + TABLE_PARENT + "(" + KEY_LABELID + "),"
                 + "FOREIGN KEY(" + KEY_GNAME + ") REFERENCES "
                 + TABLE_GROUP + "(" + KEY_GNAME + "),"
                 + "FOREIGN KEY(" + KEY_PENID + ") REFERENCES "
@@ -426,6 +468,21 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         Log.d(TAG, "New pig breed inserted into sqlite: " + id);
     }
 
+    public void addParent(String parent_id, String label, String label_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_PARENTID, parent_id);
+        values.put(KEY_LABEL, label);
+        values.put(KEY_LABELID, label_id);
+
+        // Inserting Row
+        long id = db.insert(TABLE_PARENT, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New parent inserted into sqlite: " + id);
+    }
+
     public void addTags(String tag_id, String tag_rfid, String pig_id,
                         String label,String status){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -449,7 +506,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
      */
     public void addPig(String pig_id, String boar_id, String sow_id, String foster_sow,
                        String week_farrowed, String gender, String farrowing_date, String pig_status,
-                       String pen_id, String breed_id, String group_name, String sync_status) {
+                       String pen_id, String breed_id, String user, String group_name, String sync_status) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -463,6 +520,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         values.put(KEY_PIGSTAT, pig_status);
         values.put(KEY_PENID, pen_id);
         values.put(KEY_BREEDID, breed_id);
+        values.put(KEY_USER, user);
         values.put(KEY_GNAME, group_name);
         values.put(KEY_SYNCSTAT, sync_status);
 
@@ -651,6 +709,30 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
 
         Log.d(TAG, "New pig med record inserted into sqlite: " + id);
+    }
+
+    public void medPigRecByGroup(String quantity, String unit, String date_given,
+                                  String time_given, String[] pig_ids, String med_id,
+                                  String sync_status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for(int i = 0;i < pig_ids.length;i++) {
+            ContentValues values = new ContentValues();
+            values.put(KEY_QUANTITY, quantity);
+            values.put(KEY_UNIT, unit);
+            values.put(KEY_DATEGIVEN, date_given);
+            values.put(KEY_TIMEGIVEN, time_given);
+            values.put(KEY_PIGID, pig_ids[i]);
+            values.put(KEY_MEDID, med_id);
+            values.put(KEY_SYNCSTAT, sync_status);
+
+            // Inserting Row
+            long id = db.insert(TABLE_MR, null, values);
+
+            Log.d(TAG, "New med record inserted into sqlite: " + id);
+        }
+
+        db.close(); // Closing database connection
     }
 
     /**
@@ -1064,7 +1146,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         String selectQuery = "SELECT pen_id, pen_no, function FROM "
-                + TABLE_PEN + " WHERE house_id = '" + house_id + "'";
+                + TABLE_PEN + " WHERE house_id = '" + house_id + "' AND function <> 'mortality'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1204,7 +1286,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         cursor.moveToFirst();
 
-        for(int i = 0; i < cursor.getCount();i++) {
+        for(int i = 0; i < cursor.getCount(); i++) {
             HashMap<String, String> result = new HashMap<String, String>();
 
             result.put(KEY_TAGID, cursor.getString(0));
@@ -1249,7 +1331,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        Log.d(TAG, "Fetching tags from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching feeds from Sqlite: " + list.toString());
 
         return list;
     }
@@ -1280,7 +1362,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        Log.d(TAG, "Fetching tags from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching meds from Sqlite: " + list.toString());
 
         return list;
     }
@@ -1323,34 +1405,28 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         return list;
     }
 
-    public ArrayList<HashMap<String, String>> getRFIDS() {
-        ArrayList<HashMap<String, String>> list
-                = new ArrayList<>();
+    public HashMap<String, String> getLabel(String pig_id) {
+        HashMap<String, String> result = new HashMap<>();
 
-        String selectQuery = "SELECT tag_id, tag_rfid FROM " + TABLE_RFID_TAGS;
+        String selectQuery = "SELECT label FROM " + TABLE_RFID_TAGS +
+                " WHERE pig_id = '" + pig_id + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
 
         cursor.moveToFirst();
 
-        for(int i = 0; i < cursor.getCount();i++) {
-            HashMap<String, String> result = new HashMap<String, String>();
-
-            result.put(KEY_TAGID, cursor.getString(0));
-            result.put(KEY_TAGRFID, cursor.getString(1));
-            cursor.moveToNext();
-            list.add(result);
-
-            Log.d(TAG, "Getting result: " + list.toString());
+        if (cursor.getCount() > 0) {
+            result.put(KEY_LABEL, cursor.getString(0));
         }
 
         cursor.close();
         db.close();
-        // return user
-        Log.d(TAG, "Fetching tags from Sqlite: " + list.toString());
 
-        return list;
+        // return user
+        Log.d(TAG, "Getting the pig: " + result.toString());
+
+        return result;
     }
 
     public ArrayList<HashMap<String, String>> getPigsByLoc(String _loc) {
@@ -1393,9 +1469,10 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list
                 = new ArrayList<>();
 
-        String selectQuery = "SELECT a.pig_id, a.gender, b.breed_name FROM "
-                + TABLE_PIG + " a JOIN " + TABLE_PB +
-                " b ON(a.breed_id = b.breed_id) WHERE a.pen_id = '" + _pen + "'";
+        String selectQuery = "SELECT a.pig_id, a.gender, b.breed_name, c.label FROM "
+                + TABLE_PIG + " a JOIN " + TABLE_PB + " b ON(a.breed_id = b.breed_id) JOIN "
+                + TABLE_RFID_TAGS + " c ON(c.pig_id = a.pig_id) WHERE a.pen_id = '" + _pen + "'";
+
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1408,6 +1485,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             result.put(KEY_PIGID, cursor.getString(0));
             result.put(KEY_GENDER, cursor.getString(1));
             result.put(KEY_BREEDNAME, cursor.getString(2));
+            result.put(KEY_LABEL, cursor.getString(3));
             cursor.moveToNext();
             list.add(result);
 
@@ -1424,7 +1502,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
     public HashMap<String, String> getThePig(String _id) {
 
-        HashMap<String, String> list = new HashMap<String, String>();
+        HashMap<String, String> result = new HashMap<>();
 
         /*
         String selectQuery = "SELECT a.boar_id, a.sow_id, a.foster_sow, a.week_farrowed, "+
@@ -1459,26 +1537,48 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         if (cursor.getCount() > 0) {
-            list.put(KEY_BOARID, cursor.getString(0));
-            list.put(KEY_SOWID, cursor.getString(1));
-            list.put(KEY_FOSTER, cursor.getString(2));
-            list.put(KEY_WEEKF, cursor.getString(3));
-            list.put(KEY_GENDER, cursor.getString(4));
-            list.put(KEY_BREEDNAME, cursor.getString(5));
-            list.put(KEY_TAGID, cursor.getString(6));
-            list.put(KEY_TAGRFID, cursor.getString(7));
-            list.put(KEY_LABEL, cursor.getString(8));
+            result.put(KEY_BOARID, cursor.getString(0));
+            result.put(KEY_SOWID, cursor.getString(1));
+            result.put(KEY_FOSTER, cursor.getString(2));
+            result.put(KEY_WEEKF, cursor.getString(3));
+            result.put(KEY_GENDER, cursor.getString(4));
+            result.put(KEY_BREEDNAME, cursor.getString(5));
+            result.put(KEY_TAGID, cursor.getString(6));
+            result.put(KEY_TAGRFID, cursor.getString(7));
+            result.put(KEY_LABEL, cursor.getString(8));
         }
 
         cursor.close();
         db.close();
 
         // return user
-        Log.d(TAG, "Getting the pig: " + list.toString());
+        Log.d(TAG, "Getting the pig: " + result.toString());
+
+        return result;
+    }
+
+    public HashMap<String, String> getParentLabel(String _id, String label){
+        HashMap<String, String> list = new HashMap<String, String>();
+        String selectQuery = "SELECT parent_id, label_id FROM " + TABLE_PARENT +
+                " WHERE parent_id = '" + _id + "' AND label = '" + label + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            list.put(KEY_PARENTID, cursor.getString(0));
+            list.put(KEY_LABELID, cursor.getString(1));
+        }
+
+        cursor.close();
+        db.close();
+
+        Log.d(TAG, "Fetching parent from Sqlite: " + list.toString());
 
         return list;
     }
-
     public HashMap<String, String> getPigFeed(String _id) {
 
         HashMap<String, String> list = new HashMap<String, String>();
@@ -1587,9 +1687,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list
                 = new ArrayList<>();
 
-        String selectQuery = "SELECT a.pig_id, b.breed_name FROM "
-                + TABLE_PIG + " a JOIN " + TABLE_PB +
-                " b ON(a.breed_id = b.breed_id) WHERE a.gender = 'M' AND a.pig_status = 'boar'";
+        String selectQuery = "SELECT parent_id, label_id FROM "
+                + TABLE_PARENT + " WHERE label = 'boar'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1599,8 +1698,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         for(int i = 0; i < cursor.getCount();i++) {
             HashMap<String, String> result = new HashMap<String, String>();
 
-            result.put(KEY_PIGID, cursor.getString(0));
-            result.put(KEY_BREEDNAME, cursor.getString(1));
+            result.put(KEY_PARENTID, cursor.getString(0));
+            result.put(KEY_LABELID, cursor.getString(1));
             cursor.moveToNext();
             list.add(result);
 
@@ -1619,9 +1718,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list
                 = new ArrayList<>();
 
-        String selectQuery = "SELECT a.pig_id, b.breed_name FROM "
-                + TABLE_PIG + " a JOIN " + TABLE_PB +
-                " b ON(a.breed_id = b.breed_id) WHERE a.gender = 'F' AND a.pig_status = 'sow'";
+        String selectQuery = "SELECT parent_id, label_id FROM "
+                + TABLE_PARENT + " WHERE label = 'sow'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1631,8 +1729,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         for(int i = 0; i < cursor.getCount();i++) {
             HashMap<String, String> result = new HashMap<String, String>();
 
-            result.put(KEY_PIGID, cursor.getString(0));
-            result.put(KEY_BREEDNAME, cursor.getString(1));
+            result.put(KEY_PARENTID, cursor.getString(0));
+            result.put(KEY_LABELID, cursor.getString(1));
             cursor.moveToNext();
             list.add(result);
 
@@ -1651,10 +1749,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list
                 = new ArrayList<>();
 
-        String selectQuery = "SELECT a.pig_id, b.breed_name FROM "
-                + TABLE_PIG + " a JOIN " + TABLE_PB
-                + " b ON(a.breed_id = b.breed_id) WHERE a.pig_id IS NOT '"
-                + sow_id + "' AND a.gender = 'F' AND a.pig_status = 'sow'";
+        String selectQuery = "SELECT parent_id, label_id FROM " + TABLE_PARENT
+                + " WHERE parent_id IS NOT '" + sow_id + "' AND label = 'sow'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1664,8 +1760,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         for(int i = 0; i < cursor.getCount();i++) {
             HashMap<String, String> result = new HashMap<String, String>();
 
-            result.put(KEY_PIGID, cursor.getString(0));
-            result.put(KEY_BREEDNAME, cursor.getString(1));
+            result.put(KEY_PARENTID, cursor.getString(0));
+            result.put(KEY_LABELID, cursor.getString(1));
             cursor.moveToNext();
             list.add(result);
 
@@ -1684,10 +1780,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list
                 = new ArrayList<>();
 
-        String selectQuery = "SELECT a.pig_id, b.breed_name FROM "
-                + TABLE_PIG + " a JOIN " + TABLE_PB
-                + " b ON(a.breed_id = b.breed_id) WHERE a.pig_id IS NOT '"
-                + boar_id + "' AND a.gender = 'F' AND a.pig_status = 'boar'";
+        String selectQuery = "SELECT parent_id, label_id FROM " + TABLE_PARENT
+                + " WHERE parent_id IS NOT '" + boar_id + "' AND label = 'boar'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1697,8 +1791,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         for(int i = 0; i < cursor.getCount();i++) {
             HashMap<String, String> result = new HashMap<String, String>();
 
-            result.put(KEY_PIGID, cursor.getString(0));
-            result.put(KEY_BREEDNAME, cursor.getString(1));
+            result.put(KEY_PARENTID, cursor.getString(0));
+            result.put(KEY_LABELID, cursor.getString(1));
             cursor.moveToNext();
             list.add(result);
 
@@ -1885,6 +1979,90 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         Log.d(TAG, "Deleted all tables info from sqlite");
+    }
+
+    public void deleteExportedTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_FT, null, null);
+        db.delete(TABLE_MR, null, null);
+        db.delete(TABLE_WEIGHT, null, null);
+        db.delete(TABLE_PIG, null, null);
+
+        db.close();
+
+        Log.d(TAG, "Deleted all tables info from sqlite");
+    }
+
+    public void exportTables(Activity a) {
+        try {
+            final String outFileName = "phpork_out.sql";
+
+            File outFile = new File(Environment.getExternalStorageDirectory() , outFileName);
+            BufferedWriter output = new BufferedWriter(new FileWriter(outFile));
+
+            output.write(SQLGenerator.getAll(this));
+            output.flush();
+            output.close();
+
+            MediaScannerConnection.scanFile(a, new String[]{outFile.getAbsolutePath()}, null, null);
+            Toast.makeText(a, "Successfully exported database", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in exporting tables", e);
+        }
+    }
+
+    /**
+     * For Testing Only
+     */
+    public int getMaxTestID(){
+        int id = 0;
+
+        String selectQuery = "SELECT MAX(test_id) FROM " + TABLE_TEST;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            String res = cursor.getString(0);
+            if(res != null){
+                id = Integer.parseInt(res);
+            }
+        }
+
+        cursor.close();
+        db.close();
+
+        return id;
+    }
+
+    public void insertNewTest(String _id, String start_time){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_ID, _id);
+        values.put(KEY_START, start_time);
+        values.put(KEY_END, "");
+        values.put(KEY_BACKCOUNT, "");
+
+        // Inserting Row
+        long id = db.insert(TABLE_TEST, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New test inserted: " + id);
+    }
+
+    public void updateTest(String id, String end_time, String count) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE " + TABLE_TEST +
+                " SET " + KEY_END + " = '" + end_time + "', " +
+                        KEY_BACKCOUNT + " = '" + count + "'" +
+                " WHERE " + KEY_ID + " = '" + id + "'";
+        db.execSQL(query);
+        db.close();
+
+        Log.d(TAG, "Updated Test");
     }
 
 }

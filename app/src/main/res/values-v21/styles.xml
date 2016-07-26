@@ -1,8 +1,20 @@
 <resources>>
 
     <style name="AppTheme" parent="AppTheme.Base">
+        <!--
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item> -->
         <item name="android:colorPrimary">@color/colorPrimary</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="android:colorAccent">@color/colorAccent</item>
+        <item name="android:typeface">normal</item>
+    </style>
+
+    <style name="SplashTheme" parent="AppTheme.Base">
+        <!-- Disable window features like ActionBar, Title and Overlay. -->
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/logo</item>
     </style>
 </resources>

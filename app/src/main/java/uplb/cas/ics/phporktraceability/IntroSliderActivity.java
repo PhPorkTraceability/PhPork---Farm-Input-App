@@ -3,6 +3,7 @@ package uplb.cas.ics.phporktraceability;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,13 +14,15 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import helper.IntroSliderSession;
 import listeners.OnSwipeTouchListener;
 
 public class IntroSliderActivity extends AppCompatActivity {
-    private final Fragment[] f;
     private int mIndex;
     private Button next_btn;
     private Button prev_btn;
+    private final Fragment[] f;
+    IntroSliderSession introLogin;
 
     public IntroSliderActivity() {
         super();
@@ -40,6 +43,10 @@ public class IntroSliderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro_slider);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        introLogin = new IntroSliderSession(getApplicationContext());
+        introLogin.setLogin();
 
         final int containerID = R.id.container;
 

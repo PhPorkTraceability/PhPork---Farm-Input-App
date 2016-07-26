@@ -2,6 +2,7 @@ package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
@@ -15,10 +16,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +33,7 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/14/2015.
@@ -40,21 +44,15 @@ public class AddThePig extends AppCompatActivity
     private static final String LOGCAT = AddThePig.class.getSimpleName();
     private static final String KEY_PENNO = "pen_no";
     private static final String KEY_FUNC = "function";
+    private static final String KEY_LABELID = "label_id";
     SQLiteHandler db;
     SessionManager session;
     EditText et_weight;
     EditText et_quantity;
+    EditText et_quantity2;
+    Spinner sp_units;
     Button btn_addpig;
-    ImageView iv_edit1;
-    ImageView iv_edit2;
-    ImageView iv_edit3;
-    ImageView iv_edit4;
-    ImageView iv_edit5;
-    ImageView iv_edit6;
-    ImageView iv_edit7;
-    ImageView iv_edit8;
-    ImageView iv_edit9;
-    ImageView iv_edit10;
+
     TextView tv_subs;
     TextView tv_group;
     TextView tv_boar;
@@ -82,6 +80,7 @@ public class AddThePig extends AppCompatActivity
     String med_id = "";
     String weight = "";
     String quantity = "";
+    String quantity2 = "";
     String label = "";
     String pen_disp = "";
     String rfid_disp = "";
@@ -89,11 +88,18 @@ public class AddThePig extends AppCompatActivity
     String feed_name = "";
     String med_name = "";
     String function = "";
+    String unit = "";
     int curID;
     DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
     Date dateObj = new Date();
     private Toolbar toolbar;
+
+    /**
+     * For testing only
+     */
+    TestSessionManager test;
+    int testID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,22 +112,11 @@ public class AddThePig extends AppCompatActivity
 
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+        //getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
-        Intent i = getIntent();
-        boar_id = i.getStringExtra("boar_id");
-        sow_id = i.getStringExtra("sow_id");
-        foster_sow = i.getStringExtra("foster_sow");
-        group_label = i.getStringExtra("group_label");
-        breed = i.getStringExtra("breed");
-        //week_farrowed = i.getStringExtra("week_farrowed");
-        gender = i.getStringExtra("gender");
-        rfid = i.getStringExtra("rfid");
-        pen = i.getStringExtra("pen");
-        feed_id = i.getStringExtra("feed_id");
-        med_id = i.getStringExtra("med_id");
+        retrieveIntentExtra(getIntent());
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserSession();
@@ -145,17 +140,6 @@ public class AddThePig extends AppCompatActivity
         tv_med = (TextView) findViewById(R.id.tv_med);
         tv_pigid = (TextView) findViewById(R.id.tv_pig);
 
-        iv_edit1 = (ImageView) findViewById(R.id.ic_edit1);
-        iv_edit2 = (ImageView) findViewById(R.id.ic_edit2);
-        iv_edit3 = (ImageView) findViewById(R.id.ic_edit3);
-        iv_edit4 = (ImageView) findViewById(R.id.ic_edit4);
-        iv_edit5 = (ImageView) findViewById(R.id.ic_edit5);
-        iv_edit6 = (ImageView) findViewById(R.id.ic_edit6);
-        iv_edit7 = (ImageView) findViewById(R.id.ic_edit7);
-        iv_edit8 = (ImageView) findViewById(R.id.ic_edit8);
-        iv_edit9 = (ImageView) findViewById(R.id.ic_edit9);
-        iv_edit10 = (ImageView) findViewById(R.id.ic_edit10);
-
         Resources res = getResources();
         String[] arr = res.getStringArray(R.array.pig_breeds);
         breed_name = arr[Integer.parseInt(breed) - 1];
@@ -164,10 +148,13 @@ public class AddThePig extends AppCompatActivity
         med_name = db.getMedName(med_id);
         displayPen(pen);
 
+        HashMap<String, String> p1 = db.getParentLabel(boar_id, "boar");
+        HashMap<String, String> p2 = db.getParentLabel(sow_id, "sow");
+        HashMap<String, String> p3 = db.getParentLabel(foster_sow, "sow");
         tv_group.setText("Group Label: " + group_label);
-        tv_boar.setText("Boar Parent: " + getLabel(boar_id));
-        tv_sow.setText("Sow Parent: " + getLabel(sow_id));
-        tv_foster.setText("Foster Sow Parent: " + getLabel(foster_sow));
+        tv_boar.setText("Boar Parent: " + checkIfNull(p1.get(KEY_LABELID)));
+        tv_sow.setText("Sow Parent: " + checkIfNull(p2.get(KEY_LABELID)));
+        tv_foster.setText("Foster Sow Parent: " + checkIfNull(p3.get(KEY_LABELID)));
         tv_breed.setText("Breed: " + breed_name);
         //tv_weekf.setText("Week Farrowed: " + week_farrowed);
         tv_gender.setText("Gender: " + gender);
@@ -180,33 +167,50 @@ public class AddThePig extends AppCompatActivity
         btn_addpig = (Button) findViewById(R.id.btn_addPig);
         et_weight = (EditText) findViewById(R.id.et_weight);
         et_quantity = (EditText) findViewById(R.id.et_quantity);
+        et_quantity2 = (EditText) findViewById(R.id.et_quantity2);
+        sp_units = (Spinner) findViewById(R.id.sp_units);
+
+        sp_units.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                unit = parent.getItemAtPosition(position).toString();
+                Log.d(LOGCAT, unit);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         btn_addpig.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(//et_weight.getText().toString().trim().length() > 0 &&
-                        et_quantity.getText().toString().trim().length() > 0){
+                if(et_weight.getText().toString().trim().length() > 0 &&
+                        et_quantity.getText().toString().trim().length() > 0 &&
+                        et_quantity2.getText().toString().trim().length() > 0){
 
                     weight = et_weight.getText().toString();
                     quantity = et_quantity.getText().toString();
-                    String med_quantity = "";
-                    String unit = "";
+                    quantity2 = et_quantity2.getText().toString();
                     String pig_id = String.valueOf(curID);
                     String date = curDate.format(dateObj);
                     String time = curTime.format(dateObj);
                     String status = "new";
                     String prod_date = "";
+                    String feed_unit = "kg";
+                    String user = "farm_user";
 
                     //db.addGroup(group_label, pen);
 
                     db.addPig(pig_id, boar_id, sow_id, foster_sow, "", gender,
-                            farrowing_date, function, pen, breed, group_label, status);
+                            farrowing_date, function, pen, breed, user, group_label, status);
 
                     db.updateTag(rfid, pig_id, "active");
                     //db.updateTagLabel(rfid, label);
-                    //db.addWeightRecByAuto(weight, pig_id, date, time);
-                    db.feedPigRecAuto(quantity, unit, date, time, pig_id, feed_id, prod_date, status);
-                    db.addMedRecAuto(date, time, med_quantity, unit, pig_id, med_id, status);
+                    db.addWeightRecByAuto(weight, pig_id, date, time, "initial weight", status);
+                    db.feedPigRecAuto(quantity, feed_unit, date, time, pig_id, feed_id, prod_date, status);
+                    db.addMedRecAuto(date, time, quantity2, unit, pig_id, med_id, status);
 
                     Toast.makeText(AddThePig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
@@ -218,14 +222,14 @@ public class AddThePig extends AppCompatActivity
                     addD.setTitle("Added Successfully.");
 
                     // Init button of login GUI
-                    Button btn_addAnother = (Button) addD.findViewById(R.id.db_btn_addAnother);
-                    Button btn_finish = (Button) addD.findViewById(R.id.db_btn_finishAdd);
+                    ImageView iv_another = (ImageView) addD.findViewById(R.id.iv_another);
+                    ImageView iv_finish = (ImageView) addD.findViewById(R.id.iv_finish);
                     LinearLayout bl = (LinearLayout) addD.findViewById(R.id.bottom_container);
                     tv_subs = (TextView) addD.findViewById(R.id.tv_subs);
                     bl.setOnDragListener(AddThePig.this);
 
-                    btn_addAnother.setOnTouchListener(AddThePig.this);
-                    btn_finish.setOnTouchListener(AddThePig.this);
+                    iv_another.setOnTouchListener(AddThePig.this);
+                    iv_finish.setOnTouchListener(AddThePig.this);
 
                     addD.show();
 
@@ -234,7 +238,7 @@ public class AddThePig extends AppCompatActivity
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(AddThePig.this);
                     builder.setTitle("Fill up data.")
-                            .setMessage("Please Enter the feed quantity before proceeding.")
+                            .setMessage("Please fill up the blank fields before proceeding.")
                             .setCancelable(false)
                             .setNeutralButton("OK", null);
                     AlertDialog alert = builder.create();
@@ -242,22 +246,14 @@ public class AddThePig extends AppCompatActivity
                 }
             }
         });
-
-        iv_edit1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                final Dialog editD = new Dialog(AddThePig.this);
-
-
-            }
-        });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
+        //getMenuInflater().inflate(R.menu.menu_home, menu);
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
+        getMenuInflater().inflate(R.menu.menu_help, menu);
         return true;
     }
 
@@ -266,30 +262,139 @@ public class AddThePig extends AppCompatActivity
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+        final String[] choices = {
+                "Edit Boar",
+                "Edit Sow",
+                "Edit Foster Sow",
+                "Edit Breed Name",
+                "Edit Gender",
+                "Edit RFID Tag",
+                "Edit Pig Pen",
+                "Edit Feed Name",
+                "Edit Medicine Name"
+        };
+
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
+            case R.id.action_help:
+                show_help();
                 return true;
             case android.R.id.home:
                 Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
-                i.putExtra("rfid", rfid);
-                i.putExtra("boar_id", boar_id);
-                i.putExtra("sow_id", sow_id);
-                i.putExtra("foster_sow", foster_sow);
-                i.putExtra("group_label", group_label);
-                i.putExtra("breed", breed);
-                //i.putExtra("week_farrowed", week_farrowed);
-                i.putExtra("gender", gender);
-                i.putExtra("feed_id", feed_id);
-                i.putExtra("pen", pen);
+                createIntent(i);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
-
                 return true;
+            case R.id.action_edit:
+                new AlertDialog.Builder(this).setTitle("Edit Which Part?")
+                        .setItems(choices, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Intent i;
+                                switch(which) {
+                                    case 0:
+                                        i = new Intent(AddThePig.this, ChooseBoarEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 1:
+                                        i = new Intent(AddThePig.this, ChooseSowEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 2:
+                                        i = new Intent(AddThePig.this, ChooseFosterSowEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 3:
+                                        i = new Intent(AddThePig.this, ChooseBreedEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 4:
+                                        i = new Intent(AddThePig.this, ChooseGenderEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 5:
+                                        i = new Intent(AddThePig.this, AssignRFIDEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 6:
+                                        i = new Intent(AddThePig.this, AssignPenEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 7:
+                                        i = new Intent(AddThePig.this, LastFeedGivenEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    case 8:
+                                        i = new Intent(AddThePig.this, LastMedicationGivenEdit.class);
+                                        createIntent(i);
+                                        startActivity(i);
+                                        finish();
+                                        break;
+                                    default:
+                                        Log.e(LOGCAT, "which value out of bounds.");
+                                        break;
+                                }
+                                dialog.dismiss();
+                            }
+                        }).show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    public void show_help(){
+        Intent intent = new Intent(this, HelpPage.class);
+        intent.putExtra("help_page", 4);
+        startActivity(intent);
+    }
+
+    private void retrieveIntentExtra(Intent i) {
+        boar_id = i.getStringExtra("boar_id");
+        sow_id = i.getStringExtra("sow_id");
+        foster_sow = i.getStringExtra("foster_sow");
+        group_label = i.getStringExtra("group_label");
+        breed = i.getStringExtra("breed");
+        //week_farrowed = i.getStringExtra("week_farrowed");
+        gender = i.getStringExtra("gender");
+        rfid = i.getStringExtra("rfid");
+        pen = i.getStringExtra("pen");
+        feed_id = i.getStringExtra("feed_id");
+        med_id = i.getStringExtra("med_id");
+    }
+
+    private Intent createIntent(Intent i) {
+        i.putExtra("rfid", rfid);
+        i.putExtra("boar_id", boar_id);
+        i.putExtra("sow_id", sow_id);
+        i.putExtra("foster_sow", foster_sow);
+        i.putExtra("group_label", group_label);
+        i.putExtra("breed", breed);
+        //i.putExtra("week_farrowed", week_farrowed);
+        i.putExtra("gender", gender);
+        i.putExtra("feed_id", feed_id);
+        i.putExtra("pen", pen);
+        i.putExtra("med_id", med_id);
+
+        return i;
     }
 
     public void displayPen(String _pen){
@@ -360,13 +465,7 @@ public class AddThePig extends AppCompatActivity
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     if(choice.equals("add_another")){
                         Intent i = new Intent(AddThePig.this, ChooseGender.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        i.putExtra("breed", breed);
-                        i.putExtra("boar_id", boar_id);
-                        i.putExtra("sow_id", sow_id);
-                        i.putExtra("foster_sow", foster_sow);
-                        i.putExtra("group_label", group_label);
+                        createIntent(i);
                         startActivity(i);
                         finish();
                     } else if(choice.equals("finish")) {
@@ -403,18 +502,7 @@ public class AddThePig extends AppCompatActivity
     public void onBackPressed(){
         super.onBackPressed();
         Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
-        i.putExtra("rfid", rfid);
-        i.putExtra("boar_id", boar_id);
-        i.putExtra("sow_id", sow_id);
-        i.putExtra("foster_sow", foster_sow);
-        i.putExtra("group_label", group_label);
-        i.putExtra("breed", breed);
-        //i.putExtra("week_farrowed", week_farrowed);
-        i.putExtra("gender", gender);
-        i.putExtra("feed_id", feed_id);
-        i.putExtra("pen", pen);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        createIntent(i);
         startActivity(i);
         finish();
     }

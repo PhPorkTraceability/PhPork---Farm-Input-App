@@ -1,11 +1,16 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -71,6 +76,11 @@ public class ExportData extends Activity implements Runnable {
 
     // Table Medication
     private static final String KEY_MEDID = "med_id";
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
     SQLiteHandler db;
     //Initialize a counter integer to zero
     int counter = 0;
@@ -88,52 +98,48 @@ public class ExportData extends Activity implements Runnable {
         //setContentView(R.layout.loading_syncall);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        db = new SQLiteHandler(getApplicationContext());
-        //db.deleteTables();
+        db = SQLiteHandler.getInstance();
 
         int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
         if(status == 0){
-            Toast.makeText(ExportData.this, "Not connected to internet.",
-                    Toast.LENGTH_LONG).show();
-            Intent i = new Intent(ExportData.this, HomeActivity.class);
-            startActivity(i);
-            finish();
+            exportOffline();
+        } else {
 
-            return;
+            //Create a new progress dialog.
+            progressDialog = new ProgressDialog(ExportData.this);
+            //Set the progress dialog to display a horizontal bar .
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            //Set the dialog title to 'Loading...'.
+            progressDialog.setTitle("Exporting Data to Server.");
+            //Set the dialog message to 'Loading application View, please wait...'.
+            progressDialog.setMessage("Sending, please wait...");
+            //This dialog can't be canceled by pressing the back key.
+            progressDialog.setCancelable(false);
+            //This dialog isn't indeterminate.
+            progressDialog.setIndeterminate(false);
+            //The maximum number of progress items is 100.
+            progressDialog.setMax(100);
+            //Set the current progress to zero.
+            progressDialog.setProgress(0);
+            //Display the progress dialog.
+            progressDialog.show();
+
+            //Initialize the handler
+            handler = new Handler();
+            //Initialize the thread
+            thread = new Thread(this, "ProgressDialogThread");
+            //start the thread
+            thread.start();
+
+            sendDataToServer();
         }
 
-        //Create a new progress dialog.
-        progressDialog = new ProgressDialog(ExportData.this);
-        //Set the progress dialog to display a horizontal bar .
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        //Set the dialog title to 'Loading...'.
-        progressDialog.setTitle("Exporting Data to Server.");
-        //Set the dialog message to 'Loading application View, please wait...'.
-        progressDialog.setMessage("Sending, please wait...");
-        //This dialog can't be canceled by pressing the back key.
-        progressDialog.setCancelable(false);
-        //This dialog isn't indeterminate.
-        progressDialog.setIndeterminate(false);
-        //The maximum number of progress items is 100.
-        progressDialog.setMax(100);
-        //Set the current progress to zero.
-        progressDialog.setProgress(0);
-        //Display the progress dialog.
-        progressDialog.show();
+        //db.deleteTables();
 
-        //Initialize the handler
-        handler = new Handler();
-        //Initialize the thread
-        thread = new Thread(this, "ProgressDialogThread");
-        //start the thread
-        thread.start();
-
-        sendDataToServer();
 
     }
 
     private void sendDataToServer() {
-
         final String tag_string_send = "send_alldata";
 
         ArrayList<HashMap<String, String>> weight_records = db.getWeightRecs();
@@ -219,9 +225,7 @@ public class ExportData extends Activity implements Runnable {
             allData.put("med_record", mr_jsonArray);
             allData.put("pig", pig_jsonArray);
 
-            Toast.makeText(this, allData.toString(), Toast.LENGTH_LONG).show();
-
-
+            //Toast.makeText(this, String.valueOf(allData.length()), Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -252,10 +256,7 @@ public class ExportData extends Activity implements Runnable {
             @Override
             public void onErrorResponse(VolleyError error) {
                 try{
-                    Log.d(TAG, "Response error: " + error.getMessage());
-                    Toast.makeText(ExportData.this, error.getMessage(),
-                            Toast.LENGTH_LONG).show();
-
+                    handleErrorResponse(error.getMessage());
                 }catch (NullPointerException ex){}
             }
         }){
@@ -275,6 +276,26 @@ public class ExportData extends Activity implements Runnable {
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(request);//, tag_string_send);
 
+    }
+
+    public void handleErrorResponse(String error) {
+        Log.d(TAG, "Response error: " + error);
+        Toast.makeText(ExportData.this, error, Toast.LENGTH_LONG).show();
+        new AlertDialog.Builder(this)
+                .setTitle("Connection Failed")
+                .setMessage("Your phone cannot establish a connection to the server. " +
+                        "Want to store the database content on your phone?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO: Do intense testing on this part
+                        exportOffline();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {}
+                }).show();
     }
 
     @Override
@@ -331,6 +352,45 @@ public class ExportData extends Activity implements Runnable {
         synchronized (thread)
         {
             thread.interrupt();
+        }
+    }
+
+    public void exportOffline() {
+        /* code from: http://stackoverflow.com/questions/23527767/ */
+        boolean hasPermissionWrite =
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED;
+        boolean hasPermissionRead =
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED;
+
+        if (!(hasPermissionWrite || hasPermissionRead)) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            db.exportTables(this);
+        }
+
+        Intent i = new Intent(ExportData.this, ChooseModule.class);
+        startActivity(i);
+        finish();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    db.exportTables(this);
+                }
+                return;
+            }
         }
     }
 }

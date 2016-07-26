@@ -92,7 +92,7 @@ public class UpdatePigFeedFrag extends Fragment {
         house_id = i.getStringExtra("house_id");
         pen = i.getStringExtra("pen");
 
-        db = new SQLiteHandler(getContext());
+        db = SQLiteHandler.getInstance();
 
         HashMap<String, String> b = db.getPigFeed(pig_id);
         String last_feed = "Last Feed Given: ";

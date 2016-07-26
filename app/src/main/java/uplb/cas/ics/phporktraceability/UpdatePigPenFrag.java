@@ -86,7 +86,7 @@ public class UpdatePigPenFrag extends Fragment {
         pen = i.getStringExtra("pen");
 
 
-        db = new SQLiteHandler(getContext());
+        db = SQLiteHandler.getInstance();
 
         session = new SessionManager(getContext());
         HashMap<String, String> user = session.getUserSession();

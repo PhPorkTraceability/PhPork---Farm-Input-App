@@ -16,9 +16,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -28,6 +30,7 @@ import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -42,6 +45,10 @@ public class AddMedPig extends AppCompatActivity
     private static final String LOGCAT = AddMedPig.class.getSimpleName();
     private static final String KEY_MEDNAME = "med_name";
     private static final String KEY_MEDTYPE = "med_type";
+    private static final String KEY_PIGID = "pig_id";
+    private static final String KEY_LABEL = "label";
+    private static final String SEL_PIG = "by_pig";
+    private static final String SEL_PEN = "by_pen";
     Button btn_submit;
     Button btn_chooseDate;
     Button btn_chooseTime;
@@ -60,8 +67,12 @@ public class AddMedPig extends AppCompatActivity
     String med_type = "";
     String pen = "";
     String house_id = "";
-    String pig_id = "";
     String unit = "";
+    String[] total_pigs;
+    String[] pigs;
+    String[] pens;
+    Dialog addD = null;
+
     DateFormat curTime = new SimpleDateFormat("HH:mm");
     Calendar dateAndTime=Calendar.getInstance();
     TimePickerDialog.OnTimeSetListener t=new TimePickerDialog.OnTimeSetListener() {
@@ -74,6 +85,9 @@ public class AddMedPig extends AppCompatActivity
     };
     private Toolbar toolbar;
     private int year, month, day;
+
+    String selection = "";
+    String module = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,33 +103,36 @@ public class AddMedPig extends AppCompatActivity
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
         med_id = i.getStringExtra("med_id");
-        pen = i.getStringExtra("pen");
         house_id = i.getStringExtra("house_id");
-        pig_id = i.getStringExtra("pig_id");
+        if(selection.equals(SEL_PIG)){
+            pigs = i.getStringArrayExtra("pigs");
+            pen = i.getStringExtra("pen");
+            total_pigs = pigs;
+        } else if(selection.equals(SEL_PEN)){
+            pens = i.getStringArrayExtra("pens");
+        }
 
-        db = new SQLiteHandler(getApplicationContext());
+        db = SQLiteHandler.getInstance();
 
         tv_medname = (TextView) findViewById(R.id.tv_medname);
         tv_medtype = (TextView) findViewById(R.id.tv_medtype);
-        tv_pig = (TextView) findViewById(R.id.tv_pig);
         tv_chosenDate = (TextView) findViewById(R.id.tv_chosenDate);
         tv_chosenTime = (TextView) findViewById(R.id.tv_chosenTime);
         et_quantity = (EditText) findViewById(R.id.et_quantity);
         sp_units = (Spinner) findViewById(R.id.sp_units);
 
-        btn_submit = (Button) findViewById(R.id.btn_addMed);
-        btn_chooseDate = (Button) findViewById(R.id.btn_chooseDate);
-        btn_chooseTime = (Button) findViewById(R.id.btn_chooseTime);
+        btn_submit = (Button) findViewById(R.id.btn_submit);
+        btn_chooseDate = (Button) findViewById(R.id.btn_dateGiven);
+        btn_chooseTime = (Button) findViewById(R.id.btn_timeGiven);
         lv = (ListView) findViewById(R.id.listview);
 
-        HashMap<String, String> a = db.getMedNameAndType(med_id);
-        med_name = a.get(KEY_MEDNAME);
-        med_type = a.get(KEY_MEDTYPE);
+        loadList();
 
         tv_medname.setText("Med Name: " + med_name);
         tv_medtype.setText("Med Type: " + med_type);
-        tv_pig.setText("Pig ID: " + getLabel(pig_id));
 
         sp_units.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -169,38 +186,84 @@ public class AddMedPig extends AppCompatActivity
                 //String date = curDate.format(dateObj);
                 //String time = curTime.format(dateObj);
 
-                if(et_quantity.getText().toString().length() > 0) {
+                if(et_quantity.getText().toString().length() > 0 &&
+                        tv_chosenDate.getText().length() > 0 &&
+                        tv_chosenTime.getText().length() > 0) {
                     String date = tv_chosenDate.getText().toString();
                     String time = tv_chosenTime.getText().toString();
                     String quantity = et_quantity.getText().toString();
                     String status = "new";
 
-                    db.addMedRecAuto(date, time, quantity, unit, pig_id, med_id, status);
+                    Double measurement = Double.parseDouble(quantity) / total_pigs.length;
+                    quantity = String.valueOf(measurement);
+
+                    db.medPigRecByGroup(quantity, unit, date, time, total_pigs, med_id, status);
 
                     Toast.makeText(AddMedPig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
 
                     // Create Object of Dialog class
-                    final Dialog addD = new Dialog(AddMedPig.this);
+                    addD = new Dialog(AddMedPig.this);
                     // Set GUI of login screen
                     addD.setContentView(R.layout.dialog_add_pig);
                     addD.setTitle("Added Successfully.");
 
                     // Init button of login GUI
-                    Button btn_addAnother = (Button) addD.findViewById(R.id.db_btn_addAnother);
-                    Button btn_finish = (Button) addD.findViewById(R.id.db_btn_finishAdd);
+                    ImageView iv_another = (ImageView) addD.findViewById(R.id.iv_another);
+                    ImageView iv_finish = (ImageView) addD.findViewById(R.id.iv_finish);
                     LinearLayout bl = (LinearLayout) addD.findViewById(R.id.bottom_container);
                     tv_subs = (TextView) addD.findViewById(R.id.tv_subs);
                     bl.setOnDragListener(AddMedPig.this);
 
-                    btn_addAnother.setOnTouchListener(AddMedPig.this);
-                    btn_finish.setOnTouchListener(AddMedPig.this);
+                    iv_another.setOnTouchListener(AddMedPig.this);
+                    iv_finish.setOnTouchListener(AddMedPig.this);
 
                     addD.show();
                 }
             }
         });
 
+    }
+
+    public void loadList(){
+
+        HashMap<String, String> med = db.getMedNameAndType(med_id);
+        med_name = med.get(KEY_MEDNAME);
+        med_type = med.get(KEY_MEDTYPE);
+        String[] labels;
+
+        if(selection.equals("by_pen")) {
+            ArrayList<HashMap<String, String>> pig_list = new ArrayList<>();
+            for(int i = 0;i < pens.length;i++){
+                ArrayList<HashMap<String, String>> pigs_by_pen = db.getPigsByPen(pens[i]);
+                for(int k = 0;k < pigs_by_pen.size();k++){
+                    HashMap<String, String> p = pigs_by_pen.get(k);
+                    HashMap<String, String> a = new HashMap<>();
+                    a.put(KEY_PIGID, p.get(KEY_PIGID));
+                    a.put(KEY_LABEL, p.get(KEY_LABEL));
+                    pig_list.add(a);
+                }
+            }
+
+            labels = new String[pig_list.size()];
+            total_pigs = new String[pig_list.size()];
+            for(int j = 0;j < pig_list.size();j++) {
+                HashMap<String, String> c = pig_list.get(j);
+                labels[j] = "Pig Label: " + c.get(KEY_LABEL);
+                total_pigs[j] = c.get(KEY_PIGID);
+            }
+        } else {
+            labels = new String[pigs.length];
+            for(int j = 0;j < pigs.length;j++) {
+                HashMap<String, String> b = db.getLabel(pigs[j]);
+                labels[j] = "Pig Label: " + b.get(KEY_LABEL);
+            }
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, labels);
+        lv.setAdapter(adapter);
     }
 
     @Override
@@ -217,37 +280,33 @@ public class AddMedPig extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
             case android.R.id.home:
-                Intent i = new Intent(AddMedPig.this, ChooseMedPig.class);
-                i.putExtra("med_id", med_id);
-                i.putExtra("house_id", house_id);
-                i.putExtra("pen", pen);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                finish();
-
+                if(selection.equals(SEL_PIG)){
+                    Intent i = new Intent(AddMedPig.this, ChooseMedPigs.class);
+                    i.putExtra("med_id", med_id);
+                    i.putExtra("pen", pen);
+                    i.putExtra("house_id", house_id);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
+                } else if (selection.equals(SEL_PEN)){
+                    Intent i = new Intent(AddMedPig.this, ChoosePens.class);
+                    i.putExtra("med_id", med_id);
+                    i.putExtra("house_id", house_id);
+                    i.putExtra("selection", selection);
+                    i.putExtra("module", module);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
+                }
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private String getLabel(String _id){
-        String result = "";
-
-        int size = _id.length();
-        String s = "0";
-        size = 6 - size;
-        for(int i = 0; i < size;i++){
-            s = s + "0";
-        }
-        s = s + _id;
-        String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3,7);
-        result = temp1 + "-" + temp2;
-        return result;
     }
 
     @Override
@@ -280,8 +339,10 @@ public class AddMedPig extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                    addD.dismiss();
                     if(choice.equals("add_another")){
-                        Intent i = new Intent(AddMedPig.this, ChooseMedPage.class);
+                        Intent i = new Intent(AddMedPig.this, ChooseSelection.class);
+                        i.putExtra("module", module);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
@@ -318,14 +379,28 @@ public class AddMedPig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(AddMedPig.this, ChooseMedPig.class);
-        i.putExtra("med_id", med_id);
-        i.putExtra("house_id", house_id);
-        i.putExtra("pen", pen);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
-        finish();
+        if(selection.equals(SEL_PIG)){
+            Intent i = new Intent(AddMedPig.this, ChooseMedPigs.class);
+            i.putExtra("med_id", med_id);
+            i.putExtra("pen", pen);
+            i.putExtra("house_id", house_id);
+            i.putExtra("selection", selection);
+            i.putExtra("module", module);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            finish();
+        } else if (selection.equals(SEL_PEN)){
+            Intent i = new Intent(AddMedPig.this, ChoosePens.class);
+            i.putExtra("med_id", med_id);
+            i.putExtra("house_id", house_id);
+            i.putExtra("selection", selection);
+            i.putExtra("module", module);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            finish();
+        }
     }
 
 }

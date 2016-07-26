@@ -1,0 +1,81 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:context=".NeedHelpFragment">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"
+        android:textSize="36sp"
+        android:text="@string/edit"
+        android:textColor="@color/white"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/tv_text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_below="@+id/tv_title"
+        android:layout_margin="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="32sp"
+        android:textColor="@color/white"
+        android:text="@string/edit2" />
+
+    <ImageView
+        android:id="@+id/iv_image1"
+        android:layout_width="550dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tv_text1"
+        android:src="@drawable/edit_help1" />
+
+    <TextView
+        android:id="@+id/tv_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/iv_image1"
+        android:layout_margin="30dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:textSize="32sp"
+        android:textColor="@color/white"
+        android:text="@string/edit3" />
+
+    <ImageView
+        android:id="@+id/iv_image2"
+        android:layout_width="wrap_content"
+        android:layout_height="350dp"
+        android:layout_gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/tv_text2"
+        android:layout_marginBottom="50dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/edit_help2" />
+
+    <!-- Close Button -->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
+        android:onClick="close_page"
+        android:textColor="@color/black"
+        android:text="@string/tap_me_to_close" />
+
+</RelativeLayout>
