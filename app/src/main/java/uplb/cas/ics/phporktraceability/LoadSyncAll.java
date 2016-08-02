@@ -27,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
 
 import app.AppConfig;
 import app.AppController;
@@ -40,6 +41,8 @@ import helper.SQLiteHandler;
 public class LoadSyncAll extends Activity implements Runnable{
 
     private static final String TAG = LoadSyncAll.class.getSimpleName();
+    private boolean tag_error = false;
+
     // Table Location
     private static final String KEY_LOCID = "loc_id";
     private static final String KEY_LOCNAME = "loc_name";
@@ -139,16 +142,6 @@ public class LoadSyncAll extends Activity implements Runnable{
         if(status == 0){
             importTables();
 
-            if(introSession.isLoggedIn()){
-                Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
-                startActivity(i);
-                finish();
-            } else {
-                Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
-                startActivity(i);
-                finish();
-            }
-
             return;
         }
 
@@ -178,8 +171,13 @@ public class LoadSyncAll extends Activity implements Runnable{
         //start the thread
         thread.start();
 
-        getAllDataByNet();
+    }
 
+    @Override
+    protected void onStart(){
+        super.onStart();
+
+        getAllDataByNet();
     }
 
     public void getAllDataByNet() {
@@ -443,21 +441,10 @@ public class LoadSyncAll extends Activity implements Runnable{
                             Log.d(TAG, "Response error: " + error.getMessage());
                             Toast.makeText(LoadSyncAll.this, error.getMessage(),
                                     Toast.LENGTH_LONG).show();
-                            new AlertDialog.Builder(LoadSyncAll.this)
-                                    .setTitle("Connection Failed")
-                                    .setMessage("Your phone cannot establish a connection to the server. " +
-                                            "Want to store the database content on your phone?")
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            //TODO: Do intense testing on this part
-                                            importTables();
-                                        }
-                                    })
-                                    .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {}
-                                    }).show();
+
+                            progressDialog.dismiss();
+
+                            tag_error = true;
                         }catch (NullPointerException ex){}
                     }
                 });
@@ -467,6 +454,19 @@ public class LoadSyncAll extends Activity implements Runnable{
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(_request);//, tag_string_req);
 
+    }
+
+    public void nextPage(){
+        //Close the progress dialog
+        if (introSession.isLoggedIn()) {
+            Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
+            startActivity(i);
+            finish();
+        } else {
+            Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
+            startActivity(i);
+            finish();
+        }
     }
 
     public void importTables() {
@@ -523,6 +523,8 @@ public class LoadSyncAll extends Activity implements Runnable{
             Log.e(TAG, "Error in importing tables", e);
             Toast.makeText(LoadSyncAll.this, "Something went wrong on importing database", Toast.LENGTH_SHORT).show();
         }
+
+        nextPage();
     }
 
     @Override
@@ -563,19 +565,26 @@ public class LoadSyncAll extends Activity implements Runnable{
         handler.post(new Runnable()
         {
             @Override
-            public void run()
-            {
-                //Close the progress dialog
-                progressDialog.hide();
-                if(introSession.isLoggedIn()){
-                    Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
-                    startActivity(i);
-                    finish();
-                } else {
-                    Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
-                    startActivity(i);
-                    finish();
-                }
+            public void run() {
+
+                if (tag_error) {
+                    new AlertDialog.Builder(LoadSyncAll.this)
+                            .setTitle("Connection Failed")
+                            .setMessage("Your phone cannot establish a connection to the server. " +
+                                    "Want to import offline?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //TODO: Do intense testing on this part
+                                    importTables();
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            }).show();
+                } else nextPage();
             }
         });
 
