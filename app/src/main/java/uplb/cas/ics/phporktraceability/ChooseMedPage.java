@@ -266,10 +266,7 @@ public class ChooseMedPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    /*
-                    Toast.makeText(ChooseMedPage.this, "Chosen Med: " + getLabel(med_id),
-                            Toast.LENGTH_LONG).show(); */
-                    Intent i = new Intent(ChooseMedPage.this, ChooseMedHousePage.class);
+                    Intent i = new Intent(ChooseMedPage.this, ChooseHouse.class);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
                     i.putExtra("med_id", med_id);

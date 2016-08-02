@@ -270,7 +270,7 @@ public class ChooseFeedPage extends AppCompatActivity
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                    /*Toast.makeText(ChooseFeedPage.this, "Chosen Feed: " + getLabel(feed_id),
                             Toast.LENGTH_LONG).show(); */
-                    Intent i = new Intent(ChooseFeedPage.this, ChooseFeedHousePage.class);
+                    Intent i = new Intent(ChooseFeedPage.this, ChooseHouse.class);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
                     i.putExtra("feed_id", feed_id);

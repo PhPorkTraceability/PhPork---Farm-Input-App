@@ -458,55 +458,24 @@
         </activity>
 
         <activity
-            android:name=".ChooseFeedHousePage"
-            android:label="@string/feed"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedPage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseFeedPage" />
-        </activity>
-
-        <activity
-            android:name=".ChooseFeedPenPage"
-            android:label="@string/feed"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedHousePage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseFeedHousePage" />
-        </activity>
-
-        <activity
-            android:name=".ChooseFeedPens"
-            android:label="@string/feed"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedHousePage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseFeedHousePage" />
-        </activity>
-        <activity
-            android:name=".ChooseFeedPigs"
-            android:label="@string/feed"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseFeedPenPage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseFeedPenPage" />
-        </activity>
-
-        <activity
             android:name=".AddFeedPig"
             android:label="@string/feed"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name=".ChooseHouse"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name=".ChoosePen"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name=".ChooseByPig"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name=".ChooseByPen"
             android:launchMode="singleTop" >
         </activity>
 
@@ -521,64 +490,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ChooseModule" />
         </activity>
-        <activity
-            android:name=".ChooseMedHousePage"
-            android:label="@string/med"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPage">
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseMedPage" />
-        </activity>
-        <activity
-            android:name=".ChooseMedPenPage"
-            android:label="@string/med"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedHousePage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseMedHousePage" />
-        </activity>
-
-        <activity
-            android:name=".ChoosePens"
-            android:label="@string/med"
-            android:launchMode="singleTop" >
-
-        </activity>
-
-        <activity
-            android:name=".ChooseMedPigs"
-            android:label="@string/med"
-            android:launchMode="singleTop" >
-
-        </activity>
-
-        <activity
-            android:name=".ChooseMedPig"
-            android:label="@string/med"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPenPage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseMedPenPage" />
-        </activity>
         <activity
             android:name=".AddMedPig"
             android:label="@string/med"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseMedPig">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseMedPig" />
+            android:launchMode="singleTop">
         </activity>
     </application>
 

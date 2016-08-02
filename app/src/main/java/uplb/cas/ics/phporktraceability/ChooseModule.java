@@ -32,6 +32,7 @@ public class ChooseModule extends AppCompatActivity
         implements View.OnDragListener {
 
     private static final String LOGCAT = ChooseModule.class.getSimpleName();
+
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;

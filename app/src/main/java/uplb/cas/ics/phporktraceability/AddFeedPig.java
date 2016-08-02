@@ -299,28 +299,21 @@ public class AddFeedPig extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                Intent i = new Intent();
                 if(selection.equals(SEL_PIG)){
-                    Intent i = new Intent(AddFeedPig.this, ChooseFeedPigs.class);
-                    i.putExtra("feed_id", feed_id);
+                    i.setClass(AddFeedPig.this, ChooseByPig.class);
                     i.putExtra("pen", pen);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("selection", selection);
-                    i.putExtra("module", module);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
-                } else if (selection.equals(SEL_PEN)){
-                    Intent i = new Intent(AddFeedPig.this, ChooseFeedPens.class);
-                    i.putExtra("feed_id", feed_id);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("selection", selection);
-                    i.putExtra("module", module);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
-                }
+                } else if (selection.equals(SEL_PEN))
+                    i.setClass(AddFeedPig.this, ChooseByPen.class);
+
+                i.putExtra("feed_id", feed_id);
+                i.putExtra("house_id", house_id);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
 
                 return true;
             default:
@@ -360,20 +353,16 @@ public class AddFeedPig extends AppCompatActivity
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     addD.dismiss();
+                    Intent i = new Intent();
                     if(choice.equals("add_another")){
-                        Intent i = new Intent(AddFeedPig.this, ChooseSelection.class);
+                        i.setClass(AddFeedPig.this, ChooseSelection.class);
                         i.putExtra("module", module);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
-                        finish();
-                    } else if(choice.equals("finish")) {
-                        Intent i = new Intent(AddFeedPig.this, ChooseModule.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
-                        finish();
-                    }
+                    } else if(choice.equals("finish"))
+                        i.setClass(AddFeedPig.this, ChooseModule.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
                 }
                 Log.d(LOGCAT, "Dropped " + choice);
                 break;
@@ -399,28 +388,20 @@ public class AddFeedPig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        Intent i = new Intent();
         if(selection.equals(SEL_PIG)){
-            Intent i = new Intent(AddFeedPig.this, ChooseFeedPigs.class);
-            i.putExtra("feed_id", feed_id);
+            i.setClass(AddFeedPig.this, ChooseByPig.class);
             i.putExtra("pen", pen);
-            i.putExtra("house_id", house_id);
-            i.putExtra("selection", selection);
-            i.putExtra("module", module);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-        } else if (selection.equals(SEL_PEN)){
-            Intent i = new Intent(AddFeedPig.this, ChooseFeedPens.class);
-            i.putExtra("feed_id", feed_id);
-            i.putExtra("house_id", house_id);
-            i.putExtra("selection", selection);
-            i.putExtra("module", module);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-        }
+        } else if (selection.equals(SEL_PEN))
+            i.setClass(AddFeedPig.this, ChooseByPen.class);
+        i.putExtra("feed_id", feed_id);
+        i.putExtra("house_id", house_id);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
     }
 
 

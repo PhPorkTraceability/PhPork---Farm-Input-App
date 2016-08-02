@@ -20,18 +20,24 @@ import java.util.List;
 import helper.SQLiteHandler;
 
 /**
- * Created by marmagno on 7/20/2016.
+ * Created by marmagno on 7/26/2016.
  */
-public class ChoosePens extends AppCompatActivity {
+public class ChooseByPen extends AppCompatActivity  {
 
-    private static final String LOGCAT = ChoosePens.class.getSimpleName();
+    private static final String LOGCAT = ChooseByPen.class.getSimpleName();
 
+    //Module
+    private static final String FEED_MOD = "Feed Pig";
+    private static final String MED_MOD = "Medicate Pig";
+
+    //When by pen is selected
     public static final String KEY_PENID = "pen_id";
     public static final String KEY_PENNO = "pen_no";
     public static final String KEY_FUNC = "function";
 
     SQLiteHandler db;
     String house_id = "";
+    String feed_id = "";
     String med_id = "";
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -57,10 +63,18 @@ public class ChoosePens extends AppCompatActivity {
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
-        house_id = i.getStringExtra("house_id");
-        med_id = i.getStringExtra("med_id");
         selection = i.getStringExtra("selection");
         module = i.getStringExtra("module");
+        house_id = i.getStringExtra("house_id");
+
+        if(module.equals(FEED_MOD)) {
+            getSupportActionBar().setTitle(R.string.feed);
+            feed_id = i.getStringExtra("feed_id");
+        }
+        if(module.equals(MED_MOD)) {
+            getSupportActionBar().setTitle(R.string.med);
+            med_id = i.getStringExtra("med_id");
+        }
 
         db = SQLiteHandler.getInstance();
 
@@ -92,16 +106,24 @@ public class ChoosePens extends AppCompatActivity {
                         selected_pens[i] = selectedItems.get(i);
                     }
 
-                    Intent i = new Intent(ChoosePens.this, AddMedPig.class);
+                    Intent i = new Intent();
+
+                    if(module.equals(FEED_MOD)){
+                        i.setClass(ChooseByPen.this, AddFeedPig.class);
+                        i.putExtra("feed_id", feed_id);
+                    } if(module.equals(MED_MOD)){
+                        i.setClass(ChooseByPen.this, AddMedPig.class);
+                        i.putExtra("med_id", med_id);
+                    }
+
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
                     i.putExtra("pens", selected_pens);
                     i.putExtra("house_id", house_id);
-                    i.putExtra("med_id", med_id);
                     startActivity(i);
                     finish();
                 } else {
-                    Toast.makeText(ChoosePens.this, "Please select pigs to feed.",
+                    Toast.makeText(ChooseByPen.this, "Please select pens.",
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -124,14 +146,20 @@ public class ChoosePens extends AppCompatActivity {
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                Intent i = new Intent(ChoosePens.this, ChooseMedHousePage.class);
-                i.putExtra("med_id", med_id);
+                Intent i = new Intent();
+                i.setClass(ChooseByPen.this, ChooseHouse.class);
+                if(module.equals(FEED_MOD))
+                    i.putExtra("feed_id", feed_id);
+                else if(module.equals(MED_MOD))
+                    i.putExtra("med_id", med_id);
+
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -150,7 +178,7 @@ public class ChoosePens extends AppCompatActivity {
             CheckItemModel chkitem =
                     new CheckItemModel(
                             c.get(KEY_PENID),
-                            "Pen No: " + c.get(KEY_PENNO),
+                            "Pig No: " + c.get(KEY_PENNO),
                             "Function: " + c.get(KEY_FUNC),
                             false);
             chklist.add(chkitem);
@@ -164,8 +192,13 @@ public class ChoosePens extends AppCompatActivity {
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(ChoosePens.this, ChooseMedHousePage.class);
-        i.putExtra("med_id", med_id);
+        Intent i = new Intent();
+        i.setClass(ChooseByPen.this, ChooseHouse.class);
+        if(module.equals(FEED_MOD))
+            i.putExtra("feed_id", feed_id);
+        else if(module.equals(MED_MOD))
+            i.putExtra("med_id", med_id);
+
         i.putExtra("selection", selection);
         i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -174,4 +207,3 @@ public class ChoosePens extends AppCompatActivity {
         finish();
     }
 }
-

@@ -1,42 +1,44 @@
 package uplb.cas.ics.phporktraceability;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.SessionManager;
 
 /**
- * Created by marmagno on 1/26/2016.
+ * Created by marmagno on 7/26/2016.
  */
-public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragListener {
-    public final static String KEY_PENID = "pen_id";
-    public final static String KEY_PENNO = "pen_no";
+public class ChooseHouse extends AppCompatActivity implements View.OnDragListener {
+
+    public final static String KEY_HOUSEID = "house_id";
+    public final static String KEY_HOUSENO = "house_no";
+    public final static String KEY_HOUSENAME = "house_name";
     public final static String KEY_FUNC = "function";
-    public final static String KEY_GNAME = "group_name";
-    private static final String LOGCAT = ChooseMedPenPage.class.getSimpleName();
+    private static final String FEED_MOD = "Feed Pig";
+    private static final String MED_MOD = "Medicate Pig";
+    private static final String SEL_PIG = "by_pig";
+    private static final String SEL_PEN = "by_pen";
+
+    private static final String LOGCAT = ChooseHouse.class.getSimpleName();
+
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
@@ -44,17 +46,19 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
     TextView tv_title;
     ImageView iv_left, iv_right;
     SQLiteHandler db;
-    String pen = "";
     String house_id = "";
     String med_id = "";
+    String feed_id = "";
+    SessionManager session;
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
+    String location= "";
     private Toolbar toolbar;
 
-    String selection = "selection";
-    String module = "module";
+    String selection = "";
+    String module = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +73,22 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
+
+        session = new SessionManager(getApplicationContext());
+        HashMap<String, String> user = session.getUserSession();
+        location = user.get(SessionManager.KEY_LOC);
+
         Intent i = getIntent();
-        med_id = i.getStringExtra("med_id");
-        house_id = i.getStringExtra("house_id");
-        selection = i.getStringExtra("selection");
         module = i.getStringExtra("module");
+        selection = i.getStringExtra("selection");
+        if(module.equals(FEED_MOD)) {
+            getSupportActionBar().setTitle(R.string.feed);
+            feed_id = i.getStringExtra("feed_id");
+        }
+        if(module.equals(MED_MOD)) {
+            getSupportActionBar().setTitle(R.string.med);
+            med_id = i.getStringExtra("med_id");
+        }
 
         db = SQLiteHandler.getInstance();
 
@@ -85,7 +100,7 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter(ChooseMedPenPage.this, lists, lists2, lists3, ids);
+        adapter = new CustomPagerAdapter(ChooseHouse.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -147,22 +162,8 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
         });
 
         tv_title = (TextView) findViewById(R.id.tv_title);
-        String title = "Swipe to Choose a Pen";
+        String title = "Swipe to Choose a House";
         tv_title.setText(title);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    add_pen();
-                }
-            });
-        } else {
-            Log.e(LOGCAT, "fab is null.");
-        }
-
     }
 
     public void checkList(){
@@ -174,20 +175,22 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
     }
 
     public void loadLists(){
-        ArrayList<HashMap<String, String>> the_list = db.getPensByHouse(house_id);
+
+        ArrayList<HashMap<String, String>> the_list = db.getHouses(location);
 
         lists = new String[the_list.size()];
         lists2 = new String[the_list.size()];
         lists3 = new String[the_list.size()];
         ids = new String[the_list.size()];
-
-        for(int i = 0;i < the_list.size();i++) {
+        for(int i = 0;i < the_list.size();i++)
+        {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen No: " + c.get(KEY_PENNO);
-            lists2[i] = "Function: " + c.get(KEY_FUNC);
-            lists3[i] = "";
-            ids[i] = c.get(KEY_PENID);
+            lists[i] = "House No: " + c.get(KEY_HOUSENO);
+            lists2[i] = "House Name: " + c.get(KEY_HOUSENAME);
+            lists3[i] = "Function: " + c.get(KEY_FUNC);
+            ids[i] = c.get(KEY_HOUSEID);
+
         }
     }
 
@@ -206,8 +209,12 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                Intent i = new Intent(ChooseMedPenPage.this, ChooseMedHousePage.class);
-                i.putExtra("med_id", med_id);
+                Intent i = new Intent();
+                if(module.equals(FEED_MOD))
+                    i.setClass(ChooseHouse.this, ChooseFeedPage.class);
+                else if(module.equals(MED_MOD))
+                    i.setClass(ChooseHouse.this, ChooseMedPage.class);
+
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -245,26 +252,36 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
-                pen = view.findViewById(id).getTag().toString();
+                house_id = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    /*
-                    Toast.makeText(ChooseMedPenPage.this, "Chosen " + pen,
-                            Toast.LENGTH_LONG).show(); */
-                    Intent i = new Intent(ChooseMedPenPage.this, ChooseMedPigs.class);
+                    Intent i = new Intent();
+
+                    if(selection.equals(SEL_PIG)) {
+                        i.setClass(ChooseHouse.this, ChoosePen.class);
+                        if(module.equals(FEED_MOD))
+                            i.putExtra("feed_id", feed_id);
+                        if(module.equals(MED_MOD))
+                            i.putExtra("med_id", med_id);
+                    } else if(selection.equals(SEL_PEN)) {
+                        i.setClass(ChooseHouse.this, ChooseByPen.class);
+                        if(module.equals(FEED_MOD))
+                            i.putExtra("feed_id", feed_id);
+                        if(module.equals(MED_MOD))
+                            i.putExtra("med_id", med_id);
+                    }
+
+                    i.putExtra("house_id", house_id);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
-                    i.putExtra("pen", pen);
-                    i.putExtra("med_id", med_id);
-                    i.putExtra("house_id", house_id);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
 
-                Log.d(LOGCAT, "Dropped " + pen);
+                Log.d(LOGCAT, "Dropped " + house_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -278,86 +295,17 @@ public class ChooseMedPenPage extends AppCompatActivity implements View.OnDragLi
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(ChooseMedPenPage.this, ChooseMedHousePage.class);
-        i.putExtra("med_id", med_id);
+        Intent i = new Intent();
+        if(module.equals(FEED_MOD))
+            i.setClass(ChooseHouse.this, ChooseFeedPage.class);
+        else if(module.equals(MED_MOD))
+            i.setClass(ChooseHouse.this, ChooseMedPage.class);
+
         i.putExtra("selection", selection);
         i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
-    }
-
-    public void add_pen(){
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View subView = inflater.inflate(R.layout.add_pen_fragment,null);
-
-        final EditText et_penid = (EditText) subView.findViewById(R.id.et_pen_id);
-        final EditText et_penno= (EditText) subView.findViewById(R.id.et_pen_no);
-        final EditText et_penfunc= (EditText) subView.findViewById(R.id.et_pen_function);
-        final EditText et_penhouseid= (EditText) subView.findViewById(R.id.et_pen_house_id);
-
-        builder.setTitle("Add a House");
-        builder.setView(subView);
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialog, int id){
-
-                verifier.setMessage("Are you sure all entries are correct?");
-                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String pen_id=et_penid.getText().toString();
-                        String pen_no=et_penno.getText().toString();
-                        String pen_function=et_penfunc.getText().toString().trim().toLowerCase();
-                        String pen_penhouseid=et_penhouseid.getText().toString();
-                        try{
-                            Toast.makeText(ChooseMedPenPage.this, "Pen Added", Toast.LENGTH_SHORT).show();
-                            db.addPen(pen_id,pen_no,pen_function,pen_penhouseid);
-                            refresh();
-                        }
-                        catch(Exception e){
-
-                            Toast.makeText(ChooseMedPenPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                AlertDialog verify_prompt = verifier.create();
-                verify_prompt.show();
-
-            }
-
-
-
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(ChooseMedPenPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog contact_prompt = builder.create();
-        contact_prompt.show();
-
-
-    }
-
-    public void refresh() {
-        loadLists();
-        adapter = new CustomPagerAdapter(ChooseMedPenPage.this, lists, lists2, lists3, ids);
-        viewPager.setAdapter(adapter);
     }
 }

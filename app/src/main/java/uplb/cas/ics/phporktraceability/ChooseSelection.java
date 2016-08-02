@@ -123,42 +123,23 @@ public class ChooseSelection extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                      /*
-                        TextView tv_rem = (TextView) findViewById(R.id.tv_cf);
-                        text_cont.removeView(tv_rem);
-                        tv_rem.invalidate(); */
                     Toast.makeText(ChooseSelection.this, "Chosen " + selection.toUpperCase(),
                             Toast.LENGTH_LONG).show();
 
-                    if(selection.equals("by_pig")) {
-                        if(module.equals(FEED_MOD)){
-                            Intent i = new Intent(ChooseSelection.this, ChooseFeedPage.class);
-                            i.putExtra("module", module);
-                            i.putExtra("selection", selection);
-                            startActivity(i);
-                            finish();
-                        } else if(module.equals(MED_MOD)){
-                            Intent i = new Intent(ChooseSelection.this, ChooseMedPage.class);
-                            i.putExtra("module", module);
-                            i.putExtra("selection", selection);
-                            startActivity(i);
-                            finish();
-                        }
-                    } else if(selection.equals("by_pen")) {
-                        if(module.equals(FEED_MOD)){
-                            Intent i = new Intent(ChooseSelection.this, ChooseFeedPage.class);
-                            i.putExtra("module", module);
-                            i.putExtra("selection", selection);
-                            startActivity(i);
-                            finish();
-                        } else if(module.equals(MED_MOD)){
-                            Intent i = new Intent(ChooseSelection.this, ChooseMedPage.class);
-                            i.putExtra("module", module);
-                            i.putExtra("selection", selection);
-                            startActivity(i);
-                            finish();
-                        }
+                    if(module.equals(FEED_MOD)){
+                        Intent i = new Intent(ChooseSelection.this, ChooseFeedPage.class);
+                        i.putExtra("module", module);
+                        i.putExtra("selection", selection);
+                        startActivity(i);
+                        finish();
+                    } else if(module.equals(MED_MOD)){
+                        Intent i = new Intent(ChooseSelection.this, ChooseMedPage.class);
+                        i.putExtra("module", module);
+                        i.putExtra("selection", selection);
+                        startActivity(i);
+                        finish();
                     }
+
                 }
 
                 Log.d(LOGCAT, "Dropped " + selection);

@@ -27,16 +27,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.SessionManager;
 
 /**
- * Created by marmagno on 11/25/2015.
+ * Created by marmagno on 7/26/2016.
  */
-public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragListener {
+public class ChoosePen extends AppCompatActivity implements View.OnDragListener {
+
+    private static final String LOGCAT = ChoosePen.class.getSimpleName();
+
     public final static String KEY_PENID = "pen_id";
     public final static String KEY_PENNO = "pen_no";
     public final static String KEY_FUNC = "function";
     public final static String KEY_GNAME = "group_name";
-    private static final String LOGCAT = ChooseFeedPenPage.class.getSimpleName();
+
+    private static final String FEED_MOD = "Feed Pig";
+    private static final String MED_MOD = "Medicate Pig";
+
     ViewPager viewPager;
     PagerAdapter adapter;
     LinearLayout ll;
@@ -47,6 +54,7 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
     String pen = "";
     String house_id = "";
     String feed_id = "";
+    String med_id = "";
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
@@ -70,10 +78,18 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         Intent i = getIntent();
-        feed_id = i.getStringExtra("feed_id");
         house_id = i.getStringExtra("house_id");
         selection = i.getStringExtra("selection");
         module = i.getStringExtra("module");
+
+        if(module.equals(FEED_MOD)) {
+            getSupportActionBar().setTitle(R.string.feed);
+            feed_id = i.getStringExtra("feed_id");
+        }
+        if(module.equals(MED_MOD)) {
+            getSupportActionBar().setTitle(R.string.med);
+            med_id = i.getStringExtra("med_id");
+        }
 
         db = SQLiteHandler.getInstance();
 
@@ -85,7 +101,7 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
-        adapter = new CustomPagerAdapter(ChooseFeedPenPage.this, lists, lists2, lists3, ids);
+        adapter = new CustomPagerAdapter(ChoosePen.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -206,8 +222,11 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
-                i.putExtra("feed_id", feed_id);
+                Intent i = new Intent(ChoosePen.this, ChooseHouse.class);
+                if(module.equals(FEED_MOD))
+                    i.putExtra("feed_id", feed_id);
+                if(module.equals(MED_MOD))
+                    i.putExtra("med_id", med_id);
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -252,9 +271,14 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
                     /*
                     Toast.makeText(ChooseFeedPenPage.this, "Chosen " + pen,
                             Toast.LENGTH_LONG).show(); */
-                    Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedPigs.class);
+
+                    Intent i = new Intent(ChoosePen.this, ChooseByPig.class);
+                    if(module.equals(FEED_MOD))
+                        i.putExtra("feed_id", feed_id);
+                    if(module.equals(MED_MOD))
+                        i.putExtra("med_id", med_id);
+
                     i.putExtra("pen", pen);
-                    i.putExtra("feed_id", feed_id);
                     i.putExtra("house_id", house_id);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
@@ -278,8 +302,11 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Intent i = new Intent(ChooseFeedPenPage.this, ChooseFeedHousePage.class);
-        i.putExtra("feed_id", feed_id);
+        Intent i = new Intent(ChoosePen.this, ChooseHouse.class);
+        if(module.equals(FEED_MOD))
+            i.putExtra("feed_id", feed_id);
+        else if(module.equals(MED_MOD))
+            i.putExtra("med_id", med_id);
         i.putExtra("selection", selection);
         i.putExtra("module", module);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -316,13 +343,13 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
                         String pen_function=et_penfunc.getText().toString().trim().toLowerCase();
                         String pen_penhouseid=et_penhouseid.getText().toString();
                         try{
-                            Toast.makeText(ChooseFeedPenPage.this, "Pen Added", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChoosePen.this, "Pen Added", Toast.LENGTH_SHORT).show();
                             db.addPen(pen_id,pen_no,pen_function,pen_penhouseid);
                             refresh();
                         }
                         catch(Exception e){
 
-                            Toast.makeText(ChooseFeedPenPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(ChoosePen.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -344,7 +371,7 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(ChooseFeedPenPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChoosePen.this, "Cancelled action", Toast.LENGTH_SHORT).show();
                 dialog.cancel();
             }
         });
@@ -357,7 +384,7 @@ public class ChooseFeedPenPage extends AppCompatActivity implements View.OnDragL
 
     public void refresh() {
         loadLists();
-        adapter = new CustomPagerAdapter(ChooseFeedPenPage.this, lists, lists2, lists3, ids);
+        adapter = new CustomPagerAdapter(ChoosePen.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
     }
 }

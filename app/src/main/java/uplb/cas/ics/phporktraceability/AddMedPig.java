@@ -281,28 +281,20 @@ public class AddMedPig extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                Intent i = new Intent();
                 if(selection.equals(SEL_PIG)){
-                    Intent i = new Intent(AddMedPig.this, ChooseMedPigs.class);
-                    i.putExtra("med_id", med_id);
+                    i.setClass(AddMedPig.this, ChooseByPig.class);
                     i.putExtra("pen", pen);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("selection", selection);
-                    i.putExtra("module", module);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
-                } else if (selection.equals(SEL_PEN)){
-                    Intent i = new Intent(AddMedPig.this, ChoosePens.class);
-                    i.putExtra("med_id", med_id);
-                    i.putExtra("house_id", house_id);
-                    i.putExtra("selection", selection);
-                    i.putExtra("module", module);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(i);
-                    finish();
-                }
+                } else if (selection.equals(SEL_PEN))
+                    i.setClass(AddMedPig.this, ChooseByPen.class);
+                i.putExtra("med_id", med_id);
+                i.putExtra("house_id", house_id);
+                i.putExtra("selection", selection);
+                i.putExtra("module", module);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -379,28 +371,20 @@ public class AddMedPig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        Intent i = new Intent();
         if(selection.equals(SEL_PIG)){
-            Intent i = new Intent(AddMedPig.this, ChooseMedPigs.class);
-            i.putExtra("med_id", med_id);
+            i.setClass(AddMedPig.this, ChooseByPig.class);
             i.putExtra("pen", pen);
-            i.putExtra("house_id", house_id);
-            i.putExtra("selection", selection);
-            i.putExtra("module", module);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-        } else if (selection.equals(SEL_PEN)){
-            Intent i = new Intent(AddMedPig.this, ChoosePens.class);
-            i.putExtra("med_id", med_id);
-            i.putExtra("house_id", house_id);
-            i.putExtra("selection", selection);
-            i.putExtra("module", module);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(i);
-            finish();
-        }
+        } else if (selection.equals(SEL_PEN))
+            i.setClass(AddMedPig.this, ChooseByPen.class);
+        i.putExtra("med_id", med_id);
+        i.putExtra("house_id", house_id);
+        i.putExtra("selection", selection);
+        i.putExtra("module", module);
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finish();
     }
 
 }
