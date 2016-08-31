@@ -63,23 +63,10 @@ public class IntroSliderSession {
     /**
      * Clear session details
      * */
-    public void logoutUser(){
+    public void logoutUser() {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
-
-        /*
-        // After logout redirect user to Login Activity
-        Intent i = new Intent(_context, HomeActivity.class);
-        // Closing all the Activities
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-        // Add new Flag to start new Activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        // Starting Login Activity
-        _context.startActivity(i);
-        */
 
     }
     public boolean isLoggedIn() {

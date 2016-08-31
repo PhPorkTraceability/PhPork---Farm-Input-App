@@ -130,10 +130,45 @@ public class SQLGenerator {
         return feedTransList;
     }
 
+    private static String getTestData(SQLiteHandler sh) {
+        SQLiteDatabase db = sh.getReadableDatabase();
+        String result = "";
+        String selectQuery = "SELECT `test_id`, `start_time`, `end_time`, " +
+                "`back_count` FROM test";
+
+        Cursor c = db.rawQuery(selectQuery, null);
+        c.moveToFirst();
+
+        result += "Test id, Start Time, End Time, Back Counts \n";
+
+        for(int i=0; i<c.getCount(); i++) {
+            /*feedTransList += "INSERT INTO `weight_record` (`record_date`, " +
+                    "`record_time`, `weight`, `pig_id`, `remarks`) VALUES "; */
+
+            result += c.getString(0);
+
+            for(int j=1; j<c.getColumnCount(); j++) {
+                result += "," + c.getString(j);
+            }
+            result += "\n";
+
+            c.moveToNext();
+        }
+        c.close();
+
+        result += "\n";
+
+        return result;
+    }
+
     public static String getAll(SQLiteHandler sh) {
         return getFeedTransaction(sh) +
                 getMedRecord(sh) +
                 getPigs(sh) +
                 getWeightRecord(sh);
+    }
+
+    public static String getTest(SQLiteHandler s){
+        return getTestData(s);
     }
 }

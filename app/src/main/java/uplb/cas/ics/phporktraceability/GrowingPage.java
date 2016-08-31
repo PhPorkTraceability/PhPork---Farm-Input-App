@@ -53,7 +53,7 @@ public class GrowingPage extends AppCompatActivity
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         session = new SessionManager(getApplicationContext());
-        HashMap<String, String> user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
         farm_funct = user.get(SessionManager.KEY_FUNC);
 
         iv_addfeed = (ImageView) findViewById(R.id.iv_addfeed);

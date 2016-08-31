@@ -75,7 +75,7 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
 
 
         session = new SessionManager(getApplicationContext());
-        HashMap<String, String> user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
         location = user.get(SessionManager.KEY_LOC);
 
         Intent i = getIntent();

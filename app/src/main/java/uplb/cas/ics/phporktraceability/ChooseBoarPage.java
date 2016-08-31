@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -47,11 +48,17 @@ public class ChooseBoarPage extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
+    TestSessionManager test;
+    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -155,6 +162,8 @@ public class ChooseBoarPage extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(ChooseBoarPage.this, ChooseModule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -316,6 +325,9 @@ public class ChooseBoarPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+
+        count++;
+        test.updateCount(count);
 
         Intent i = new Intent(ChooseBoarPage.this, ChooseModule.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

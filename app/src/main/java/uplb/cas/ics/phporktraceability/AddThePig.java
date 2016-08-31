@@ -94,18 +94,27 @@ public class AddThePig extends AppCompatActivity
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
     Date dateObj = new Date();
     private Toolbar toolbar;
+    Dialog addD = null;
 
     /**
      * For testing only
      */
     TestSessionManager test;
-    int testID;
+    int count = 0;
+    String testID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addthepig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testcount = test.getCount();
+        count = testcount.get(TestSessionManager.KEY_COUNT);
+
+        HashMap<String, String> testuser = test.getID();
+        testID = testuser.get(TestSessionManager.KEY_ID);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -119,7 +128,7 @@ public class AddThePig extends AppCompatActivity
         db = SQLiteHandler.getInstance();
 
         session = new SessionManager(getApplicationContext());
-        HashMap<String, String > user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
 
         function = user.get(SessionManager.KEY_FUNC);
 
@@ -170,6 +179,9 @@ public class AddThePig extends AppCompatActivity
         et_quantity2 = (EditText) findViewById(R.id.et_quantity2);
         sp_units = (Spinner) findViewById(R.id.sp_units);
 
+        // Create Object of Dialog class
+        addD = new Dialog(AddThePig.this);
+
         sp_units.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -215,8 +227,6 @@ public class AddThePig extends AppCompatActivity
                     Toast.makeText(AddThePig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
 
-                    // Create Object of Dialog class
-                    final Dialog addD = new Dialog(AddThePig.this);
                     // Set GUI of login screen
                     addD.setContentView(R.layout.dialog_add_pig);
                     addD.setTitle("Added Successfully.");
@@ -280,6 +290,8 @@ public class AddThePig extends AppCompatActivity
                 show_help();
                 return true;
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
                 createIntent(i);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -468,8 +480,15 @@ public class AddThePig extends AppCompatActivity
                         createIntent(i);
                         startActivity(i);
                         finish();
-                    } else if(choice.equals("finish")) {
-                        Intent i = new Intent(AddThePig.this, ChooseModule.class);
+                    }
+                        if(choice.equals("finish")) {
+                        String time = curTime.format(dateObj);
+                        db.updateTest(testID, time, String.valueOf(count));
+
+                        test.logoutUser();
+
+                        Intent i = new Intent(AddThePig.this, HomeActivity.class);
+                        //Intent i = new Intent(AddThePig.this, ChooseModule.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
@@ -501,9 +520,18 @@ public class AddThePig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
         Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
         createIntent(i);
         startActivity(i);
         finish();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        addD.dismiss();
     }
 }

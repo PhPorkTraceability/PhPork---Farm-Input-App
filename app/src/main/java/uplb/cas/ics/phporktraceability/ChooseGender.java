@@ -17,6 +17,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+
+import helper.TestSessionManager;
+
 /**
  * Created by marmagno on 11/11/2015.
  */
@@ -37,11 +41,18 @@ public class ChooseGender extends AppCompatActivity
     private LinearLayout bot_cont;
     //String week_farrowed = "";
 
+    TestSessionManager test;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_gender);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,6 +97,8 @@ public class ChooseGender extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
                 //i.putExtra("breed", breed);
                 i.putExtra("boar_id", boar_id);
@@ -174,6 +187,8 @@ public class ChooseGender extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
         Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
         i.putExtra("breed", breed);
         i.putExtra("boar_id", boar_id);

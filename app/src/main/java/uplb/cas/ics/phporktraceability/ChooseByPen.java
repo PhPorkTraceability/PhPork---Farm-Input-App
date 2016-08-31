@@ -178,7 +178,7 @@ public class ChooseByPen extends AppCompatActivity  {
             CheckItemModel chkitem =
                     new CheckItemModel(
                             c.get(KEY_PENID),
-                            "Pig No: " + c.get(KEY_PENNO),
+                            "Pen No: " + c.get(KEY_PENNO),
                             "Function: " + c.get(KEY_FUNC),
                             false);
             chklist.add(chkitem);

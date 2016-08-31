@@ -14,12 +14,17 @@ import java.util.HashMap;
 
 import uplb.cas.ics.phporktraceability.GrowingPage;
 import uplb.cas.ics.phporktraceability.HomeActivity;
+import uplb.cas.ics.phporktraceability.LoginActivity;
 import uplb.cas.ics.phporktraceability.WeaningPage;
 
 
 public class SessionManager {
     public static final String KEY_FUNC = "function";
     public static final String KEY_LOC = "loc_name";
+
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_PASSWORD = "password";
+
     // Shared preferences file name
     private static final String PREF_NAME = "PHPorkLogin";
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
@@ -36,11 +41,24 @@ public class SessionManager {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+        editor.apply();
     }
 
-    public void setLogin(String function, String loc_name) {
 
+    public void setLogin(String username, String password) {
         editor.putBoolean(KEY_IS_LOGGEDIN, true);
+
+        editor.putString(KEY_USERNAME, username);
+
+        editor.putString(KEY_PASSWORD, password);
+
+        // commit changes
+        editor.commit();
+
+        Log.d(TAG, "User login session modified!");
+    }
+
+    public void setLocation(String function, String loc_name) {
 
         editor.putString(KEY_FUNC, function);
 
@@ -49,47 +67,13 @@ public class SessionManager {
         // commit changes
         editor.commit();
 
-        Log.d(TAG, "User login session modified!");
+        Log.d(TAG, "User location session modified!");
     }
 
-    /**
-     * Check login method wil check user login status
-     * If false it will redirect user to login page
-     * Else won't do anything
-     * */
-    public void checkLogin(){
-        if(isLoggedIn()){
-           if(KEY_FUNC.equals("weaning") && KEY_LOC.equals("RF11")){
-               // After logout redirect user to Login Activity
-               Intent i = new Intent(_context, WeaningPage.class);
-
-               // Closing all the Activities
-               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-               // Add new Flag to start new Activity
-               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-               // Starting Login Activity
-               _context.startActivity(i);
-           } if(KEY_FUNC.equals("growing") &&
-                    (KEY_LOC.equals("RF18") || KEY_LOC.equals("RF19"))){
-               // After logout redirect user to Login Activity
-               Intent i = new Intent(_context, GrowingPage.class);
-               // Closing all the Activities
-               i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-               // Add new Flag to start new Activity
-               i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-               // Starting Login Activity
-               _context.startActivity(i);
-           }
-        }
-    }
     /**
      * Get stored session data
      * */
-    public HashMap<String, String> getUserSession(){
+    public HashMap<String, String> getUserLoc(){
         HashMap<String, String> user = new HashMap<>();
 
         user.put(KEY_FUNC, pref.getString(KEY_FUNC, null));
@@ -100,6 +84,19 @@ public class SessionManager {
         return user;
     }
 
+    /**
+     * Get stored session data
+     * */
+    public HashMap<String, String> getUserSession(){
+        HashMap<String, String> user = new HashMap<>();
+
+        user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
+
+        user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
+
+        // return user
+        return user;
+    }
 
     /**
      * Clear session details
@@ -110,13 +107,11 @@ public class SessionManager {
         editor.commit();
 
         // After logout redirect user to Login Activity
-        Intent i = new Intent(_context, HomeActivity.class);
+        Intent i = new Intent(_context, LoginActivity.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
         // Add new Flag to start new Activity
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         // Starting Login Activity
         _context.startActivity(i);
 

@@ -43,6 +43,11 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String TAG = LoadSyncAll.class.getSimpleName();
     private boolean tag_error = false;
 
+    // Table Farm Users
+    private static final String KEY_USERNAME = "username";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_ACCOUNT = "user_type";
+
     // Table Location
     private static final String KEY_LOCID = "loc_id";
     private static final String KEY_LOCNAME = "loc_name";
@@ -101,6 +106,8 @@ public class LoadSyncAll extends Activity implements Runnable{
     private static final String KEY_MEDTYPE = "med_type";
     // Table Med Record
     private static final String KEY_MRID = "mr_id";
+
+    JSONArray users = null;
     JSONArray locs = null;
     JSONArray houses = null;
     JSONArray hPens = null;
@@ -138,13 +145,6 @@ public class LoadSyncAll extends Activity implements Runnable{
 
         introSession = new IntroSliderSession(getApplicationContext());
 
-        int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
-        if(status == 0){
-            importTables();
-
-            return;
-        }
-
         //Create a new progress dialog.
         progressDialog = new ProgressDialog(LoadSyncAll.this);
         //Set the progress dialog to display a horizontal bar .
@@ -171,13 +171,15 @@ public class LoadSyncAll extends Activity implements Runnable{
         //start the thread
         thread.start();
 
-    }
+        int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
+        if(status == 0){
+            tag_error = true;
 
-    @Override
-    protected void onStart(){
-        super.onStart();
+        } else {
+            getAllDataByNet();
 
-        getAllDataByNet();
+        }
+
     }
 
     public void getAllDataByNet() {
@@ -200,6 +202,20 @@ public class LoadSyncAll extends Activity implements Runnable{
                             if (!error) {
 
                                 String sync_status = "old";
+
+                                users = new JSONArray();
+                                users = resp.getJSONArray("user");
+                                for(int i = 0;i < users.length();i++)
+                                {
+                                    JSONObject c = users.getJSONObject(i);
+
+                                    // Now store the user in SQLite
+                                    String username = c.getString(KEY_USERNAME);
+                                    String password = c.getString(KEY_PASSWORD);
+                                    String account = c.getString(KEY_ACCOUNT);
+
+                                    db.addFarmUser(username, password, account);
+                                }
 
                                 locs = new JSONArray();
                                 locs = resp.getJSONArray("location");
@@ -442,8 +458,6 @@ public class LoadSyncAll extends Activity implements Runnable{
                             Toast.makeText(LoadSyncAll.this, error.getMessage(),
                                     Toast.LENGTH_LONG).show();
 
-                            progressDialog.dismiss();
-
                             tag_error = true;
                         }catch (NullPointerException ex){}
                     }
@@ -457,16 +471,15 @@ public class LoadSyncAll extends Activity implements Runnable{
     }
 
     public void nextPage(){
-        //Close the progress dialog
+        Intent i = new Intent();
         if (introSession.isLoggedIn()) {
-            Intent i = new Intent(LoadSyncAll.this, HomeActivity.class);
-            startActivity(i);
-            finish();
+            i.setClass(LoadSyncAll.this, HomeActivity.class);
         } else {
-            Intent i = new Intent(LoadSyncAll.this, IntroSliderActivity.class);
-            startActivity(i);
-            finish();
+            i.setClass(LoadSyncAll.this, IntroSliderActivity.class);
+            //i.setClass(LoadSyncAll.this, LoginActivity.class);
         }
+        startActivity(i);
+        finish();
     }
 
     public void importTables() {
@@ -528,16 +541,12 @@ public class LoadSyncAll extends Activity implements Runnable{
     }
 
     @Override
-    public void run()
-    {
-        try
-        {
+    public void run() {
+        try {
             //Obtain the thread's token
-            synchronized (thread)
-            {
+            synchronized (thread) {
                 //While the counter is smaller than four
-                while(counter <= 5)
-                {
+                while(counter <= 5) {
                     //Wait 1000 milliseconds
                     thread.wait(1000);
                     //Increment the counter
@@ -556,17 +565,12 @@ public class LoadSyncAll extends Activity implements Runnable{
                 }
             }
         }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
+        catch (InterruptedException e) { e.printStackTrace();}
 
         //This works just like the onPostExecute method from the AsyncTask class
-        handler.post(new Runnable()
-        {
+        handler.post(new Runnable() {
             @Override
             public void run() {
-
                 if (tag_error) {
                     new AlertDialog.Builder(LoadSyncAll.this)
                             .setTitle("Connection Failed")
@@ -582,6 +586,7 @@ public class LoadSyncAll extends Activity implements Runnable{
                             .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
+                                    nextPage();
                                 }
                             }).show();
                 } else nextPage();
@@ -589,9 +594,16 @@ public class LoadSyncAll extends Activity implements Runnable{
         });
 
         //Try to "kill" the thread, by interrupting its execution
-        synchronized (thread)
-        {
+        synchronized (thread) {
             thread.interrupt();
         }
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        //Close the progress dialog
+        progressDialog.dismiss();
     }
 }

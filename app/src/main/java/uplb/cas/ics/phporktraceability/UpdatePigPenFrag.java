@@ -89,7 +89,7 @@ public class UpdatePigPenFrag extends Fragment {
         db = SQLiteHandler.getInstance();
 
         session = new SessionManager(getContext());
-        HashMap<String, String> user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
         location = user.get(SessionManager.KEY_LOC);
 
         HashMap<String, String> b = db.getPigGroup(pig_id);

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -58,11 +59,17 @@ public class LastMedicationGiven extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
+    TestSessionManager test;
+    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -185,6 +192,8 @@ public class LastMedicationGiven extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
                 i.putExtra("rfid", rfid);
                 i.putExtra("boar_id", boar_id);
@@ -318,6 +327,8 @@ public class LastMedicationGiven extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
         Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
         i.putExtra("rfid", rfid);
         i.putExtra("boar_id", boar_id);

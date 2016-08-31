@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class TestSessionManager {
 
     public static final String KEY_COUNT = "count";
-    public static final String KEY_ID = "test_id";
+    public static final String KEY_ID = "id";
 
     // Shared preferences file name
     private static final String PREF_NAME = "PHPorkTest";
@@ -32,6 +32,7 @@ public class TestSessionManager {
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+        editor.apply();
     }
 
     public void userStart(String _id) {
@@ -51,9 +52,9 @@ public class TestSessionManager {
     /**
      * Update count per back
      */
-    public void updateCount(int count){
+    public void updateCount(int _count){
         if(isLoggedIn()){
-            editor.putInt(KEY_COUNT, count);
+            editor.putInt(KEY_COUNT, _count);
 
             // commit changes
             editor.commit();
@@ -64,10 +65,20 @@ public class TestSessionManager {
     /**
      * Get stored session data
      * */
-    public HashMap<String, Integer> getCurrentSession(){
+    public HashMap<String, Integer> getCount(){
         HashMap<String, Integer> user = new HashMap<>();
 
         user.put(KEY_COUNT, pref.getInt(KEY_COUNT, 0));
+
+        // return user
+
+        return user;
+    }
+
+    public HashMap<String, String> getID(){
+        HashMap<String, String> user = new HashMap<>();
+
+        user.put(KEY_ID, pref.getString(KEY_ID, null));
 
         // return user
 
@@ -82,6 +93,8 @@ public class TestSessionManager {
         // Clearing all data from Shared Preferences
         editor.clear();
         editor.commit();
+
+        Log.d(TAG, "Logout user " + editor.toString());
 
     }
     public boolean isLoggedIn() {

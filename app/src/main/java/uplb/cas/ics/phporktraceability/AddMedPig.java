@@ -35,6 +35,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.SessionManager;
 
 /**
  * Created by marmagno on 1/26/2016.
@@ -89,6 +90,11 @@ public class AddMedPig extends AppCompatActivity
     String selection = "";
     String module = "";
 
+    SessionManager session;
+    String user_id = "";
+    String username = "";
+    String password = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +122,13 @@ public class AddMedPig extends AppCompatActivity
         }
 
         db = SQLiteHandler.getInstance();
+        session = new SessionManager(getApplicationContext());
+
+        HashMap<String, String> user = session.getUserSession();
+        username = user.get(SessionManager.KEY_USERNAME);
+        password = user.get(SessionManager.KEY_PASSWORD);
+
+        user_id = db.getUserID(username, password);
 
         tv_medname = (TextView) findViewById(R.id.tv_medname);
         tv_medtype = (TextView) findViewById(R.id.tv_medtype);
@@ -198,6 +211,7 @@ public class AddMedPig extends AppCompatActivity
                     quantity = String.valueOf(measurement);
 
                     db.medPigRecByGroup(quantity, unit, date, time, total_pigs, med_id, status);
+                    //db.addMedHistory(); add med history here
 
                     Toast.makeText(AddMedPig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();

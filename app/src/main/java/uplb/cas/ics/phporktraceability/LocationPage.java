@@ -65,11 +65,18 @@ public class LocationPage extends AppCompatActivity
     private Toolbar toolbar;
     private ActionBar actionBar;
 
+    TestSessionManager test;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> user = test.getCount();
+        count = user.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -136,22 +143,6 @@ public class LocationPage extends AppCompatActivity
         iv_right = (ImageView)findViewById(R.id.iv_right);
 
         checkList();
-        iv_left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
-            }
-        });
-
-        iv_right.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
-
-            }
-        });
 
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose a Farm";
@@ -171,11 +162,29 @@ public class LocationPage extends AppCompatActivity
         }
     }
 
+
     public void checkList(){
         int count = viewPager.getCurrentItem();
         if(count + 1 < lists.length){
             iv_right.setVisibility(View.VISIBLE);
         }
+
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item - 1);
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int item = viewPager.getCurrentItem();
+                viewPager.setCurrentItem(item + 1);
+
+            }
+        });
 
     }
 
@@ -197,6 +206,8 @@ public class LocationPage extends AppCompatActivity
             	 show_help();
             	 return true;
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(LocationPage.this, HomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -294,7 +305,7 @@ public class LocationPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    session.setLogin(function, location);
+                    session.setLocation(function, location);
 
                     Toast.makeText(LocationPage.this, "Chosen " + location, Toast.LENGTH_LONG).show();
 
@@ -340,6 +351,9 @@ public class LocationPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+
+        count++;
+        test.updateCount(count);
 
         Intent i = new Intent(LocationPage.this, HomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

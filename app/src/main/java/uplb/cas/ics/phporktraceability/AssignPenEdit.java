@@ -73,7 +73,7 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
 
         session = new SessionManager(getApplicationContext());
-        HashMap<String, String> user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
         location = user.get(SessionManager.KEY_LOC);
 
         retrieveIntentExtra(getIntent());

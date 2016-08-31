@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 3/9/2016.
@@ -67,11 +68,18 @@ public class ChooseModule extends AppCompatActivity
             "Send Data to Server" };
     private int[] list;
 
+    TestSessionManager test;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -82,7 +90,7 @@ public class ChooseModule extends AppCompatActivity
 
         session = new SessionManager(getApplicationContext());
 
-        HashMap<String, String> user = session.getUserSession();
+        HashMap<String, String > user = session.getUserLoc();
         function = user.get(SessionManager.KEY_FUNC);
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
@@ -191,6 +199,8 @@ public class ChooseModule extends AppCompatActivity
             	 show_help();
             	 return true;
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(ChooseModule.this, LocationPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -276,6 +286,9 @@ public class ChooseModule extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+
+        count++;
+        test.updateCount(count);
 
         Intent i = new Intent(ChooseModule.this, LocationPage.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

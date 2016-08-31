@@ -494,7 +494,13 @@
         <activity
             android:name=".AddMedPig"
             android:label="@string/med"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop" >
+        </activity>
+
+        <activity
+            android:name=".LoginActivity"
+            android:label="Login"
+            android:launchMode="singleTask" >
         </activity>
     </application>
 

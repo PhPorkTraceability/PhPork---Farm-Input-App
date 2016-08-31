@@ -17,6 +17,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
@@ -39,7 +40,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "phpork";
 
     // Table names
-    //private static final String TABLE_USER = "farm_users";
+    private static final String TABLE_USER = "farm_users";
     //private static final String TABLE_EMP = "employees";
     private static final String TABLE_LOC = "location";
     private static final String TABLE_HOUSE = "house";
@@ -54,6 +55,10 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String TABLE_MEDS = "medication";
     private static final String TABLE_MR = "med_record";
     private static final String TABLE_PB = "pig_breeds";
+    private static final String TABLE_EDITH = "edit_history";
+    private static final String TABLE_FEEDEDIT = "feeds_edit_history";
+    private static final String TABLE_MEDEDIT = "med_edit_history";
+    //private static final String TABLE_USEREDIT = "med_edit_history";
 
     // For Survey of user mistakes
     private static final String TABLE_TEST = "test";
@@ -67,13 +72,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     private static final String KEY_EMPID = "employee_id";
     private static final String KEY_NAME = "employee_name";
     private static final String KEY_CONTACT = "contact_no";
+    */
 
     // Table Farm Users
-    private static final String KEY_ID = "user_id";
+    private static final String KEY_USERID = "user_id";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
-    private static final String KEY_ACCOUNT = "accnt_type";
-    */
+    private static final String KEY_ACCOUNT = "user_type";
 
     // Table Location
     private static final String KEY_LOCID = "loc_id";
@@ -146,6 +151,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     // Table Med Record
     private static final String KEY_MRID = "mr_id";
 
+    // Table Edit History
+    private static final String KEY_EDITID = "edit_id";
+    private static final String KEY_BIRTH = "birth";
+    private static final String KEY_EDITD = "edit_date";
+
+    // Table Feeds and Med Edit History
+    private static final String KEY_DATEUPDATED = "date_updated";
+
     private static final String KEY_SYNCSTAT = "sync_status";
 
     private static SQLiteHandler instance;
@@ -170,14 +183,13 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + KEY_EMPID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
                 + KEY_CONTACT + " TEXT," + KEY_ADD + " TEXT" + ")";
         db.execSQL(CREATE_EMP_TABLE);
-
-        String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
-                + KEY_ID + " INTEGER PRIMARY KEY," + KEY_USERNAME + " TEXT,"
-                + KEY_PASSWORD + " TEXT UNIQUE," + KEY_ACCOUNT + " TEXT,"
-                + KEY_EMPID + " INTEGER," + "FOREIGN KEY(" + KEY_EMPID + ") REFERENCES "
-                + TABLE_EMP + "(" + KEY_EMPID + ")" + ")";
-        db.execSQL(CREATE_USER_TABLE);
         */
+        String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
+                + KEY_USERID + " INTEGER PRIMARY KEY,"
+                + KEY_USERNAME + " TEXT UNIQUE,"
+                + KEY_PASSWORD + " TEXT UNIQUE,"
+                + KEY_ACCOUNT + " TEXT" + ")";
+        db.execSQL(CREATE_USER_TABLE);
 
         String CREATE_TEST_TABLE = "CREATE TABLE " + TABLE_TEST + "("
                 + KEY_ID + " INTEGER PRIMARY KEY,"
@@ -324,6 +336,28 @@ public class SQLiteHandler extends SQLiteOpenHelper {
                 + TABLE_MEDS + "(" + KEY_MEDID + ")" + ")";
         db.execSQL(CREATE_MEDREC_TABLE);
 
+        String CREATE_FEEDS_EDIT = "CREATE TABLE " + TABLE_FEEDEDIT + "("
+                + KEY_EDITID + " INTEGER PRIMARY KEY,"
+                + KEY_FTID + " INTEGER,"
+                + KEY_DATEUPDATED + " TIMESTAMP,"
+                + KEY_FEEDID + " INTEGER,"
+                + KEY_USER + " INTEGER,"
+                + KEY_SYNCSTAT + " TEXT,"
+                + "FOREIGN KEY(" + KEY_FTID + ") REFERENCES "
+                + TABLE_FT + "(" + KEY_FTID + ")" + ")";
+        db.execSQL(CREATE_FEEDS_EDIT);
+
+        String CREATE_MEDS_EDIT = "CREATE TABLE " + TABLE_MEDEDIT + "("
+                + KEY_EDITID + " INTEGER PRIMARY KEY,"
+                + KEY_MRID + " INTEGER,"
+                + KEY_DATEUPDATED + " TIMESTAMP,"
+                + KEY_MEDID + " INTEGER,"
+                + KEY_USER + " INTEGER,"
+                + KEY_SYNCSTAT + " TEXT,"
+                + "FOREIGN KEY(" + KEY_MRID + ") REFERENCES "
+                + TABLE_MR + "(" + KEY_MRID + ")" + ")";
+        db.execSQL(CREATE_MEDS_EDIT);
+
         Log.d(TAG, "Database tables created");
 
     }
@@ -373,15 +407,52 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     /**
      * Storing user details in database
      */
-    /*
-    public void addFarmUser(String username, String password, String account, int employee_id) {
+
+    public void addFeedHistory(String ft_id, String date_updated, String feed_id,
+                                String user, String sync_stat){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_FTID, ft_id);
+        values.put(KEY_DATEUPDATED, date_updated);
+        values.put(KEY_FEEDID, feed_id);
+        values.put(KEY_USER, user);
+        values.put(KEY_SYNCSTAT, sync_stat);
+
+        // Inserting Row
+        long id = db.insert(TABLE_USER, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New feed history added into sqlite: " + id);
+
+    }
+
+    public void addMedHistory(String mr_id, String date_updated, String med_id,
+                               String user, String sync_stat){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MRID, mr_id);
+        values.put(KEY_DATEUPDATED, date_updated);
+        values.put(KEY_MEDID, med_id);
+        values.put(KEY_USER, user);
+        values.put(KEY_SYNCSTAT, sync_stat);
+
+        // Inserting Row
+        long id = db.insert(TABLE_USER, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New med record history added into sqlite: " + id);
+
+    }
+
+    public void addFarmUser(String username, String password, String account) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_USERNAME, username); // Username
         values.put(KEY_PASSWORD, password); // Password
         values.put(KEY_ACCOUNT, account); // Account
-        values.put(KEY_EMPID, employee_id); // Employee_id
 
         // Inserting Row
         long id = db.insert(TABLE_USER, null, values);
@@ -389,7 +460,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         Log.d(TAG, "New user inserted into sqlite: " + id);
     }
-    */
+
 
     public void addLoc(String loc_id, String loc_name, String loc_add) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -735,26 +806,59 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close(); // Closing database connection
     }
 
+    public void addFeedsEdit(String ft_id, String date_updated, String feed_id, String user,
+                            String sync_status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_FTID, ft_id);
+        values.put(KEY_DATEUPDATED, date_updated);
+        values.put(KEY_FEEDID, feed_id);
+        values.put(KEY_USER, user);
+        values.put(KEY_SYNCSTAT, sync_status);
+
+        // Inserting Row
+        long id = db.insert(TABLE_MR, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New pig med edit history inserted into sqlite: " + id);
+    }
+
+    public void addMedsEdit(String mr_id, String date_updated, String med_id, String user,
+                             String sync_status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MRID, mr_id);
+        values.put(KEY_DATEUPDATED, date_updated);
+        values.put(KEY_MEDID, med_id);
+        values.put(KEY_USER, user);
+        values.put(KEY_SYNCSTAT, sync_status);
+
+        // Inserting Row
+        long id = db.insert(TABLE_MR, null, values);
+        db.close(); // Closing database connection
+
+        Log.d(TAG, "New pig med edit history inserted into sqlite: " + id);
+    }
+
     /**
      * Getting user data from database
      */
-    /*
-    public HashMap<String, String> getUserDetails(String username, String password, String account) {
-        HashMap<String, String> user = new HashMap<String, String>();
-        String selectQuery = "SELECT  * FROM " + TABLE_USER + " a INNER JOIN "
-                + TABLE_EMP + " b ON(a.employee_id = b.employee_id) WHERE a.username = '"
-                + username + "' AND a.password = '" + password + "' AND a.accnt_type = '"
-                + account + "'";
+
+    public HashMap<String, String> getUser(String username, String password) {
+        HashMap<String, String> user = new HashMap<>();
+        String selectQuery = "SELECT username, password FROM " + TABLE_USER
+                + " WHERE username = '" + username + "' AND password = '"
+                + password + "'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
         // Move to first row
         cursor.moveToFirst();
         if (cursor.getCount() > 0) {
-            user.put("employee_name", cursor.getString(1));
-            user.put("contact_no", cursor.getString(2));
-            user.put("address", cursor.getString(3));
-            user.put("accnt_type", cursor.getString(4));
+            user.put(KEY_USERNAME, cursor.getString(0));
+            user.put(KEY_PASSWORD, cursor.getString(1));
         }
 
         cursor.close();
@@ -764,7 +868,32 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return user;
     }
-    */
+
+    public String getUserID(String username, String password) {
+        String _id = "";
+        String selectQuery = "SELECT user_id FROM " + TABLE_USER
+                + " WHERE username = '" + username + "' AND password = '"
+                + password + "'";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        // Move to first row
+        cursor.moveToFirst();
+        if (cursor.getCount() > 0) {
+            String res = cursor.getString(0);
+            if(res != null){
+                _id = res;
+            }
+        }
+
+        cursor.close();
+        db.close();
+        // return user
+        Log.d(TAG, "Fetching user from Sqlite: " + _id);
+
+        return _id;
+    }
+
 
     public ArrayList<HashMap<String, String>> getNewPigs(){
         ArrayList<HashMap<String,String>> list = new ArrayList<>();
@@ -1222,6 +1351,8 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount();i++) {
+
+
             HashMap<String, String> result = new HashMap<String, String>();
 
             result.put(KEY_HOUSEID, cursor.getString(0));
@@ -1279,7 +1410,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
         String selectQuery = "SELECT tag_id, tag_rfid, label FROM " + TABLE_RFID_TAGS
-                + " WHERE status = 'inactive'";
+                + " WHERE status <> 'active' OR 'broken' OR 'lost'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
@@ -1287,7 +1418,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount(); i++) {
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
 
             result.put(KEY_TAGID, cursor.getString(0));
             result.put(KEY_TAGRFID, cursor.getString(1));
@@ -1579,6 +1710,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         return list;
     }
+
     public HashMap<String, String> getPigFeed(String _id) {
 
         HashMap<String, String> list = new HashMap<String, String>();
@@ -1658,7 +1790,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public HashMap<String, String> getPigGroup(String _id) {
 
         HashMap<String, String> list = new HashMap<String, String>();
-        String selectQuery = "SELECT a.group_name, a.pen_id, b.pen_no, b.function FROM "
+        String selectQuery = "SELECT a.pig_batch, a.pen_id, b.pen_no, b.function FROM "
                 + TABLE_PIG + " a JOIN " + TABLE_PEN
                 + " b ON(a.pen_id = b.pen_id) WHERE a.pig_id = '"
                 + _id + "'";
@@ -2009,6 +2141,57 @@ public class SQLiteHandler extends SQLiteOpenHelper {
             Toast.makeText(a, "Successfully exported database", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(TAG, "Error in exporting tables", e);
+        }
+    }
+
+    public void exportTest(Activity a) {
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT test_id, start_time, end_time, " +
+                "back_count FROM " + TABLE_TEST;
+
+        try {
+            final String outFileName = "test.txt";
+
+            File outFile = new File(Environment.getExternalStorageDirectory() , outFileName);
+            BufferedWriter output = new BufferedWriter(new FileWriter(outFile));
+
+            output.write("Test id \t Start Time \t End Time \t Back Counts ");
+            output.newLine();
+
+            Cursor c = db.rawQuery(selectQuery, null);
+            c.moveToFirst();
+
+            for(int i=0; i<c.getCount(); i++) {
+
+                output.write(c.getString(0));
+
+                for(int j=1; j<c.getColumnCount(); j++) {
+                    output.write(" \t\t\t " + c.getString(j));
+                }
+                output.write(" ");
+                output.newLine();
+
+                c.moveToNext();
+            }
+
+            c.close();
+
+            output.flush();
+            output.close();
+
+            MediaScannerConnection.scanFile(a, new String[]{outFile.getAbsolutePath()}, null,
+                    new MediaScannerConnection.OnScanCompletedListener() {
+                        @Override
+                        public void onScanCompleted(String path, Uri uri) {
+                            Log.d(TAG,
+                                    "file " + path + " was scanned succesfully: " + uri);
+                        }
+                    }
+            );
+            Toast.makeText(a, "Successfully exported test data", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(TAG, "Error in exporting data", e);
         }
     }
 

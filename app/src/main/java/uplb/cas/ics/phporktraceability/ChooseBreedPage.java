@@ -19,7 +19,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.Random;
+
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -45,11 +48,17 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     String[] ids = {"1", "2", "3", "4", "5", "6"};
     private Toolbar toolbar;
 
+    TestSessionManager test;
+    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -164,6 +173,8 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
@@ -248,6 +259,8 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
         Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);

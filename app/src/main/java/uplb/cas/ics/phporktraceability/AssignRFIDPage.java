@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -54,11 +55,18 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     String[] ids = {};
     private Toolbar toolbar;
 
+    TestSessionManager test;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -204,6 +212,8 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
                 Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
@@ -281,6 +291,8 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
         Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);

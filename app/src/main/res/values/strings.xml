@@ -3,7 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="action_help">Help</string>
     <string name="action_edit">Edit</string>
-    <string name="action_export">Export</string>
+    <string name="action_export">Export Test</string>
     <string name="action_import">Import</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
@@ -104,8 +104,6 @@
 
     <!-- Subtitles -->
     <string name="subtitle_1">Drag and Drop it to the box below</string>
-
-
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

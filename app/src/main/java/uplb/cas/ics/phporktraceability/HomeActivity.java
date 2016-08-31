@@ -1,8 +1,11 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -47,6 +50,12 @@ public class HomeActivity extends AppCompatActivity
     int testID;
     String time;
 
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +65,6 @@ public class HomeActivity extends AppCompatActivity
         db = SQLiteHandler.getInstance();
 
         time = curTime.format(dateObj);
-        testID = db.getMaxTestID() + 1;
 
         test = new TestSessionManager(getApplicationContext());
 
@@ -95,7 +103,7 @@ public class HomeActivity extends AppCompatActivity
         */
     }
 
-    /*
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -115,10 +123,18 @@ public class HomeActivity extends AppCompatActivity
                 finish();
                 startActivity(i);
                 return true;
+            case R.id.action_export:
+                exportOffline();
+                return true;
+           /* case R.id.action_logout:
+                test.logoutUser();
+                session.logoutUser();
+                finish();
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
-    } */
+    }
 
     @Override
     public boolean onDrag(View v, DragEvent e) {
@@ -149,10 +165,15 @@ public class HomeActivity extends AppCompatActivity
                 int id = view.getId();
                 function = findViewById(id).getTag().toString();
                 int vid = to.getId();
-                if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    test.userStart(String.valueOf(testID));
+                if(findViewById(vid) == findViewById(R.id.bottom_container)) {
 
-                    db.insertNewTest(String.valueOf(testID), time);
+                    Log.d(LOGCAT, "Logged in value: " + test.isLoggedIn());
+
+                    if (!test.isLoggedIn()){
+                        testID = db.getMaxTestID() + 1;
+                        test.userStart(String.valueOf(testID));
+                        db.insertNewTest(String.valueOf(testID), time);
+                    }
 
                     Toast.makeText(HomeActivity.this, "Chosen " + function.toUpperCase(),
                             Toast.LENGTH_LONG).show();
@@ -185,4 +206,40 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed(){super.onBackPressed(); finish(); }
+
+    public void exportOffline() {
+        /* code from: http://stackoverflow.com/questions/23527767/ */
+        boolean hasPermissionWrite =
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED;
+        boolean hasPermissionRead =
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        == PackageManager.PERMISSION_GRANTED;
+
+        if (!(hasPermissionWrite || hasPermissionRead)) {
+            ActivityCompat.requestPermissions(
+                    this,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        } else {
+            db.exportTest(this);
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_EXTERNAL_STORAGE: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    db.exportTest(this);
+                }
+                return;
+            }
+        }
+    }
 }
