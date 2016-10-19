@@ -41,7 +41,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     private static final String LOGCAT = AssignPenPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -52,7 +51,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     String boar_id = "";
     String sow_id = "";
     String foster_sow = "";
-    //String week_farrowed = "";
     String group_label = "";
     String breed = "";
     SessionManager session;
@@ -63,8 +61,8 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     String location= "";
     private Toolbar toolbar;
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +70,9 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -93,7 +91,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
         rfid = i.getStringExtra("rfid");
 
@@ -101,7 +98,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
 
         loadLists();
 
-        ll = (LinearLayout) findViewById(R.id.top_container);
         bl = (LinearLayout) findViewById(R.id.bottom_container);
         //ll.setOnDragListener(this);
         bl.setOnDragListener(this);
@@ -228,15 +224,14 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
                 i.putExtra("foster_sow", foster_sow);
                 i.putExtra("group_label", group_label);
                 i.putExtra("breed", breed);
-                //i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("gender", gender);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -281,7 +276,7 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     Toast.makeText(AssignPenPage.this, "Chosen " + pen,
                             Toast.LENGTH_LONG).show();
-                    Intent i = new Intent(AssignPenPage.this, LastFeedGivenPage.class);
+                    Intent i = new Intent(AssignPenPage.this, AddThePig.class);
                     i.putExtra("pen", pen);
                     i.putExtra("rfid", rfid);
                     i.putExtra("boar_id", boar_id);
@@ -289,7 +284,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -309,15 +303,14 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
         Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
         i.putExtra("foster_sow", foster_sow);
         i.putExtra("group_label", group_label);
         i.putExtra("breed", breed);
-        //i.putExtra("week_farrowed", week_farrowed);
         i.putExtra("gender", gender);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

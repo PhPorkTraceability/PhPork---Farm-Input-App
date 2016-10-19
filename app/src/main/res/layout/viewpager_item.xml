@@ -3,15 +3,17 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:layout_gravity="center" android:fitsSystemWindows="true"
     android:gravity="center" android:orientation="vertical"
-    android:paddingLeft="10dp" android:paddingRight="10dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:id="@+id/whole_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/btn_gradient">
 
         <TextView
             android:id="@+id/tv_subitem1"
@@ -39,7 +41,6 @@
             android:gravity="center"
             android:textSize="18sp"
             android:textStyle="bold" />
-
     </LinearLayout>
 
 </LinearLayout>

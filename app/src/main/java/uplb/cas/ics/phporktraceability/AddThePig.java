@@ -1,6 +1,7 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -16,8 +17,10 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +31,7 @@ import android.widget.Toast;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -48,10 +52,12 @@ public class AddThePig extends AppCompatActivity
     SQLiteHandler db;
     SessionManager session;
     EditText et_weight;
-    EditText et_quantity;
-    EditText et_quantity2;
-    Spinner sp_units;
+    EditText et_weekF;
+//    EditText et_quantity;
+//    EditText et_quantity2;
+//    Spinner sp_units;
     Button btn_addpig;
+    Button btn_farrowing;
 
     TextView tv_subs;
     TextView tv_group;
@@ -63,8 +69,9 @@ public class AddThePig extends AppCompatActivity
     TextView tv_gender;
     TextView tv_rfid;
     TextView tv_pen;
-    TextView tv_feed;
-    TextView tv_med;
+    TextView tv_chosenDate;
+//    TextView tv_feed;
+//    TextView tv_med;
     TextView tv_pigid;
     String pen = "";
     String rfid = "";
@@ -74,47 +81,51 @@ public class AddThePig extends AppCompatActivity
     String foster_sow = "";
     String group_label = "";
     String breed = "";
-    //String week_farrowed = "";
+    String week_farrowed = "";
     String farrowing_date = "";
-    String feed_id = "";
-    String med_id = "";
+//    String feed_id = "";
+//    String med_id = "";
     String weight = "";
-    String quantity = "";
-    String quantity2 = "";
+//    String quantity = "";
+//    String quantity2 = "";
     String label = "";
     String pen_disp = "";
     String rfid_disp = "";
     String breed_name = "";
-    String feed_name = "";
-    String med_name = "";
+//    String feed_name = "";
+//    String med_name = "";
     String function = "";
-    String unit = "";
+//    String unit = "";
+
     int curID;
     DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
+    Calendar dateAndTime=Calendar.getInstance();
     Date dateObj = new Date();
     private Toolbar toolbar;
+    private int year, month, day;
     Dialog addD = null;
 
     /**
      * For testing only
      */
-    TestSessionManager test;
-    int count = 0;
-    String testID = "";
+//    TestSessionManager test;
+//    int count = 0;
+//    String testID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addthepig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testcount = test.getCount();
-        count = testcount.get(TestSessionManager.KEY_COUNT);
-
-        HashMap<String, String> testuser = test.getID();
-        testID = testuser.get(TestSessionManager.KEY_ID);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testcount = test.getCount();
+//        count = testcount.get(TestSessionManager.KEY_COUNT);
+//
+//        HashMap<String, String> testuser = test.getID();
+//        testID = testuser.get(TestSessionManager.KEY_ID);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -145,16 +156,17 @@ public class AddThePig extends AppCompatActivity
         tv_gender = (TextView) findViewById(R.id.tv_gender);
         tv_rfid = (TextView) findViewById(R.id.tv_rfid);
         tv_pen = (TextView) findViewById(R.id.tv_pen);
-        tv_feed = (TextView) findViewById(R.id.tv_feed);
-        tv_med = (TextView) findViewById(R.id.tv_med);
+//        tv_feed = (TextView) findViewById(R.id.tv_feed);
+//        tv_med = (TextView) findViewById(R.id.tv_med);
         tv_pigid = (TextView) findViewById(R.id.tv_pig);
+        tv_chosenDate = (TextView) findViewById(R.id.tv_chosenDate);
 
         Resources res = getResources();
         String[] arr = res.getStringArray(R.array.pig_breeds);
         breed_name = arr[Integer.parseInt(breed) - 1];
         rfid_disp = db.getRFID(rfid);
-        feed_name = db.getFeedName(feed_id);
-        med_name = db.getMedName(med_id);
+//        feed_name = db.getFeedName(feed_id);
+//        med_name = db.getMedName(med_id);
         displayPen(pen);
 
         HashMap<String, String> p1 = db.getParentLabel(boar_id, "boar");
@@ -169,29 +181,54 @@ public class AddThePig extends AppCompatActivity
         tv_gender.setText("Gender: " + gender);
         tv_rfid.setText("Tag Label: " + rfid_disp);
         tv_pen.setText(pen_disp);
-        tv_feed.setText("Last Feed Given: " + feed_name);
-        tv_med.setText("Last Vaccine Given: " + med_name);
+//        tv_feed.setText("Last Feed Given: " + feed_name);
+//        tv_med.setText("Last Vaccine Given: " + med_name);
         tv_pigid.setText("Pig Label: " + label);
 
         btn_addpig = (Button) findViewById(R.id.btn_addPig);
+        btn_farrowing = (Button) findViewById(R.id.btn_farrowing);
         et_weight = (EditText) findViewById(R.id.et_weight);
-        et_quantity = (EditText) findViewById(R.id.et_quantity);
-        et_quantity2 = (EditText) findViewById(R.id.et_quantity2);
-        sp_units = (Spinner) findViewById(R.id.sp_units);
+        et_weekF = (EditText) findViewById(R.id.et_weekF);
+//        et_quantity = (EditText) findViewById(R.id.et_quantity);
+//        et_quantity2 = (EditText) findViewById(R.id.et_quantity2);
+//        sp_units = (Spinner) findViewById(R.id.sp_units);
 
         // Create Object of Dialog class
         addD = new Dialog(AddThePig.this);
 
-        sp_units.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                unit = parent.getItemAtPosition(position).toString();
-                Log.d(LOGCAT, unit);
-            }
+//        sp_units.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                unit = parent.getItemAtPosition(position).toString();
+//                Log.d(LOGCAT, unit);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//
+//            }
+//        });
 
+        btn_farrowing.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            public void onClick(View v) {
+                year = dateAndTime.get(Calendar.YEAR);
+                month = dateAndTime.get(Calendar.MONTH);
+                day = dateAndTime.get(Calendar.DAY_OF_MONTH);
 
+                // Launch Date Picker Dialog
+                DatePickerDialog dpd = new DatePickerDialog(AddThePig.this,
+                        new DatePickerDialog.OnDateSetListener() {
+
+                            public void onDateSet(DatePicker view, int year,
+                                                  int monthOfYear, int dayOfMonth) {
+                                // Display Selected date in textbox
+                                tv_chosenDate.setText(year + "-"
+                                        + (monthOfYear + 1) + "-" + dayOfMonth);
+
+                            }
+                        }, year, month, day);
+                dpd.show();
             }
         });
 
@@ -199,30 +236,34 @@ public class AddThePig extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 if(et_weight.getText().toString().trim().length() > 0 &&
-                        et_quantity.getText().toString().trim().length() > 0 &&
-                        et_quantity2.getText().toString().trim().length() > 0){
+                        et_weekF.getText().toString().trim().length() > 0 &&
+                        tv_chosenDate.getText().length() > 0){
+//                        et_quantity.getText().toString().trim().length() > 0 &&
+//                        et_quantity2.getText().toString().trim().length() > 0){
 
-                    weight = et_weight.getText().toString();
-                    quantity = et_quantity.getText().toString();
-                    quantity2 = et_quantity2.getText().toString();
+                    weight = et_weight.getText().toString().trim();
+                    farrowing_date = tv_chosenDate.getText().toString().trim();
+                    week_farrowed = et_weekF.getText().toString().trim();
+//                    quantity = et_quantity.getText().toString();
+//                    quantity2 = et_quantity2.getText().toString();
                     String pig_id = String.valueOf(curID);
                     String date = curDate.format(dateObj);
                     String time = curTime.format(dateObj);
                     String status = "new";
-                    String prod_date = "";
-                    String feed_unit = "kg";
-                    String user = "farm_user";
+//                    String prod_date = "";
+//                    String feed_unit = "kg";
+                    String user = "2";
 
                     //db.addGroup(group_label, pen);
 
-                    db.addPig(pig_id, boar_id, sow_id, foster_sow, "", gender,
+                    db.addPig(pig_id, boar_id, sow_id, foster_sow, week_farrowed, gender,
                             farrowing_date, function, pen, breed, user, group_label, status);
 
                     db.updateTag(rfid, pig_id, "active");
                     //db.updateTagLabel(rfid, label);
                     db.addWeightRecByAuto(weight, pig_id, date, time, "initial weight", status);
-                    db.feedPigRecAuto(quantity, feed_unit, date, time, pig_id, feed_id, prod_date, status);
-                    db.addMedRecAuto(date, time, quantity2, unit, pig_id, med_id, status);
+//                    db.feedPigRecAuto(quantity, feed_unit, date, time, pig_id, feed_id, prod_date, status);
+//                    db.addMedRecAuto(date, time, quantity2, unit, pig_id, med_id, status);
 
                     Toast.makeText(AddThePig.this, "Added Successfully.",
                             Toast.LENGTH_LONG).show();
@@ -290,8 +331,8 @@ public class AddThePig extends AppCompatActivity
                 show_help();
                 return true;
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
                 createIntent(i);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -385,12 +426,11 @@ public class AddThePig extends AppCompatActivity
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
         rfid = i.getStringExtra("rfid");
         pen = i.getStringExtra("pen");
-        feed_id = i.getStringExtra("feed_id");
-        med_id = i.getStringExtra("med_id");
+//        feed_id = i.getStringExtra("feed_id");
+//        med_id = i.getStringExtra("med_id");
     }
 
     private Intent createIntent(Intent i) {
@@ -400,11 +440,10 @@ public class AddThePig extends AppCompatActivity
         i.putExtra("foster_sow", foster_sow);
         i.putExtra("group_label", group_label);
         i.putExtra("breed", breed);
-        //i.putExtra("week_farrowed", week_farrowed);
         i.putExtra("gender", gender);
-        i.putExtra("feed_id", feed_id);
+//        i.putExtra("feed_id", feed_id);
         i.putExtra("pen", pen);
-        i.putExtra("med_id", med_id);
+//        i.putExtra("med_id", med_id);
 
         return i;
     }
@@ -482,15 +521,15 @@ public class AddThePig extends AppCompatActivity
                         finish();
                     }
                         if(choice.equals("finish")) {
-                        String time = curTime.format(dateObj);
-                        db.updateTest(testID, time, String.valueOf(count));
+//                        String time = curTime.format(dateObj);
+//                        db.updateTest(testID, time, String.valueOf(count));
+//
+//                        test.logoutUser();
 
-                        test.logoutUser();
-
-                        Intent i = new Intent(AddThePig.this, HomeActivity.class);
-                        //Intent i = new Intent(AddThePig.this, ChooseModule.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        Intent i = new Intent(AddThePig.this, HomeActivity.class);
+                        Intent i = new Intent(AddThePig.this, ChooseModule.class);
+                        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
                         finish();
                     }
@@ -520,8 +559,8 @@ public class AddThePig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
         Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
         createIntent(i);
         startActivity(i);

@@ -33,7 +33,7 @@
         android:text="@string/add_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32sp" />
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/tv_add_pig_desc"
@@ -47,7 +47,7 @@
         android:text="@string/add_pig_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="22sp" />
+        android:textSize="24sp" />
 
 
 
@@ -76,7 +76,7 @@
         android:text="@string/feed_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32sp" />
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/tv_add_feed_desc"
@@ -90,7 +90,7 @@
         android:text="@string/add_feed_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="22sp" />
+        android:textSize="24sp" />
 
     <!-- Add Med Help Description -->
     <ImageView
@@ -118,7 +118,7 @@
         android:text="@string/add_med_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_add_med_desc"
@@ -133,7 +133,7 @@
         android:text="@string/add_med_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="22sp" />
+        android:textSize="23sp" />
 
     <!-- View Pig Help Description -->
     <ImageView
@@ -161,7 +161,7 @@
         android:text="@string/view_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_view_pig_desc"
@@ -176,7 +176,7 @@
         android:text="@string/view_pig_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="22sp"/>
+        android:textSize="24sp"/>
 
     <!-- Update Server Help Description -->
     <ImageView
@@ -204,7 +204,7 @@
         android:text="@string/upload_data_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_update_server_desc"
@@ -219,7 +219,7 @@
         android:text="@string/upload_data_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="22sp"/>
+        android:textSize="24sp"/>
 
 
 

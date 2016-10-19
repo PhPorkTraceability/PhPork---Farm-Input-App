@@ -3,6 +3,7 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 7/26/2016.
@@ -49,11 +51,18 @@ public class ChooseByPen extends AppCompatActivity  {
     String selection = "selection";
     String module = "module";
 
+//    TestSessionManager test;
+//    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choosepens);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -123,8 +132,10 @@ public class ChooseByPen extends AppCompatActivity  {
                     startActivity(i);
                     finish();
                 } else {
-                    Toast.makeText(ChooseByPen.this, "Please select pens.",
-                            Toast.LENGTH_LONG).show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Please select pen(s).", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
                 }
             }
         });
@@ -146,6 +157,9 @@ public class ChooseByPen extends AppCompatActivity  {
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent();
                 i.setClass(ChooseByPen.this, ChooseHouse.class);
                 if(module.equals(FEED_MOD))
@@ -178,7 +192,7 @@ public class ChooseByPen extends AppCompatActivity  {
             CheckItemModel chkitem =
                     new CheckItemModel(
                             c.get(KEY_PENID),
-                            "Pen No: " + c.get(KEY_PENNO),
+                            "Pen: " + c.get(KEY_PENNO),
                             "Function: " + c.get(KEY_FUNC),
                             false);
             chklist.add(chkitem);
@@ -192,6 +206,9 @@ public class ChooseByPen extends AppCompatActivity  {
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+//        count++;
+//        test.updateCount(count);
+
         Intent i = new Intent();
         i.setClass(ChooseByPen.this, ChooseHouse.class);
         if(module.equals(FEED_MOD))

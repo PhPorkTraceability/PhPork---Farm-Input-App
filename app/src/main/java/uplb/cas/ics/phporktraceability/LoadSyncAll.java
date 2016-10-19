@@ -171,6 +171,12 @@ public class LoadSyncAll extends Activity implements Runnable{
         //start the thread
         thread.start();
 
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+
         int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
         if(status == 0){
             tag_error = true;
@@ -179,6 +185,7 @@ public class LoadSyncAll extends Activity implements Runnable{
             getAllDataByNet();
 
         }
+
 
     }
 
@@ -436,6 +443,7 @@ public class LoadSyncAll extends Activity implements Runnable{
 
                                 String errorMsg = resp.getString("error_msg");
                                 Toast.makeText(LoadSyncAll.this, errorMsg, Toast.LENGTH_LONG).show();
+                                tag_error = true;
                             }
                         } catch (JSONException e) {
                             // JSON error
@@ -445,6 +453,7 @@ public class LoadSyncAll extends Activity implements Runnable{
                             try {
                                 Log.e(TAG, "Response in string:\n" + resp.toString(3));
                             } catch(Exception ex) {}
+                            tag_error = true;
                         }
 
                     }

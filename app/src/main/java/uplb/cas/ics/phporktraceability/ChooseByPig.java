@@ -3,6 +3,7 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 7/26/2016.
@@ -28,7 +30,6 @@ public class ChooseByPig extends AppCompatActivity  {
 
     //Module
     private static final String FEED_MOD = "Feed Pig";
-    private static final String MED_MOD = "Medicate Pig";
 
     public static final String KEY_PIGID = "pig_id";
     public static final String KEY_LABEL = "label";
@@ -49,11 +50,18 @@ public class ChooseByPig extends AppCompatActivity  {
     String selection = "selection";
     String module = "module";
 
+//    TestSessionManager test;
+//    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choosepig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -71,7 +79,7 @@ public class ChooseByPig extends AppCompatActivity  {
             getSupportActionBar().setTitle(R.string.feed);
             feed_id = i.getStringExtra("feed_id");
         }
-        if(module.equals(MED_MOD)) {
+        else {
             getSupportActionBar().setTitle(R.string.med);
             med_id = i.getStringExtra("med_id");
         }
@@ -110,7 +118,7 @@ public class ChooseByPig extends AppCompatActivity  {
                         i.setClass(ChooseByPig.this, AddFeedPig.class);
                         i.putExtra("feed_id", feed_id);
                     }
-                    if(module.equals(MED_MOD)) {
+                   else {
                         i.setClass(ChooseByPig.this, AddMedPig.class);
                         i.putExtra("med_id", med_id);
                     }
@@ -123,8 +131,10 @@ public class ChooseByPig extends AppCompatActivity  {
                     startActivity(i);
                     finish();
                 } else {
-                    Toast.makeText(ChooseByPig.this, "Please select pigs to feed.",
-                            Toast.LENGTH_LONG).show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Please select pig(s).", Snackbar.LENGTH_LONG);
+
+                    snackbar.show();
                 }
             }
         });
@@ -146,11 +156,14 @@ public class ChooseByPig extends AppCompatActivity  {
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent(ChooseByPig.this, ChoosePen.class);
                 if(module.equals(FEED_MOD))
                     i.putExtra("feed_id", feed_id);
-                else if(module.equals(MED_MOD))
-                    i.putExtra("med_id", feed_id);
+                else
+                    i.putExtra("med_id", med_id);
 
                 i.putExtra("house_id", house_id);
                 i.putExtra("selection", selection);
@@ -195,8 +208,8 @@ public class ChooseByPig extends AppCompatActivity  {
         Intent i = new Intent(ChooseByPig.this, ChoosePen.class);
         if(module.equals(FEED_MOD))
             i.putExtra("feed_id", feed_id);
-        else if(module.equals(MED_MOD))
-            i.putExtra("med_id", feed_id);
+        else
+            i.putExtra("med_id", med_id);
 
         i.putExtra("house_id", house_id);
         i.putExtra("selection", selection);

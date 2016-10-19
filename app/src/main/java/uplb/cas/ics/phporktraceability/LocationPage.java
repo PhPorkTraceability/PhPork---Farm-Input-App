@@ -50,7 +50,7 @@ public class LocationPage extends AppCompatActivity
     private static final String LOGCAT = LocationPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
+//    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -65,8 +65,8 @@ public class LocationPage extends AppCompatActivity
     private Toolbar toolbar;
     private ActionBar actionBar;
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +74,9 @@ public class LocationPage extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> user = test.getCount();
-        count = user.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> user = test.getCount();
+//        count = user.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -206,8 +206,8 @@ public class LocationPage extends AppCompatActivity
             	 show_help();
             	 return true;
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(LocationPage.this, HomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -307,7 +307,7 @@ public class LocationPage extends AppCompatActivity
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     session.setLocation(function, location);
 
-                    Toast.makeText(LocationPage.this, "Chosen " + location, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(LocationPage.this, "Chosen " + location, Toast.LENGTH_LONG).show();
 
                     Intent i = new Intent(LocationPage.this, ChooseModule.class);
                     startActivity(i);
@@ -352,8 +352,8 @@ public class LocationPage extends AppCompatActivity
     public void onBackPressed(){
         super.onBackPressed();
 
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
 
         Intent i = new Intent(LocationPage.this, HomeActivity.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);

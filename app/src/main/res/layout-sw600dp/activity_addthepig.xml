@@ -124,25 +124,12 @@
                 android:textStyle="bold"  />
 
             <TextView
-                android:id="@+id/tv_week"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/tv_group"
-                android:layout_alignStart="@+id/tv_group"
-                android:layout_below="@+id/tv_breed"
-                android:layout_marginTop="10dp"
-                android:text="Week Farrowed: "
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <TextView
                 android:id="@+id/tv_gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
-                android:layout_below="@+id/tv_week"
+                android:layout_below="@+id/tv_breed"
                 android:layout_marginTop="10dp"
                 android:text="Gender: "
                 android:textSize="28sp"
@@ -173,15 +160,74 @@
                 android:textStyle="bold"  />
 
             <TextView
-                android:id="@+id/tv_feed"
+                android:id="@+id/tv_week"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
                 android:layout_below="@+id/tv_pen"
                 android:layout_marginTop="10dp"
-                android:text="Last Feed Given: "
+                android:text="Week Farrowed: "
                 android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_weekF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/tv_week"
+                android:layout_toEndOf="@+id/tv_week"
+                android:layout_toRightOf="@+id/tv_week"
+                android:layout_below="@+id/tv_pen"
+                android:ems="3"
+                android:textSize="26sp"
+                android:inputType="number|text" />
+
+            <TextView
+                android:id="@+id/tv_farrowing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_week"
+                android:layout_marginTop="20dp"
+                android:text="Farrowing Date: "
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_farrowing"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_week"
+                android:layout_alignBaseline="@id/tv_farrowing"
+                android:layout_toEndOf="@+id/tv_farrowing"
+                android:layout_toRightOf="@+id/tv_farrowing"
+                android:textSize="18sp"
+                android:text="Select" />
+
+            <TextView
+                android:id="@+id/tv_chosenDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_farrowing"
+                android:layout_below="@+id/tv_week"
+                android:layout_toEndOf="@+id/btn_farrowing"
+                android:layout_toRightOf="@+id/btn_farrowing"
+                android:textSize="24sp"/>
+
+            <!--
+            <TextView
+                android:id="@+id/tv_feed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pen"
+                android:layout_marginTop="2dp"
+                android:text="Last Feed Given: "
+                android:textSize="16sp"
                 android:textStyle="bold"  />
 
             <EditText
@@ -191,10 +237,9 @@
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
                 android:layout_below="@+id/tv_feed"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="2dp"
                 android:hint="Feed quantity in kg. ex. 2.4"
-                android:inputType="text|numberDecimal"
-                android:textSize="28sp"  />
+                android:inputType="text|numberDecimal"  />
 
             <TextView
                 android:id="@+id/tv_med"
@@ -203,9 +248,9 @@
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
                 android:layout_below="@+id/et_quantity"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="2dp"
                 android:text="Last Med Given: "
-                android:textSize="28sp"
+                android:textSize="16sp"
                 android:textStyle="bold"  />
 
             <EditText
@@ -215,10 +260,9 @@
                 android:layout_alignLeft="@+id/tv_med"
                 android:layout_alignStart="@+id/tv_med"
                 android:layout_below="@+id/tv_med"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:hint="Enter quantity: "
-                android:inputType="numberDecimal"
-                android:textSize="28sp"  />
+                android:inputType="numberDecimal" />
 
             <Spinner
                 android:id="@+id/sp_units"
@@ -228,9 +272,10 @@
                 android:layout_below="@id/tv_pig"
                 android:layout_toRightOf="@+id/et_quantity2"
                 android:layout_toEndOf="@+id/et_quantity2"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:entries="@array/units"
                 android:spinnerMode="dropdown" />
+            -->
 
             <EditText
                 android:id="@+id/et_weight"
@@ -238,11 +283,11 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"
-                android:layout_below="@+id/et_quantity2"
+                android:layout_below="@+id/tv_farrowing"
                 android:layout_marginTop="15dp"
+                android:textSize="28sp"
                 android:hint="Pig Weight in kg. ex. 30.6"
-                android:inputType="text|numberDecimal"
-                android:textSize="28sp"  />
+                android:inputType="text|numberDecimal" />
 
             <Button
                 android:id="@+id/btn_addPig"

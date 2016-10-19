@@ -20,6 +20,7 @@ import android.widget.Toast;
 import java.util.HashMap;
 
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 7/11/2016.
@@ -39,6 +40,9 @@ public class ChooseSelection extends AppCompatActivity
     String selection = "";
     String module = "";
 
+//    TestSessionManager test;
+//    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,10 @@ public class ChooseSelection extends AppCompatActivity
 
         Intent i = getIntent();
         module = i.getStringExtra("module");
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,6 +89,9 @@ public class ChooseSelection extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent(ChooseSelection.this, ChooseModule.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -123,8 +134,8 @@ public class ChooseSelection extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseSelection.this, "Chosen " + selection.toUpperCase(),
-                            Toast.LENGTH_LONG).show();
+                   /* Toast.makeText(ChooseSelection.this, "Chosen " + selection.toUpperCase(),
+                            Toast.LENGTH_LONG).show(); */
 
                     if(module.equals(FEED_MOD)){
                         Intent i = new Intent(ChooseSelection.this, ChooseFeedPage.class);
@@ -167,6 +178,10 @@ public class ChooseSelection extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+
+//        count++;
+//        test.updateCount(count);
+
         Intent i = new Intent(ChooseSelection.this, ChooseModule.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

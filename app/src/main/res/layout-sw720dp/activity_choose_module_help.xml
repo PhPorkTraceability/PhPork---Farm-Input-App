@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/colorPrimary" >
+
+    <!-- Add Pig Help Description -->
+    <ImageView
+        android:id="@+id/iv_addpig_help"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_alignParentLeft="true"
+
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="29dp"
+        android:layout_marginStart="29dp"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/ic_addpig"/>
+
+    <TextView
+        android:id="@+id/tv_add_pig_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_addpig_help"
+        android:layout_toEndOf="@id/iv_addpig_help"
+        android:layout_alignTop="@id/iv_addpig_help"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_pig_title"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="42sp" />
+
+    <TextView
+        android:id="@+id/tv_add_pig_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_add_pig_title"
+        android:layout_alignLeft="@id/tv_add_pig_title"
+        android:layout_alignStart="@id/tv_add_pig_title"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/add_pig_desc"
+        android:gravity="start"
+        android:textColor="@android:color/white"
+        android:textSize="32sp" />
+
+
+
+    <!-- Add Feed Help Description -->
+    <ImageView
+        android:id="@+id/iv_addfeed_help"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_below="@+id/iv_addpig_help"
+        android:layout_marginTop="50dp"
+        android:layout_toLeftOf="@+id/tv_add_pig_desc"
+        android:layout_toStartOf="@+id/tv_add_pig_desc"
+        android:src="@drawable/ic_feeds" />
+
+    <TextView
+        android:id="@+id/tv_add_feed_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_addfeed_help"
+        android:layout_toEndOf="@id/iv_addfeed_help"
+        android:layout_alignTop="@id/iv_addfeed_help"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/feed_pig_title"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="42sp" />
+
+    <TextView
+        android:id="@+id/tv_add_feed_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_add_feed_title"
+        android:layout_alignLeft="@id/tv_add_feed_title"
+        android:layout_alignStart="@id/tv_add_feed_title"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+        android:text="@string/add_feed_desc"
+        android:gravity="start"
+        android:textColor="@android:color/white"
+        android:textSize="32sp" />
+
+    <!-- Add Med Help Description -->
+    <ImageView
+        android:id="@+id/iv_addmed_help"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_below="@+id/iv_addfeed_help"
+        android:layout_marginTop="50dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_medications"
+        />
+    <TextView
+        android:id="@+id/tv_add_med_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_addmed_help"
+        android:layout_toEndOf="@id/iv_addmed_help"
+        android:layout_alignTop="@id/iv_addmed_help"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_med_title"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="42sp"/>
+
+    <TextView
+        android:id="@+id/tv_add_med_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_add_med_title"
+        android:layout_alignLeft="@id/tv_add_med_title"
+        android:layout_alignStart="@id/tv_add_med_title"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/add_med_desc"
+        android:gravity="start"
+        android:textColor="@android:color/white"
+        android:textSize="32sp" />
+
+    <!-- View Pig Help Description -->
+    <ImageView
+        android:id="@+id/iv_viewpig_help"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_below="@+id/iv_addmed_help"
+        android:layout_marginTop="50dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_viewlist"
+        />
+    <TextView
+        android:id="@+id/tv_view_pig_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_viewpig_help"
+        android:layout_toEndOf="@id/iv_viewpig_help"
+        android:layout_alignTop="@id/iv_viewpig_help"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/view_pig_title"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="42sp"/>
+
+    <TextView
+        android:id="@+id/tv_view_pig_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_view_pig_title"
+        android:layout_alignLeft="@id/tv_view_pig_title"
+        android:layout_alignStart="@id/tv_view_pig_title"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/view_pig_desc"
+        android:gravity="start"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"/>
+
+    <!-- Update Server Help Description -->
+    <ImageView
+        android:id="@+id/iv_update_server_help"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="fitCenter"
+        android:layout_below="@+id/iv_viewpig_help"
+        android:layout_marginTop="50dp"
+        android:layout_toLeftOf="@id/tv_add_pig_desc"
+        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:src="@drawable/ic_senddata" />
+
+    <TextView
+        android:id="@+id/tv_update_server_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/iv_update_server_help"
+        android:layout_toEndOf="@id/iv_update_server_help"
+        android:layout_alignTop="@id/iv_update_server_help"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/upload_data_title"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="42sp"/>
+
+    <TextView
+        android:id="@+id/tv_update_server_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_update_server_title"
+        android:layout_alignLeft="@id/tv_update_server_title"
+        android:layout_alignStart="@id/tv_update_server_title"
+        android:paddingLeft="@dimen/desc_padding"
+        android:paddingRight="@dimen/desc_padding"
+
+        android:text="@string/upload_data_desc"
+        android:gravity="start"
+        android:textColor="@android:color/white"
+        android:textSize="32sp"/>
+
+    <!-- Close Button -->
+    <Button
+        android:id="@+id/close_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:onClick="close_page"
+        android:textColor="@color/black"
+        android:text="@string/tap_me_to_close"/>
+
+    <!--
+    <TextView
+        android:id="@+id/note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/iv_update_server_help"
+        android:text="@string/note"
+        android:textColor="#000000"
+        android:textSize="14sp"/> -->
+
+</RelativeLayout>

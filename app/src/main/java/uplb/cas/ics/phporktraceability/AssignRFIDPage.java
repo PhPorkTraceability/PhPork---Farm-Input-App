@@ -35,7 +35,6 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     private static final String LOGCAT = AssignRFIDPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -45,7 +44,6 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     String boar_id = "";
     String sow_id = "";
     String foster_sow = "";
-    //String week_farrowed = "";
     String group_label = "";
     String breed = "";
     ArrayList<HashMap<String, String>> rfid_list;
@@ -55,8 +53,8 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     String[] ids = {};
     private Toolbar toolbar;
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +62,9 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -81,7 +79,6 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        //week_farrowed = i.getStringExtra("week_farrowed");
         gender = i.getStringExtra("gender");
 
         db = SQLiteHandler.getInstance();
@@ -89,10 +86,8 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         loadRFIDSBySQL();
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        ll = (LinearLayout) findViewById(R.id.bottom_container);
 
         bl.setOnDragListener(this);
-        //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new CustomPagerAdapter(AssignRFIDPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
@@ -212,14 +207,13 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
                 i.putExtra("foster_sow", sow_id);
                 i.putExtra("breed", breed);
-                //i.putExtra("week_farrowed", week_farrowed);
                 i.putExtra("group_label", group_label);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -271,7 +265,6 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -291,8 +284,8 @@ public class AssignRFIDPage extends AppCompatActivity implements View.OnDragList
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
         Intent i = new Intent(AssignRFIDPage.this, ChooseGender.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);

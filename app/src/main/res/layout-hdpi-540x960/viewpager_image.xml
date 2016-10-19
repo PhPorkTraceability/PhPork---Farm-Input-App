@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:layout_gravity="center" android:fitsSystemWindows="true"
     android:gravity="center" android:orientation="vertical"
-    android:paddingLeft="50dp" android:paddingRight="50dp">
+    android:padding="10dp">
 
     <LinearLayout
         android:id="@+id/whole_item"
@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:textColor="@color/lbl_name"
-            android:textSize="28sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
 
         <ImageView
@@ -28,7 +28,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:padding="10dp"
             android:scaleType="fitCenter" />
 
     </LinearLayout>

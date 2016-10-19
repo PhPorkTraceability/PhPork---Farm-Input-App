@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/white" android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        </android.support.design.widget.AppBarLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="Finalizing Input"
+            android:textSize="42sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="Please Review Details of New Pig"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp">
+
+            <TextView
+                android:id="@+id/tv_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="10dp"
+                android:text="Group Label: "
+                android:textSize="32sp"
+                android:textStyle="bold|italic"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tv_pig"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_group"
+                android:layout_marginTop="10dp"
+                android:text="Pig Label: "
+                android:textSize="36sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_boar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pig"
+                android:layout_marginTop="10dp"
+                android:text="Boar Parent: "
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_sow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_boar"
+                android:layout_marginTop="10dp"
+                android:text="Sow ID: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_fostersow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_sow"
+                android:layout_marginTop="10dp"
+                android:text="Foster Sow: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_breed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_fostersow"
+                android:layout_marginTop="10dp"
+                android:text="Breed: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_gender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_breed"
+                android:layout_marginTop="10dp"
+                android:text="Gender: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_rfid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_gender"
+                android:layout_marginTop="10dp"
+                android:text="RFID: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_pen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_rfid"
+                android:layout_marginTop="10dp"
+                android:text="Pen: "
+                android:textSize="32sp"
+                android:textStyle="bold"  />
+
+            <TextView
+                android:id="@+id/tv_week"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pen"
+                android:layout_marginTop="15dp"
+                android:text="Week Farrowed: "
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/et_weekF"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/tv_week"
+                android:layout_toEndOf="@+id/tv_week"
+                android:layout_toRightOf="@+id/tv_week"
+                android:layout_below="@+id/tv_pen"
+                android:ems="3"
+                android:textSize="28sp"
+                android:inputType="number|text" />
+
+            <TextView
+                android:id="@+id/tv_farrowing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_week"
+                android:layout_marginTop="20dp"
+                android:text="Farrowing Date: "
+                android:textSize="32sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btn_farrowing"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_week"
+                android:layout_alignBaseline="@id/tv_farrowing"
+                android:layout_toEndOf="@+id/tv_farrowing"
+                android:layout_toRightOf="@+id/tv_farrowing"
+                android:textSize="20sp"
+                android:text="Select" />
+
+            <TextView
+                android:id="@+id/tv_chosenDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/btn_farrowing"
+                android:layout_below="@+id/tv_week"
+                android:layout_toEndOf="@+id/btn_farrowing"
+                android:layout_toRightOf="@+id/btn_farrowing"
+                android:textSize="26sp" />
+
+            <!--
+            <TextView
+                android:id="@+id/tv_feed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_pen"
+                android:layout_marginTop="2dp"
+                android:text="Last Feed Given: "
+                android:textSize="16sp"
+                android:textStyle="bold"  />
+
+            <EditText
+                android:id="@+id/et_quantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_feed"
+                android:layout_marginTop="2dp"
+                android:hint="Feed quantity in kg. ex. 2.4"
+                android:inputType="text|numberDecimal"  />
+
+            <TextView
+                android:id="@+id/tv_med"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/et_quantity"
+                android:layout_marginTop="2dp"
+                android:text="Last Med Given: "
+                android:textSize="16sp"
+                android:textStyle="bold"  />
+
+            <EditText
+                android:id="@+id/et_quantity2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_med"
+                android:layout_alignStart="@+id/tv_med"
+                android:layout_below="@+id/tv_med"
+                android:layout_marginTop="10dp"
+                android:hint="Enter quantity: "
+                android:inputType="numberDecimal" />
+
+            <Spinner
+                android:id="@+id/sp_units"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/et_quantity2"
+                android:layout_below="@id/tv_pig"
+                android:layout_toRightOf="@+id/et_quantity2"
+                android:layout_toEndOf="@+id/et_quantity2"
+                android:layout_marginLeft="10dp"
+                android:entries="@array/units"
+                android:spinnerMode="dropdown" />
+            -->
+
+            <EditText
+                android:id="@+id/et_weight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/tv_farrowing"
+                android:layout_marginTop="15dp"
+                android:textSize="28sp"
+                android:hint="Pig Weight in kg. ex. 30.6"
+                android:inputType="text|numberDecimal" />
+
+            <Button
+                android:id="@+id/btn_addPig"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/tv_group"
+                android:layout_alignStart="@+id/tv_group"
+                android:layout_below="@+id/et_weight"
+                android:layout_margin="30dp"
+                android:background="@color/colorAccent"
+                android:text="Add Pig"
+                android:textColor="@color/lbl_name"
+                android:textSize="42sp"  />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

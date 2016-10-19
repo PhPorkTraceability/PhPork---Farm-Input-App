@@ -41,12 +41,12 @@
             android:text="Drag and Drop it to the box below"
             android:textSize="22sp"
             android:textStyle="bold" />
-        <!--
+
         <LinearLayout
             android:id="@+id/text_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight=".3"
+            android:layout_weight=".29"
             android:background="@color/white"
             android:fitsSystemWindows="true"
             android:gravity="center"
@@ -71,13 +71,14 @@
                 android:text="By Pen"
                 android:textSize="24sp"
                 android:textStyle="bold|italic" />
-        </LinearLayout> -->
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/top_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginBottom="10dp"
-            android:layout_weight=".22"
+            android:layout_weight=".23"
             android:background="@color/white"
             android:gravity="center"
             android:orientation="horizontal"
@@ -121,7 +122,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="30dp"
-            android:layout_weight=".19"
+            android:layout_weight=".21"
             android:background="@drawable/layout_gradient"
             android:orientation="horizontal"
             android:padding="20dp">

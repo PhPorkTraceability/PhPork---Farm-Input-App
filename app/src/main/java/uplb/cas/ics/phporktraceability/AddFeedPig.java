@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -38,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -82,6 +85,13 @@ public class AddFeedPig extends AppCompatActivity
     String selection = "";
     String module = "";
 
+//    TestSessionManager test;
+//    int count = 0;
+//    String testID = "";
+//    DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
+//    DateFormat curTime2 = new SimpleDateFormat("HH:mm:ss");
+//    Date dateObj = new Date();
+
     DateFormat curTime = new SimpleDateFormat("HH:mm");
     TimePickerDialog.OnTimeSetListener t=new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay,
@@ -97,6 +107,11 @@ public class AddFeedPig extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfeedpig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -114,7 +129,7 @@ public class AddFeedPig extends AppCompatActivity
             pigs = i.getStringArrayExtra("pigs");
             pen = i.getStringExtra("pen");
             total_pigs = pigs;
-        } else if(selection.equals(SEL_PEN)){
+        } else {
             pens = i.getStringArrayExtra("pens");
         }
 
@@ -213,9 +228,6 @@ public class AddFeedPig extends AppCompatActivity
                     db.feedPigRecByGroup(quantity, unit, date, time, total_pigs,
                             feed_id, prod_date, status);
 
-                    Toast.makeText(AddFeedPig.this, "Added Successfully.",
-                            Toast.LENGTH_LONG).show();
-
                     // Create Object of Dialog class
                     addD = new Dialog(AddFeedPig.this);
                     // Set GUI of login screen
@@ -234,8 +246,10 @@ public class AddFeedPig extends AppCompatActivity
 
                     addD.show();
                 } else {
-                    Toast.makeText(AddFeedPig.this, "Please enter quantity of feed to be given.",
-                            Toast.LENGTH_LONG).show();
+
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Fill up details before proceeding", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
             }
         });
@@ -250,7 +264,7 @@ public class AddFeedPig extends AppCompatActivity
         feed_type = feed.get(KEY_FEEDTYPE);
         String[] labels;
 
-        if(selection.equals("by_pen")) {
+        if(selection.equals(SEL_PEN)) {
             ArrayList<HashMap<String, String>> pig_list = new ArrayList<>();
             for(int i = 0;i < pens.length;i++){
                 ArrayList<HashMap<String, String>> pigs_by_pen = db.getPigsByPen(pens[i]);
@@ -299,11 +313,14 @@ public class AddFeedPig extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent();
                 if(selection.equals(SEL_PIG)){
                     i.setClass(AddFeedPig.this, ChooseByPig.class);
                     i.putExtra("pen", pen);
-                } else if (selection.equals(SEL_PEN))
+                } else
                     i.setClass(AddFeedPig.this, ChooseByPen.class);
 
                 i.putExtra("feed_id", feed_id);
@@ -352,15 +369,17 @@ public class AddFeedPig extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+
                     addD.dismiss();
                     Intent i = new Intent();
                     if(choice.equals("add_another")){
                         i.setClass(AddFeedPig.this, ChooseSelection.class);
                         i.putExtra("module", module);
                     } else if(choice.equals("finish"))
+                        //i.setClass(AddFeedPig.this, HomeActivity.class);
                         i.setClass(AddFeedPig.this, ChooseModule.class);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -388,11 +407,14 @@ public class AddFeedPig extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+//        count++;
+//        test.updateCount(count);
+
         Intent i = new Intent();
         if(selection.equals(SEL_PIG)){
             i.setClass(AddFeedPig.this, ChooseByPig.class);
             i.putExtra("pen", pen);
-        } else if (selection.equals(SEL_PEN))
+        } else
             i.setClass(AddFeedPig.this, ChooseByPen.class);
         i.putExtra("feed_id", feed_id);
         i.putExtra("house_id", house_id);

@@ -898,31 +898,30 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<HashMap<String, String>> getNewPigs(){
         ArrayList<HashMap<String,String>> list = new ArrayList<>();
 
-        String selectQuery = "SELECT pig_id, boar_id, sow_id, foster_sow, week_farrowed, gender," +
-                " farrowing_date, pig_status, pen_id, breed_id FROM " + TABLE_PIG +
-                " WHERE sync_status = 'new' AND pig_status IS NOT 'boar' AND pig_status " +
-                "IS NOT 'sow'";
+        String selectQuery = "SELECT * FROM " + TABLE_PIG +
+                " WHERE sync_status = 'new'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        Log.d(TAG, String.valueOf(cursor.getCount()));
+        //Log.d(TAG, String.valueOf(cursor.getCount()));
         // Move to first row
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount();i++)
         {
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
 
             result.put(KEY_PIGID, cursor.getString(0));
             result.put(KEY_BOARID, cursor.getString(1));
             result.put(KEY_SOWID, cursor.getString(2));
             result.put(KEY_FOSTER, cursor.getString(3));
-            result.put(KEY_WEEKF, cursor.getString(4));
+            //result.put(KEY_WEEKF, cursor.getString(4));
             result.put(KEY_GENDER, cursor.getString(5));
-            result.put(KEY_FDATE, cursor.getString(6));
+            //result.put(KEY_FDATE, cursor.getString(6));
             result.put(KEY_PIGSTAT, cursor.getString(7));
             result.put(KEY_PENID, cursor.getString(8));
             result.put(KEY_BREEDID, cursor.getString(9));
+            //result.put(KEY_USER, cursor.getString(10));
 
             cursor.moveToNext();
             list.add(result);
@@ -931,7 +930,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        //Log.d(TAG, "Fetching pigs from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching pigs from Sqlite: " + list.toString());
 
         return list;
     }
@@ -981,19 +980,19 @@ public class SQLiteHandler extends SQLiteOpenHelper {
     public ArrayList<HashMap<String, String>> getWeightRecs() {
         ArrayList<HashMap<String, String>> list = new ArrayList<>();
 
-        String selectQuery = "SELECT * FROM " + TABLE_WEIGHT + " WHERE "
-                + KEY_SYNCSTAT + " = 'new'";
+        String selectQuery = "SELECT * FROM " + TABLE_WEIGHT + " WHERE sync_status = 'new'";
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        Log.d(TAG, String.valueOf(cursor.getCount()));
+        //Log.d(TAG, String.valueOf(cursor.getCount()));
         // Move to first row
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount();i++)
         {
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
 
+            result.put(KEY_WRID, cursor.getString(0));
             result.put(KEY_RECDATE, cursor.getString(1));
             result.put(KEY_RECTIME, cursor.getString(2));
             result.put(KEY_WEIGHT, cursor.getString(3));
@@ -1008,7 +1007,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-        //Log.d(TAG, "Fetching weight records from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching weight records from Sqlite: " + list.toString());
 
         return list;
     }
@@ -1020,13 +1019,14 @@ public class SQLiteHandler extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(selectQuery, null);
-        Log.d(TAG, String.valueOf(cursor.getCount()));
+
         // Move to first row
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount();i++) {
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
 
+            result.put(KEY_FTID, cursor.getString(0));
             result.put(KEY_QUANTITY, cursor.getString(1));
             result.put(KEY_UNIT, cursor.getString(2));
             result.put(KEY_DATEGIVEN, cursor.getString(3));
@@ -1043,7 +1043,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-       // Log.d(TAG, "Fetching pig feed record from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching pig feed record from Sqlite: " + list.toString());
 
         return list;
     }
@@ -1060,8 +1060,9 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.moveToFirst();
 
         for(int i = 0; i < cursor.getCount();i++) {
-            HashMap<String, String> result = new HashMap<String, String>();
+            HashMap<String, String> result = new HashMap<>();
 
+            result.put(KEY_MRID, cursor.getString(0));
             result.put(KEY_DATEGIVEN, cursor.getString(1));
             result.put(KEY_TIMEGIVEN, cursor.getString(2));
             result.put(KEY_QUANTITY, cursor.getString(3));
@@ -1077,7 +1078,7 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         // return user
-       // Log.d(TAG, "Fetching pig med record from Sqlite: " + list.toString());
+        Log.d(TAG, "Fetching pig med record from Sqlite: " + list.toString());
 
         return list;
     }
@@ -2032,6 +2033,50 @@ public class SQLiteHandler extends SQLiteOpenHelper {
         db.close();
 
         Log.d(TAG, "Updated RFID tag");
+    }
+
+    public void updatePig(String _id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE pig " +
+                "SET sync_status = 'old'" +
+                "WHERE pig_id = '" + _id + "'";
+        db.execSQL(query);
+        db.close();
+
+        Log.d(TAG, "Updated Pig");
+    }
+
+    public void updateFeedRec(String _id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE feed_transaction " +
+                "SET sync_status = 'old'" +
+                "WHERE ft_id = '" + _id + "'";
+        db.execSQL(query);
+        db.close();
+
+        Log.d(TAG, "Updated Feed Rec");
+    }
+
+    public void updateMedRec(String _id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE med_record " +
+                "SET sync_status = 'old'" +
+                "WHERE mr_id = '" + _id + "'";
+        db.execSQL(query);
+        db.close();
+
+        Log.d(TAG, "Updated Med Rec");
+    }
+
+    public void updateWeightRec(String _id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE weight_record " +
+                "SET sync_status = 'old'" +
+                "WHERE record_id = '" + _id + "'";
+        db.execSQL(query);
+        db.close();
+
+        Log.d(TAG, "Updated Weight Rec");
     }
 
     public void updateTagLabel(String tag_id, String label) {

@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 7/26/2016.
@@ -33,7 +34,6 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
     public final static String KEY_HOUSENAME = "house_name";
     public final static String KEY_FUNC = "function";
     private static final String FEED_MOD = "Feed Pig";
-    private static final String MED_MOD = "Medicate Pig";
     private static final String SEL_PIG = "by_pig";
     private static final String SEL_PEN = "by_pen";
 
@@ -60,11 +60,18 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
     String selection = "";
     String module = "";
 
+//    TestSessionManager test;
+//    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +79,6 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setIcon(R.mipmap.ic_phpork);
-
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserLoc();
@@ -85,7 +91,7 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
             getSupportActionBar().setTitle(R.string.feed);
             feed_id = i.getStringExtra("feed_id");
         }
-        if(module.equals(MED_MOD)) {
+       else{
             getSupportActionBar().setTitle(R.string.med);
             med_id = i.getStringExtra("med_id");
         }
@@ -186,7 +192,7 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "House No: " + c.get(KEY_HOUSENO);
+            lists[i] = "House: " + c.get(KEY_HOUSENO);
             lists2[i] = "House Name: " + c.get(KEY_HOUSENAME);
             lists3[i] = "Function: " + c.get(KEY_FUNC);
             ids[i] = c.get(KEY_HOUSEID);
@@ -209,10 +215,13 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent();
                 if(module.equals(FEED_MOD))
                     i.setClass(ChooseHouse.this, ChooseFeedPage.class);
-                else if(module.equals(MED_MOD))
+                else
                     i.setClass(ChooseHouse.this, ChooseMedPage.class);
 
                 i.putExtra("selection", selection);
@@ -262,13 +271,13 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
                         i.setClass(ChooseHouse.this, ChoosePen.class);
                         if(module.equals(FEED_MOD))
                             i.putExtra("feed_id", feed_id);
-                        if(module.equals(MED_MOD))
+                        else
                             i.putExtra("med_id", med_id);
                     } else if(selection.equals(SEL_PEN)) {
                         i.setClass(ChooseHouse.this, ChooseByPen.class);
                         if(module.equals(FEED_MOD))
                             i.putExtra("feed_id", feed_id);
-                        if(module.equals(MED_MOD))
+                        else
                             i.putExtra("med_id", med_id);
                     }
 
@@ -295,10 +304,13 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+//        count++;
+//        test.updateCount(count);
+
         Intent i = new Intent();
         if(module.equals(FEED_MOD))
             i.setClass(ChooseHouse.this, ChooseFeedPage.class);
-        else if(module.equals(MED_MOD))
+        else
             i.setClass(ChooseHouse.this, ChooseMedPage.class);
 
         i.putExtra("selection", selection);

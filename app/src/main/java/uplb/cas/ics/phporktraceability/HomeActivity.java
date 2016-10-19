@@ -4,6 +4,10 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,15 +44,32 @@ public class HomeActivity extends AppCompatActivity
     private ImageView iv_growing;
     private LinearLayout bot_cont;
 
+    private SoundPool soundPool;
+
+    private AudioManager audioManager;
+
+    // Maximumn sound stream.
+    private static final int MAX_STREAMS = 5;
+
+    // Stream type.
+    private static final int streamType = AudioManager.STREAM_MUSIC;
+
+    private boolean loaded;
+
+    private int soundId1;
+    private int soundId2;
+    private int streamId;
+    private float volume;
+
     /**
      * For Testing only
      * Delete when done
      */
-    TestSessionManager test;
-    DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
-    Date dateObj = new Date();
-    int testID;
-    String time;
+//    TestSessionManager test;
+//    DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
+//    Date dateObj = new Date();
+//    int testID;
+//    String time;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -64,9 +85,9 @@ public class HomeActivity extends AppCompatActivity
 
         db = SQLiteHandler.getInstance();
 
-        time = curTime.format(dateObj);
-
-        test = new TestSessionManager(getApplicationContext());
+//        time = curTime.format(dateObj);
+//
+//        test = new TestSessionManager(getApplicationContext());
 
         session = new SessionManager(getApplicationContext());
         //session.checkLogin();
@@ -101,6 +122,53 @@ public class HomeActivity extends AppCompatActivity
             }
         });
         */
+
+        // AudioManager audio settings for adjusting the volume
+        audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
+
+        // Current volumn Index of particular stream type.
+        float currentVolumeIndex = (float) audioManager.getStreamVolume(streamType);
+
+        // Get the maximum volume index for a particular stream type.
+        float maxVolumeIndex  = (float) audioManager.getStreamMaxVolume(streamType);
+
+        // Volumn (0 --> 1)
+        this.volume = currentVolumeIndex / maxVolumeIndex;
+
+        // Suggests an audio stream whose volume should be changed by
+        // the hardware volume controls.
+        this.setVolumeControlStream(streamType);
+
+        // For Android SDK >= 21
+        if (Build.VERSION.SDK_INT >= 21 ) {
+
+            AudioAttributes audioAttrib = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build();
+
+            SoundPool.Builder builder= new SoundPool.Builder();
+            builder.setAudioAttributes(audioAttrib).setMaxStreams(MAX_STREAMS);
+
+            this.soundPool = builder.build();
+        }
+        // for Android SDK < 21
+        else {
+            // SoundPool(int maxStreams, int streamType, int srcQuality)
+            this.soundPool = new SoundPool(MAX_STREAMS, AudioManager.STREAM_MUSIC, 0);
+        }
+
+        // When Sound Pool load complete.
+        this.soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                loaded = true;
+            }
+        });
+
+        // Load sound file (gun.wav) into SoundPool.
+        this.soundId1 = this.soundPool.load(this, R.raw.sound_1,1);
+        this.soundId2 = this.soundPool.load(this, R.raw.sound_2,1);
     }
 
 
@@ -126,11 +194,11 @@ public class HomeActivity extends AppCompatActivity
             case R.id.action_export:
                 exportOffline();
                 return true;
-           /* case R.id.action_logout:
-                test.logoutUser();
+            case R.id.action_logout:
+//                test.logoutUser();
                 session.logoutUser();
                 finish();
-                return true;*/
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -166,14 +234,14 @@ public class HomeActivity extends AppCompatActivity
                 function = findViewById(id).getTag().toString();
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)) {
-
+                    /*
                     Log.d(LOGCAT, "Logged in value: " + test.isLoggedIn());
 
                     if (!test.isLoggedIn()){
                         testID = db.getMaxTestID() + 1;
                         test.userStart(String.valueOf(testID));
                         db.insertNewTest(String.valueOf(testID), time);
-                    }
+                    } */
 
                     Toast.makeText(HomeActivity.this, "Chosen " + function.toUpperCase(),
                             Toast.LENGTH_LONG).show();
@@ -199,6 +267,10 @@ public class HomeActivity extends AppCompatActivity
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
             v.startDrag(null, shadowBuilder, v, 0);
+           /* if(v.getId() == R.id.iv_weaning)
+                playSound1(v);
+            else
+                playSound2(v);*/
             return true;
         }
         else { return false; }
@@ -240,6 +312,20 @@ public class HomeActivity extends AppCompatActivity
                 }
                 return;
             }
+        }
+    }
+
+    public void playSound1(View view)  {
+        if(loaded)  {
+            // Play sound of gunfire. Returns the ID of the new stream.
+            streamId = this.soundPool.play(this.soundId1, volume, volume, 1, 0, 1f);
+        }
+    }
+
+    public void playSound2(View view)  {
+        if(loaded)  {
+            // Play sound of gunfire. Returns the ID of the new stream.
+            streamId = this.soundPool.play(this.soundId2, volume, volume, 1, 0, 1f);
         }
     }
 }

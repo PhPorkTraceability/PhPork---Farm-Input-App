@@ -29,9 +29,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="20dp"
+            android:layout_margin="15dp"
             android:text="Choose Pigs"
-            android:textSize="60sp"
+            android:textSize="48sp"
             android:textStyle="bold" />
 
         <TextView
@@ -40,7 +40,7 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:text="Tap Items to Choose"
-            android:textSize="48sp"
+            android:textSize="36sp"
             android:textStyle="bold" />
         <!--
         <EditText
@@ -57,8 +57,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="50dp"
-            android:layout_marginLeft="70dp"
-            android:layout_marginRight="70dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:scrollbars="vertical" />
@@ -69,7 +69,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:layout_gravity="center"
-            android:layout_margin="50dp"
+            android:layout_margin="40dp"
             android:ems="8"
             android:text="Ok"
             android:textColor="@color/lbl_name"

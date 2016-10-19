@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
+        android:largeHeap="true"
         android:name="app.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_phpork"
@@ -410,6 +411,7 @@
 
         <activity
             android:name=".AddThePig"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/add_pig"
             android:launchMode="singleTask"
             android:parentActivityName=".AssignPenPage">
@@ -459,6 +461,7 @@
 
         <activity
             android:name=".AddFeedPig"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/feed"
             android:launchMode="singleTop" >
         </activity>
@@ -493,6 +496,7 @@
 
         <activity
             android:name=".AddMedPig"
+            android:windowSoftInputMode="adjustResize"
             android:label="@string/med"
             android:launchMode="singleTop" >
         </activity>

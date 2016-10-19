@@ -41,8 +41,8 @@ public class ChooseGender extends AppCompatActivity
     private LinearLayout bot_cont;
     //String week_farrowed = "";
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +50,9 @@ public class ChooseGender extends AppCompatActivity
         setContentView(R.layout.activity_gender);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -67,7 +67,6 @@ public class ChooseGender extends AppCompatActivity
         foster_sow = i.getStringExtra("foster_sow");
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
-        //week_farrowed = i.getStringExtra("week_farrowed");
 
         iv_male = (ImageView) findViewById(R.id.iv_male);
         iv_female = (ImageView) findViewById(R.id.iv_female);
@@ -97,10 +96,9 @@ public class ChooseGender extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
-                //i.putExtra("breed", breed);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
                 i.putExtra("foster_sow", foster_sow);
@@ -156,7 +154,6 @@ public class ChooseGender extends AppCompatActivity
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
-                    //i.putExtra("week_farrowed", week_farrowed);
                     i.putExtra("gender", gender);
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -187,10 +184,9 @@ public class ChooseGender extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
         Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
-        i.putExtra("breed", breed);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
         i.putExtra("foster_sow", foster_sow);

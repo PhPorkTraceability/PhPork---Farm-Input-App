@@ -28,6 +28,7 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 7/26/2016.
@@ -40,9 +41,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
     public final static String KEY_PENNO = "pen_no";
     public final static String KEY_FUNC = "function";
     public final static String KEY_GNAME = "group_name";
-
     private static final String FEED_MOD = "Feed Pig";
-    private static final String MED_MOD = "Medicate Pig";
 
     ViewPager viewPager;
     PagerAdapter adapter;
@@ -64,11 +63,18 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
     String selection = "selection";
     String module = "module";
 
+//    TestSessionManager test;
+//    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,7 +92,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
             getSupportActionBar().setTitle(R.string.feed);
             feed_id = i.getStringExtra("feed_id");
         }
-        if(module.equals(MED_MOD)) {
+        else{
             getSupportActionBar().setTitle(R.string.med);
             med_id = i.getStringExtra("med_id");
         }
@@ -163,7 +169,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
         });
 
         tv_title = (TextView) findViewById(R.id.tv_title);
-        String title = "Swipe to Choose a Pen to be Fed";
+        String title = "Swipe to Choose a Pen";
         tv_title.setText(title);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -200,7 +206,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
         for(int i = 0;i < the_list.size();i++) {
             HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen No: " + c.get(KEY_PENNO);
+            lists[i] = "Pen: " + c.get(KEY_PENNO);
             lists2[i] = "Function: " + c.get(KEY_FUNC);
             lists3[i] = "";
             ids[i] = c.get(KEY_PENID);
@@ -222,10 +228,13 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+//                count++;
+//                test.updateCount(count);
+
                 Intent i = new Intent(ChoosePen.this, ChooseHouse.class);
                 if(module.equals(FEED_MOD))
                     i.putExtra("feed_id", feed_id);
-                if(module.equals(MED_MOD))
+                else
                     i.putExtra("med_id", med_id);
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
@@ -275,7 +284,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
                     Intent i = new Intent(ChoosePen.this, ChooseByPig.class);
                     if(module.equals(FEED_MOD))
                         i.putExtra("feed_id", feed_id);
-                    if(module.equals(MED_MOD))
+                    else
                         i.putExtra("med_id", med_id);
 
                     i.putExtra("pen", pen);
@@ -305,7 +314,7 @@ public class ChoosePen extends AppCompatActivity implements View.OnDragListener 
         Intent i = new Intent(ChoosePen.this, ChooseHouse.class);
         if(module.equals(FEED_MOD))
             i.putExtra("feed_id", feed_id);
-        else if(module.equals(MED_MOD))
+        else
             i.putExtra("med_id", med_id);
         i.putExtra("selection", selection);
         i.putExtra("module", module);

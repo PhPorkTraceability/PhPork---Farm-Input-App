@@ -3,6 +3,9 @@ package uplb.cas.ics.phporktraceability;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -68,8 +71,8 @@ public class ChooseModule extends AppCompatActivity
             "Send Data to Server" };
     private int[] list;
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +80,9 @@ public class ChooseModule extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -199,8 +202,8 @@ public class ChooseModule extends AppCompatActivity
             	 show_help();
             	 return true;
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(ChooseModule.this, LocationPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -243,7 +246,7 @@ public class ChooseModule extends AppCompatActivity
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
 
-                    Toast.makeText(ChooseModule.this, "Chosen " + module, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(ChooseModule.this, "Chosen " + module, Toast.LENGTH_LONG).show();
 
                     if(module.equals(names[0])) {
                         Intent i = new Intent(ChooseModule.this, ChooseBoarPage.class);
@@ -287,8 +290,8 @@ public class ChooseModule extends AppCompatActivity
     public void onBackPressed(){
         super.onBackPressed();
 
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
 
         Intent i = new Intent(ChooseModule.this, LocationPage.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -337,8 +340,11 @@ public class ChooseModule extends AppCompatActivity
             TextView imageTitle = (TextView) itemView.findViewById(R.id.tv_subitem1);
             imageTitle.setText(titles[position]);
 
+            Resources res = getResources();
             ImageView imageView = (ImageView) itemView.findViewById(R.id.iv_image);
-            imageView.setImageResource(images[position]);
+            Bitmap bm = BitmapFactory.decodeResource(res, images[position]);
+            imageView.setImageBitmap(bm);
+            //imageView.setImageResource(images[position]);
 
             LinearLayout tl = (LinearLayout) itemView.findViewById(R.id.whole_item);
             tl.setTag(titles[position]);

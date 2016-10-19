@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -57,6 +58,9 @@ public class ChooseFeedPage extends AppCompatActivity
     String selection = "";
     String module = "";
 
+    TestSessionManager test;
+    int count = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +70,10 @@ public class ChooseFeedPage extends AppCompatActivity
         Intent i = getIntent();
         selection = i.getStringExtra("selection");
         module = i.getStringExtra("module");
+
+        test = new TestSessionManager(getApplicationContext());
+        HashMap<String, Integer> testuser = test.getCount();
+        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -185,6 +193,9 @@ public class ChooseFeedPage extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
+                count++;
+                test.updateCount(count);
+
                 Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
@@ -301,6 +312,9 @@ public class ChooseFeedPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
+        count++;
+        test.updateCount(count);
+
         Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
         i.putExtra("selection", selection);
         i.putExtra("module", module);

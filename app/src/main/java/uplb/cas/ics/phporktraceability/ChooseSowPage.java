@@ -49,8 +49,8 @@ public class ChooseSowPage extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
-    TestSessionManager test;
-    int count = 0;
+//    TestSessionManager test;
+//    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +58,9 @@ public class ChooseSowPage extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
+//        test = new TestSessionManager(getApplicationContext());
+//        HashMap<String, Integer> testuser = test.getCount();
+//        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -172,8 +172,8 @@ public class ChooseSowPage extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
+//                count++;
+//                test.updateCount(count);
                 Intent i = new Intent(ChooseSowPage.this, ChooseBoarPage.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -298,8 +298,8 @@ public class ChooseSowPage extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
+//        count++;
+//        test.updateCount(count);
         Intent i = new Intent(ChooseSowPage.this, ChooseBoarPage.class);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
