@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.SessionManager;
+import listeners.OnSwipeTouchListener;
 
 /**
  * Created by marmagno on 12/11/2015.
@@ -32,14 +34,17 @@ public class UpdatePigTagFrag extends Fragment {
     public final static String KEY_LABEL = "label";
     private static final String LOGCAT = UpdatePigTagFrag.class.getSimpleName();
     SQLiteHandler db;
+    SessionManager session;
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
+    String user_id = "";
     String pig_id = "";
-    String pen = "";
+    String pen_id = "";
     String house_id = "";
     String tag_id = "";
+    String prev_tagid = "";
     String tag_rfid = "";
     String label = "";
     String title = "Update Pig Tag";
@@ -80,15 +85,20 @@ public class UpdatePigTagFrag extends Fragment {
         Intent i = getActivity().getIntent();
         pig_id = i.getStringExtra("pig_id");
         house_id = i.getStringExtra("house_id");
-        pen = i.getStringExtra("pen");
+        pen_id = i.getStringExtra("pen_id");
 
         db = SQLiteHandler.getInstance();
+
+        session = new SessionManager(getContext());
+        HashMap<String, String > user = session.getUserLoc();
+        user_id = user.get(SessionManager.KEY_USERID);
 
         HashMap<String, String> b = db.getThePig(pig_id);
         String tag_disp = "Current Tag: ";
         tag_rfid = checkIfNull(b.get(KEY_TAGRFID));
         label = checkIfNull(b.get(KEY_LABEL));
         tag_disp += label + " (" + tag_rfid + ")";
+        prev_tagid = b.get(KEY_TAGID);
 
         tv_title.setText(title);
         tv_item.setText(tag_disp);
@@ -119,7 +129,6 @@ public class UpdatePigTagFrag extends Fragment {
                         iv_right.setVisibility(View.VISIBLE);
                     }
 
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -136,16 +145,14 @@ public class UpdatePigTagFrag extends Fragment {
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = frag_viewPager.getCurrentItem();
-                frag_viewPager.setCurrentItem(item - 1);
+                prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = frag_viewPager.getCurrentItem();
-                frag_viewPager.setCurrentItem(item + 1);
+                nextItem();
 
             }
         });
@@ -180,11 +187,6 @@ public class UpdatePigTagFrag extends Fragment {
                         Log.d(LOGCAT, "Dropped " + tag_id);
 
                         int vid = to.getId();
-                        if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            Toast.makeText(getActivity(), "Chosen " + tag_id,
-                                    Toast.LENGTH_LONG).show();
-
-                        }
                         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                         builder.setTitle("Updating Pig Tag...")
                                 .setMessage("Confirm update?")
@@ -193,12 +195,13 @@ public class UpdatePigTagFrag extends Fragment {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
                                         String pig_label = getLabel(pig_id);
-                                        db.updateTag(tag_id, pig_id, "active");
+                                        db.updateTag(pig_id, prev_tagid, null, user_id, "inactive");
+                                        db.updateTag(null, tag_id, pig_id, user_id, "active");
                                         //db.updateTagLabel(tag_id, pig_label);
                                         Intent i = new Intent(getActivity(),
                                                 UpdatePigActivity.class);
                                         i.putExtra("pig_id", pig_id);
-                                        i.putExtra("pen", pen);
+                                        i.putExtra("pen_id", pen_id);
                                         i.putExtra("house_id", house_id);
                                         i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                         getActivity().finish();
@@ -208,7 +211,21 @@ public class UpdatePigTagFrag extends Fragment {
                                     }
 
                                 })
-                                .setNegativeButton("No", null);
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent i = new Intent(getActivity(),
+                                                UpdatePigActivity.class);
+                                        i.putExtra("pig_id", pig_id);
+                                        i.putExtra("pen_id", pen_id);
+                                        i.putExtra("house_id", house_id);
+                                        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                        getActivity().finish();
+                                        getActivity().startActivity(i);
+
+                                        dialog.cancel();
+                                    }
+                                });
 
                         AlertDialog alert = builder.create();
                         alert.show();
@@ -231,7 +248,16 @@ public class UpdatePigTagFrag extends Fragment {
         if(count + 1 < lists.length){
             iv_right.setVisibility(View.VISIBLE);
         }
+    }
 
+    public void nextItem() {
+        int item = frag_viewPager.getCurrentItem();
+        frag_viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = frag_viewPager.getCurrentItem();
+        frag_viewPager.setCurrentItem(item - 1);
     }
 
     private String checkIfNull(String _value){

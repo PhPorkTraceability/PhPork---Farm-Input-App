@@ -83,12 +83,15 @@
 
             <Button
                 android:id="@+id/btn_proddate"
+                android:background="@drawable/btn_gradient"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_feedtype"
                 android:layout_alignBaseline="@id/tv_proddate"
                 android:layout_toEndOf="@+id/tv_proddate"
                 android:layout_toRightOf="@+id/tv_proddate"
+                android:padding="10dp"
                 android:text="Select" />
 
             <TextView
@@ -105,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_proddate"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="@dimen/mgt_big_item"
                 android:text="Date Given: "
                 android:textSize="@dimen/fs_reg_items"
@@ -113,6 +116,7 @@
 
             <Button
                 android:id="@+id/btn_dateGiven"
+                android:background="@drawable/btn_gradient"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -120,6 +124,7 @@
                 android:layout_alignBaseline="@id/tv_dateGiven"
                 android:layout_toEndOf="@+id/tv_dateGiven"
                 android:layout_toRightOf="@+id/tv_dateGiven"
+                android:padding="10dp"
                 android:text="Select" />
 
             <TextView
@@ -144,6 +149,7 @@
 
             <Button
                 android:id="@+id/btn_timeGiven"
+                android:background="@drawable/btn_gradient"
                 style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -151,6 +157,7 @@
                 android:layout_alignBaseline="@id/tv_timeGiven"
                 android:layout_toEndOf="@+id/tv_timeGiven"
                 android:layout_toRightOf="@+id/tv_timeGiven"
+                android:padding="10dp"
                 android:text="Select" />
 
             <TextView

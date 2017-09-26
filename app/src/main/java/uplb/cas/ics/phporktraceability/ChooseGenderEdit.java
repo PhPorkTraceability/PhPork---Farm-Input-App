@@ -2,6 +2,7 @@ package uplb.cas.ics.phporktraceability;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -35,11 +36,6 @@ public class ChooseGenderEdit extends AppCompatActivity
     String pen;
     String feed_id;
     String med_id;
-    private Toolbar toolbar;
-    private ImageView iv_male;
-    private ImageView iv_female;
-    private LinearLayout top_cont;
-    private LinearLayout bot_cont;
     //String week_farrowed = "";
 
     @Override
@@ -48,24 +44,26 @@ public class ChooseGenderEdit extends AppCompatActivity
         setContentView(R.layout.activity_gender);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.gender_edit);
 
         retrieveIntentExtra(getIntent());
         //week_farrowed = i.getStringExtra("week_farrowed");
 
-        iv_male = (ImageView) findViewById(R.id.iv_male);
-        iv_female = (ImageView) findViewById(R.id.iv_female);
-        top_cont = (LinearLayout) findViewById(R.id.top_container);
-        bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
+        ImageView iv_male = (ImageView) findViewById(R.id.iv_male);
+        ImageView iv_female = (ImageView) findViewById(R.id.iv_female);
+        LinearLayout bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
 
         iv_male.setOnTouchListener(this);
         iv_female.setOnTouchListener(this);
-        //top_cont.setOnDragListener(this);
         bot_cont.setOnDragListener(this);
 
     }
@@ -100,12 +98,12 @@ public class ChooseGenderEdit extends AppCompatActivity
         med_id = i.getStringExtra("med_id");
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -117,8 +115,6 @@ public class ChooseGenderEdit extends AppCompatActivity
             case android.R.id.home:
                 Intent i = new Intent(ChooseGenderEdit.this, AddThePig.class);
                 createIntent(i);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -160,8 +156,6 @@ public class ChooseGenderEdit extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseGenderEdit.this, "Chosen " + gender,
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(ChooseGenderEdit.this, AddThePig.class);
                     createIntent(i);
                     startActivity(i);
@@ -182,7 +176,10 @@ public class ChooseGenderEdit extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -190,11 +187,8 @@ public class ChooseGenderEdit extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
         Intent i = new Intent(this, AddThePig.class);
         createIntent(i);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }

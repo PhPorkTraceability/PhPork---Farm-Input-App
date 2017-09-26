@@ -1,8 +1,11 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -35,7 +39,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
     private static final String LOGCAT = AssignPenEdit.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -57,7 +60,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
     String[] lists3 = {};
     String[] ids = {};
     String location= "";
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +67,16 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.assign_pen_edit);
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserLoc();
@@ -82,12 +88,9 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
 
         loadLists();
 
-        ll = (LinearLayout) findViewById(R.id.top_container);
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        //ll.setOnDragListener(this);
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        //viewPager.setOnDragListener(this);
         adapter = new CustomPagerAdapter(AssignPenEdit.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
@@ -195,13 +198,11 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> the_list = db.getPensByLocs(location);
-
         lists = new String[the_list.size()];
         lists2 = new String[the_list.size()];
         lists3 = new String[the_list.size()];
         ids = new String[the_list.size()];
-        for(int i = 0;i < the_list.size();i++)
-        {
+        for (int i = 0; i < the_list.size(); i++) {
             HashMap<String, String> c = the_list.get(i);
 
             lists[i] = "Pen: " + c.get(KEY_PENNO);
@@ -211,12 +212,12 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -228,8 +229,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
             case android.R.id.home:
                 Intent i = new Intent(AssignPenEdit.this, AddThePig.class);
                 createIntent(i);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -269,8 +268,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(AssignPenEdit.this, "Chosen " + pen,
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(AssignPenEdit.this, AddThePig.class);
                     createIntent(i);
                     startActivity(i);
@@ -288,7 +285,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
         Intent i = new Intent(AssignPenEdit.this, AssignRFIDPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
@@ -297,8 +293,6 @@ public class AssignPenEdit extends AppCompatActivity implements View.OnDragListe
         i.putExtra("breed", breed);
         //i.putExtra("week_farrowed", week_farrowed);
         i.putExtra("gender", gender);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }
 }

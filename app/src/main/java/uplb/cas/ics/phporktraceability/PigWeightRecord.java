@@ -1,12 +1,14 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -14,7 +16,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.achartengine.ChartFactory;
@@ -32,6 +36,8 @@ import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import helper.SessionManager;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 12/7/2015.
@@ -51,10 +57,15 @@ public class PigWeightRecord extends AppCompatActivity {
 
     String pig_id = "";
     String house_id = "";
-    String pen = "";
+    String pen_id = "";
     DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
     Date dateObj = new Date();
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,16 +76,31 @@ public class PigWeightRecord extends AppCompatActivity {
         Intent i = getIntent();
         pig_id = i.getStringExtra("pig_id");
         house_id = i.getStringExtra("house_id");
-        pen = i.getStringExtra("pen");
+        pen_id = i.getStringExtra("pen_id");
 
         db = SQLiteHandler.getInstance();
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(PigWeightRecord.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.weight_record);
 
         rl = (LinearLayout) findViewById(R.id.main_content);
 
@@ -87,33 +113,29 @@ public class PigWeightRecord extends AppCompatActivity {
             public void onClick(View v) {
                 if(et_newWeight.getText().length() > 0 &&
                         et_remarks.getText().length() > 0){
+                    SessionManager session = new SessionManager(getApplicationContext());
+                    HashMap<String, String> user = session.getUserSession();
+                    String user_id = user.get(SessionManager.KEY_USERID);
                     String weight = et_newWeight.getText().toString().trim();
                     String date = curDate.format(dateObj);
                     String time = curTime.format(dateObj);
                     String remarks = et_remarks.getText().toString();
                     String sync_status = "new";
 
-                    db.addWeightRecByAuto(weight, pig_id, date, time, remarks, sync_status);
-
-                    Toast.makeText(PigWeightRecord.this, "Updated Successfully.",
-                            Toast.LENGTH_LONG).show();
+                    db.addWeightRecByAuto(weight, pig_id, date, time, remarks, user_id, sync_status);
 
                     Intent intent = new Intent(PigWeightRecord.this, PigWeightRecord.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                     intent.putExtra("pig_id", pig_id);
                     intent.putExtra("house_id", house_id);
-                    intent.putExtra("pen", pen);
+                    intent.putExtra("pen_id", pen_id);
                     finish();
                     startActivity(intent);
                 }
                 else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(PigWeightRecord.this);
-                    builder.setTitle("Fill up data.")
-                            .setMessage("Please Enter the weight and remarks before proceeding.")
-                            .setCancelable(false)
-                            .setNeutralButton("OK", null);
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Fill up details before proceeding", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
             }
         });
@@ -176,7 +198,7 @@ public class PigWeightRecord extends AppCompatActivity {
         mRenderer.setScale(2f);
         mRenderer.setBarSpacing(1);   // adding spacing between the line or stacks
         mRenderer.setYAxisMin(0);
-        mRenderer.setYAxisMax(200);
+        mRenderer.setYAxisMax(150);
         mRenderer.setXAxisMin(0);
         mRenderer.setXAxisMax(3);
         mRenderer.setShowGridX(true);
@@ -211,13 +233,6 @@ public class PigWeightRecord extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -227,9 +242,7 @@ public class PigWeightRecord extends AppCompatActivity {
             case android.R.id.home:
                 Intent i = new Intent(PigWeightRecord.this, ViewListOfPigs.class);
                 i.putExtra("house_id", house_id);
-                i.putExtra("pen", pen);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("pen_id", pen_id);
                 startActivity(i);
                 finish();
                 return true;
@@ -240,12 +253,9 @@ public class PigWeightRecord extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
         Intent i = new Intent(PigWeightRecord.this, ViewListOfPigs.class);
         i.putExtra("house_id", house_id);
-        i.putExtra("pen", pen);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra("pen_id", pen_id);
         startActivity(i);
         finish();
     }

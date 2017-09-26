@@ -1,34 +1,34 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
-import helper.TestSessionManager;
+import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -39,11 +39,10 @@ public class ChooseFeedPage extends AppCompatActivity
     public final static String KEY_FEEDID = "feed_id";
     public final static String KEY_FEEDNAME = "feed_name";
     public final static String KEY_FEEDTYPE = "feed_type";
-    public final static String KEY_PROD = "prod_date";
+
     private static final String LOGCAT = ChooseFeedPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -53,13 +52,14 @@ public class ChooseFeedPage extends AppCompatActivity
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
-    private Toolbar toolbar;
 
     String selection = "";
     String module = "";
 
-    TestSessionManager test;
-    int count = 0;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,30 +67,48 @@ public class ChooseFeedPage extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        Intent i = getIntent();
-        selection = i.getStringExtra("selection");
-        module = i.getStringExtra("module");
-
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ChooseFeedPage.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.feed);
 
         db = SQLiteHandler.getInstance();
 
         loadLists();
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        ll = (LinearLayout) findViewById(R.id.bottom_container);
-
         bl.setOnDragListener(this);
-        //ll.setOnDragListener(this);
+        bl = (LinearLayout) findViewById(R.id.bottom_container);
+        bl.setOnDragListener(this);
+        bl.setOnTouchListener(new OnSwipeTouchListener(ChooseFeedPage.this) {
+            @Override
+            public void onSwipeLeft() {
+                nextItem();
+            }
+
+            @Override
+            public void onSwipeRight(){
+                prevItem();
+            }
+        });
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new CustomPagerAdapter(ChooseFeedPage.this, lists1, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
@@ -103,8 +121,6 @@ public class ChooseFeedPage extends AppCompatActivity
             @Override
             public void onPageSelected(int position) {
                 try {
-                    // Log.i("View Pager", "page selected " + position);
-
                     int currentPage = position + 1;
                     if (currentPage == 1) {
                         iv_left.setVisibility(View.INVISIBLE);
@@ -117,17 +133,13 @@ public class ChooseFeedPage extends AppCompatActivity
                         iv_left.setVisibility(View.VISIBLE);
                         iv_right.setVisibility(View.VISIBLE);
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
+            public void onPageScrollStateChanged(int state) {}
         });
 
         iv_left = (ImageView)findViewById(R.id.iv_left);
@@ -138,16 +150,14 @@ public class ChooseFeedPage extends AppCompatActivity
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
+                prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
+                nextItem();
 
             }
         });
@@ -156,18 +166,26 @@ public class ChooseFeedPage extends AppCompatActivity
         String title = "Swipe to Choose what to Feed";
         tv_title.setText(title);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    add_feed();
-                }
-            });
-            fab.setVisibility(View.VISIBLE);
-        } else {
-            Log.e(LOGCAT, "fab is null.");
-        }
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        if(fab != null) {
+//            fab.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    add_feed();
+//                }
+//            });
+//            fab.setVisibility(View.VISIBLE);
+//        } else {
+//            Log.e(LOGCAT, "fab is null.");
+//        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        Intent i = getIntent();
+        selection = i.getStringExtra("selection");
+        module = i.getStringExtra("module");
     }
 
     public void checkList(){
@@ -175,15 +193,19 @@ public class ChooseFeedPage extends AppCompatActivity
         if(count + 1 < lists1.length){
             iv_right.setVisibility(View.VISIBLE);
         }
-
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
+    public void nextItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item + 1);
     }
+
+    public void prevItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item - 1);
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -193,9 +215,6 @@ public class ChooseFeedPage extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
-
                 Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
@@ -209,42 +228,61 @@ public class ChooseFeedPage extends AppCompatActivity
         }
     }
 
-    private String getLabel(String _id){
-        String result = "";
-
-        int size = _id.length();
-        String s = "0";
-        size = 6 - size;
-        for(int i = 0; i < size;i++){
-            s = s + "0";
-        }
-        s = s + _id;
-        String temp1 = s.substring(0,2);
-        String temp2 = s.substring(3,7);
-        result = temp1 + "-" + temp2;
-        return result;
-    }
-
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> feeds = db.getFeeds();
+        int size = feeds.size();
+        if(size > 0) {
 
-        lists1 = new String[feeds.size()+1];
-        lists2 = new String[feeds.size()+1];
-        lists3 = new String[feeds.size()+1];
-        ids = new String[feeds.size()+1];
+            lists1 = new String[feeds.size() + 1];
+            lists2 = new String[feeds.size() + 1];
+            lists3 = new String[feeds.size() + 1];
+            ids = new String[feeds.size() + 1];
 
-        lists1[0] = "";
-        lists2[0] = "---";
-        lists3[0] = "";
-        ids[0] = "";
+            lists1[0] = "";
+            lists2[0] = "---";
+            lists3[0] = "";
+            ids[0] = "";
 
-        for(int i = 0;i < feeds.size();i++) {
-            HashMap<String, String> c = feeds.get(i);
-            lists1[i+1] = "Feed Name: " + c.get(KEY_FEEDNAME);
-            lists2[i+1] = "Feed Type: " + c.get(KEY_FEEDTYPE);
-            lists3[i+1] = "";
-            ids[i+1] = c.get(KEY_FEEDID);
+            for (int i = 0; i < size; i++) {
+                HashMap<String, String> c = feeds.get(i);
+                lists1[i + 1] = "Feed Name: " + c.get(KEY_FEEDNAME);
+                lists2[i + 1] = "Feed Type: " + c.get(KEY_FEEDTYPE);
+                lists3[i + 1] = "";
+                ids[i + 1] = c.get(KEY_FEEDID);
+            }
+        } else {
+            final int SPLASH_TIME_OUT = 2000;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No data available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                            new Handler().postDelayed(new Runnable() {
+
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(ChooseFeedPage.this, ChooseModule.class);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
@@ -279,8 +317,6 @@ public class ChooseFeedPage extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                   /*Toast.makeText(ChooseFeedPage.this, "Chosen Feed: " + getLabel(feed_id),
-                            Toast.LENGTH_LONG).show(); */
                     Intent i = new Intent(ChooseFeedPage.this, ChooseHouse.class);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
@@ -303,7 +339,10 @@ public class ChooseFeedPage extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -311,20 +350,13 @@ public class ChooseFeedPage extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-        count++;
-        test.updateCount(count);
-
         Intent i = new Intent(ChooseFeedPage.this, ChooseSelection.class);
         i.putExtra("selection", selection);
         i.putExtra("module", module);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }
-
-
+    /*
     public void add_feed(){
 
 
@@ -397,4 +429,5 @@ public class ChooseFeedPage extends AppCompatActivity
         adapter = new CustomPagerAdapter(ChooseFeedPage.this, lists1, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
     }
+    */
 }

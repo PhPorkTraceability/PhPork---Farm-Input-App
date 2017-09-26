@@ -1,12 +1,13 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -14,27 +15,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
-import helper.TestSessionManager;
+import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -62,11 +59,11 @@ public class LocationPage extends AppCompatActivity
     String[] ids = {};
     String function = "";
     String location = "";
-    private Toolbar toolbar;
-    private ActionBar actionBar;
 
-//    TestSessionManager test;
-//    int count = 0;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,21 +71,27 @@ public class LocationPage extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-//        test = new TestSessionManager(getApplicationContext());
-//        HashMap<String, Integer> user = test.getCount();
-//        count = user.get(TestSessionManager.KEY_COUNT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        toolbar.setLogo(R.mipmap.ic_phpork);
-        toolbar.setLogoDescription(R.string.home);
-
-        actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
-
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(LocationPage.this, HomeActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.location);
 
         db = SQLiteHandler.getInstance();
 
@@ -102,7 +105,20 @@ public class LocationPage extends AppCompatActivity
         bl = (LinearLayout) findViewById(R.id.bottom_container);
 
         bl.setOnDragListener(this);
-        //ll.setOnDragListener(this);
+        bl = (LinearLayout) findViewById(R.id.bottom_container);
+        bl.setOnDragListener(this);
+        bl.setOnTouchListener(new OnSwipeTouchListener(LocationPage.this) {
+            @Override
+            public void onSwipeLeft() {
+                nextItem();
+            }
+
+            @Override
+            public void onSwipeRight(){
+                prevItem();
+            }
+        });
+
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new CustomPagerAdapter(LocationPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
@@ -144,24 +160,38 @@ public class LocationPage extends AppCompatActivity
 
         checkList();
 
+        iv_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prevItem();
+            }
+        });
+
+        iv_right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextItem();
+
+            }
+        });
+
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Swipe to Choose a Farm";
         tv_title.setText(title);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    addFarm();
-                }
-            });
-        } else {
-            Log.e(LOGCAT, "fab is null.");
-        }
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        if(fab != null) {
+//            fab.setVisibility(View.VISIBLE);
+//            fab.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    addFarm();
+//                }
+//            });
+//        } else {
+//            Log.e(LOGCAT, "fab is null.");
+//        }
     }
-
 
     public void checkList(){
         int count = viewPager.getCurrentItem();
@@ -169,29 +199,23 @@ public class LocationPage extends AppCompatActivity
             iv_right.setVisibility(View.VISIBLE);
         }
 
-        iv_left.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
-            }
-        });
-
-        iv_right.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
-
-            }
-        });
-
     }
+
+    public void nextItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item - 1);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_help, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
@@ -202,16 +226,18 @@ public class LocationPage extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
-            case R.id.action_help:
-            	 show_help();
-            	 return true;
+//            case R.id.action_help:
+//            	 show_help();
+//            	 return true;
             case android.R.id.home:
-//                count++;
-//                test.updateCount(count);
                 Intent i = new Intent(LocationPage.this, HomeActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
+                finish();
+                return true;
+            case R.id.action_logout:
+                session.logoutUser();
                 finish();
                 return true;
             default:
@@ -240,7 +266,7 @@ public class LocationPage extends AppCompatActivity
         }
         else{
 
-            final int SPLASH_TIME_OUT = 1500;
+            final int SPLASH_TIME_OUT = 1000;
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("No data available.")
                     .setMessage("Please update your database. Cannot proceed any further.")
@@ -260,8 +286,6 @@ public class LocationPage extends AppCompatActivity
                                     // This method will be executed once the timer is over
                                     // Start your app main activity
                                     Intent i = new Intent(LocationPage.this, HomeActivity.class);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                     startActivity(i);
                                     finish();
 
@@ -307,23 +331,9 @@ public class LocationPage extends AppCompatActivity
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
                     session.setLocation(function, location);
 
-                    //Toast.makeText(LocationPage.this, "Chosen " + location, Toast.LENGTH_LONG).show();
-
                     Intent i = new Intent(LocationPage.this, ChooseModule.class);
                     startActivity(i);
                     finish();
-
-                    /*
-                    if(function.equals("weaning")) {
-                        Intent i = new Intent(LocationPage.this, WeaningPage.class);
-                        startActivity(i);
-                        finish();
-                    } else {
-                        Intent i = new Intent(LocationPage.this, GrowingPage.class);
-                        startActivity(i);
-                        finish();
-                    }
-                    */
                 }
 
                 Log.d(LOGCAT, "Dropped " + location);
@@ -342,7 +352,11 @@ public class LocationPage extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
+
             return true;
         }
         else { return false; }
@@ -350,21 +364,13 @@ public class LocationPage extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-
-//        count++;
-//        test.updateCount(count);
-
         Intent i = new Intent(LocationPage.this, HomeActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }
-    
-    
-
+    /*
     public void show_help(){
         Intent intent = new Intent(this,HelpPage.class);
         intent.putExtra("help_page", 2);
@@ -414,156 +420,6 @@ public class LocationPage extends AppCompatActivity
         loadLists();
         adapter = new CustomPagerAdapter(LocationPage.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
-    }
-
-
-
-    /*
-    ImageView iv_rf11;
-    ImageView iv_rf18;
-    ImageView iv_rf19;
-
-    SessionManager session;
-
-    String function = "";
-    String location = "";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
-
-        session = new SessionManager(getApplicationContext());
-
-        Intent i = getIntent();
-        function = i.getStringExtra("function");
-
-        bl = (LinearLayout) findViewById(R.id.bottom_container);
-        bl.setOnDragListener(this);
-
-        iv_rf11 = (ImageView) findViewById(R.id.iv_rf11);
-        iv_rf18 = (ImageView) findViewById(R.id.iv_rf18);
-        iv_rf19 = (ImageView) findViewById(R.id.iv_rf19);
-
-        iv_rf11.setOnTouchListener(this);
-        iv_rf18.setOnTouchListener(this);
-        iv_rf19.setOnTouchListener(this);
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        switch(item.getItemId()) {
-            //noinspection SimplifiableIfStatement
-            case R.id.action_settings:
-                return true;
-            case android.R.id.home:
-                Intent i = new Intent(LocationPage.this, HomeActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    @Override
-    public boolean onDrag(View v, DragEvent e) {
-        int action = e.getAction();
-        switch(action){
-            case DragEvent.ACTION_DRAG_STARTED:
-                Log.d(LOGCAT, "Drag event started");
-                break;
-            case DragEvent.ACTION_DRAG_ENTERED:
-                Log.d(LOGCAT, "Drag event entered into "+ v.toString());
-                break;
-            case DragEvent.ACTION_DRAG_EXITED:
-                Log.d(LOGCAT, "Drag event exited from " + v.toString());
-                break;
-            case DragEvent.ACTION_DROP:
-                TextView tv_drag = (TextView) findViewById(R.id.tv_dragHere);
-                View view = (View) e.getLocalState();
-                ViewGroup from = (ViewGroup) view.getParent();
-                from.removeView(view);
-                view.invalidate();
-                LinearLayout to = (LinearLayout) v;
-                to.addView(view);
-                to.removeView(tv_drag);
-                view.setVisibility(View.VISIBLE);
-
-                int id = view.getId();
-                location = findViewById(id).getTag().toString();
-
-                int vid = to.getId();
-                if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    session.setLogin(function, location);
-
-                    Toast.makeText(LocationPage.this, "Chosen " + location.toUpperCase(),
-                            Toast.LENGTH_LONG).show();
-
-                    if(function.equals("weaning")) {
-                        Intent i = new Intent(LocationPage.this, WeaningPage.class);
-                        startActivity(i);
-                        finish();
-                    } else {
-                        Intent i = new Intent(LocationPage.this, GrowingPage.class);
-                        startActivity(i);
-                        finish();
-                    }
-                }
-
-                Log.d(LOGCAT, "Dropped " + location);
-                break;
-            case DragEvent.ACTION_DRAG_ENDED:
-                Log.d(LOGCAT, "Drag ended");
-                break;
-            default:
-                break;
-        }
-        return true;
-
-    }
-
-    @Override
-    public boolean onTouch(View v, MotionEvent e) {
-        if (e.getAction() == MotionEvent.ACTION_DOWN) {
-            View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
-            return true;
-        }
-        else { return false; }
-    }
-
-    @Override
-    public void onBackPressed(){
-        super.onBackPressed();
-
-        Intent i = new Intent(LocationPage.this, HomeActivity.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
-        finish();
     }
     */
 }

@@ -1,7 +1,10 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -35,7 +38,6 @@ public class ChooseFosterSowEdit extends AppCompatActivity
     private static final String LOGCAT = ChooseFosterSowEdit.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -55,7 +57,6 @@ public class ChooseFosterSowEdit extends AppCompatActivity
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
-    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,12 +64,16 @@ public class ChooseFosterSowEdit extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.foster_sowparent_edit);
 
         retrieveIntentExtra(getIntent());
 
@@ -77,10 +82,8 @@ public class ChooseFosterSowEdit extends AppCompatActivity
         loadLists();
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        ll = (LinearLayout) findViewById(R.id.bottom_container);
 
         bl.setOnDragListener(this);
-        //ll.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         adapter = new CustomPagerAdapter(ChooseFosterSowEdit.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
@@ -186,12 +189,12 @@ public class ChooseFosterSowEdit extends AppCompatActivity
 
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -203,8 +206,6 @@ public class ChooseFosterSowEdit extends AppCompatActivity
             case android.R.id.home:
                 Intent i = new Intent(ChooseFosterSowEdit.this, AddThePig.class);
                 createIntent(i);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -213,29 +214,29 @@ public class ChooseFosterSowEdit extends AppCompatActivity
         }
     }
 
-    private String checkIfNull(String _value){
-        String result = "";
-        if(_value != null && !_value.isEmpty() && !_value.equals("null")) return _value;
-        else return result;
-    }
-
-    private String getLabel(String _id){
-        String result = "";
-
-        if(!checkIfNull(_id).equals("")) {
-            int size = _id.length();
-            String s = "0";
-            size = 6 - size;
-            for (int i = 0; i < size; i++) {
-                s = s + "0";
-            }
-            s = s + _id;
-            String temp1 = s.substring(0, 2);
-            String temp2 = s.substring(3, 7);
-            result = temp1 + "-" + temp2;
-        }
-        return result;
-    }
+//    private String checkIfNull(String _value){
+//        String result = "";
+//        if(_value != null && !_value.isEmpty() && !_value.equals("null")) return _value;
+//        else return result;
+//    }
+//
+//    private String getLabel(String _id){
+//        String result = "";
+//
+//        if(!checkIfNull(_id).equals("")) {
+//            int size = _id.length();
+//            String s = "0";
+//            size = 6 - size;
+//            for (int i = 0; i < size; i++) {
+//                s = s + "0";
+//            }
+//            s = s + _id;
+//            String temp1 = s.substring(0, 2);
+//            String temp2 = s.substring(3, 7);
+//            result = temp1 + "-" + temp2;
+//        }
+//        return result;
+//    }
 
     public void loadLists(){
 
@@ -251,14 +252,29 @@ public class ChooseFosterSowEdit extends AppCompatActivity
         lists3[0] = "";
         ids[0] = "";
 
-        for(int i = 0;i < sows.size();i++)
-        {
-            HashMap<String, String> c = sows.get(i);
-            String sow_id = c.get(KEY_PARENTID);
-            lists[i+1] = "Label ID: " + c.get(KEY_LABELID);
-            lists2[i+1] = "Sow: " + getLabel(sow_id);
-            lists3[i+1] = "";
-            ids[i+1] = c.get(KEY_PARENTID);
+        if(sows.size() > 0) {
+            for (int i = 0; i < sows.size(); i++) {
+                HashMap<String, String> c = sows.get(i);
+                String sow_id = c.get(KEY_PARENTID);
+                lists[i + 1] = "Label ID: " + c.get(KEY_LABELID);
+                lists2[i + 1] = "Sow: " + sow_id;
+                lists3[i + 1] = "";
+                ids[i + 1] = c.get(KEY_PARENTID);
+            }
+        } else {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No sows available.")
+                    .setMessage("Please update your database.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
@@ -293,9 +309,6 @@ public class ChooseFosterSowEdit extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseFosterSowEdit.this,  "Chosen Foster Sow Parent: " +
-                                    getLabel(foster_sow),
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(ChooseFosterSowEdit.this, AddThePig.class);
                     createIntent(i);
                     startActivity(i);
@@ -317,7 +330,10 @@ public class ChooseFosterSowEdit extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -325,13 +341,9 @@ public class ChooseFosterSowEdit extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-
-        Intent i = new Intent(ChooseFosterSowEdit.this, ChooseSowPage.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Intent i = new Intent(ChooseFosterSowEdit.this, AddThePig.class);
+        createIntent(i);
         startActivity(i);
         finish();
     }
-
 }

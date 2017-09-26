@@ -15,13 +15,7 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            <include layout="@layout/toolbar"/>
 
         </android.support.design.widget.AppBarLayout>
 
@@ -197,14 +191,15 @@
 
             <Button
                 android:id="@+id/btn_farrowing"
-                style="?android:attr/buttonStyleSmall"
+                android:background="@drawable/btn_gradient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_week"
                 android:layout_alignBaseline="@id/tv_farrowing"
                 android:layout_toEndOf="@+id/tv_farrowing"
                 android:layout_toRightOf="@+id/tv_farrowing"
-                android:textSize="20sp"
+                android:textSize="24sp"
+                android:padding="12dp"
                 android:text="Select" />
 
             <TextView
@@ -291,7 +286,7 @@
 
             <Button
                 android:id="@+id/btn_addPig"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/tv_group"
                 android:layout_alignStart="@+id/tv_group"

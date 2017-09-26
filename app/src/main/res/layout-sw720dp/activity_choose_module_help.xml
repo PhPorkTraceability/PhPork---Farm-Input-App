@@ -7,8 +7,8 @@
     <!-- Add Pig Help Description -->
     <ImageView
         android:id="@+id/iv_addpig_help"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:scaleType="fitCenter"
         android:layout_alignParentLeft="true"
 
@@ -16,7 +16,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="29dp"
         android:layout_marginStart="29dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/ic_addpig"/>
 
     <TextView
@@ -33,7 +33,7 @@
         android:text="@string/add_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="42sp" />
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/tv_add_pig_desc"
@@ -47,21 +47,21 @@
         android:text="@string/add_pig_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="32sp" />
+        android:textSize="28sp" />
 
 
 
     <!-- Add Feed Help Description -->
     <ImageView
         android:id="@+id/iv_addfeed_help"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:scaleType="fitCenter"
+        android:layout_marginTop="25dp"
+        android:src="@drawable/ic_feeds"
         android:layout_below="@+id/iv_addpig_help"
-        android:layout_marginTop="50dp"
-        android:layout_toLeftOf="@+id/tv_add_pig_desc"
-        android:layout_toStartOf="@+id/tv_add_pig_desc"
-        android:src="@drawable/ic_feeds" />
+        android:layout_alignLeft="@+id/iv_addpig_help"
+        android:layout_alignStart="@+id/iv_addpig_help" />
 
     <TextView
         android:id="@+id/tv_add_feed_title"
@@ -76,7 +76,7 @@
         android:text="@string/feed_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="42sp" />
+        android:textSize="36sp" />
 
     <TextView
         android:id="@+id/tv_add_feed_desc"
@@ -90,16 +90,16 @@
         android:text="@string/add_feed_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="32sp" />
+        android:textSize="28sp" />
 
     <!-- Add Med Help Description -->
     <ImageView
         android:id="@+id/iv_addmed_help"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:scaleType="fitCenter"
         android:layout_below="@+id/iv_addfeed_help"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="40dp"
         android:layout_toLeftOf="@id/tv_add_pig_desc"
         android:layout_toStartOf="@id/tv_add_pig_desc"
         android:src="@drawable/ic_medications"
@@ -108,7 +108,7 @@
         android:id="@+id/tv_add_med_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:layout_toRightOf="@id/iv_addmed_help"
         android:layout_toEndOf="@id/iv_addmed_help"
         android:layout_alignTop="@id/iv_addmed_help"
@@ -118,7 +118,7 @@
         android:text="@string/add_med_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="42sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_add_med_desc"
@@ -133,25 +133,24 @@
         android:text="@string/add_med_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="32sp" />
+        android:textSize="28sp" />
 
     <!-- View Pig Help Description -->
     <ImageView
         android:id="@+id/iv_viewpig_help"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:scaleType="fitCenter"
-        android:layout_below="@+id/iv_addmed_help"
-        android:layout_marginTop="50dp"
-        android:layout_toLeftOf="@id/tv_add_pig_desc"
-        android:layout_toStartOf="@id/tv_add_pig_desc"
+        android:layout_marginTop="40dp"
         android:src="@drawable/ic_viewlist"
-        />
+        android:layout_below="@+id/iv_addmed_help"
+        android:layout_toLeftOf="@+id/tv_add_med_desc"
+        android:layout_toStartOf="@+id/tv_add_med_desc" />
     <TextView
         android:id="@+id/tv_view_pig_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:layout_toRightOf="@id/iv_viewpig_help"
         android:layout_toEndOf="@id/iv_viewpig_help"
         android:layout_alignTop="@id/iv_viewpig_help"
@@ -161,7 +160,7 @@
         android:text="@string/view_pig_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="42sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_view_pig_desc"
@@ -176,19 +175,19 @@
         android:text="@string/view_pig_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="28sp"/>
 
     <!-- Update Server Help Description -->
     <ImageView
         android:id="@+id/iv_update_server_help"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
         android:scaleType="fitCenter"
-        android:layout_below="@+id/iv_viewpig_help"
-        android:layout_marginTop="50dp"
-        android:layout_toLeftOf="@id/tv_add_pig_desc"
-        android:layout_toStartOf="@id/tv_add_pig_desc"
-        android:src="@drawable/ic_senddata" />
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_senddata"
+        android:layout_below="@+id/tv_view_pig_desc"
+        android:layout_toLeftOf="@+id/tv_view_pig_desc"
+        android:layout_toStartOf="@+id/tv_view_pig_desc" />
 
     <TextView
         android:id="@+id/tv_update_server_title"
@@ -204,7 +203,7 @@
         android:text="@string/upload_data_title"
         android:gravity="center"
         android:textColor="@android:color/white"
-        android:textSize="42sp"/>
+        android:textSize="36sp"/>
 
     <TextView
         android:id="@+id/tv_update_server_desc"
@@ -219,7 +218,7 @@
         android:text="@string/upload_data_desc"
         android:gravity="start"
         android:textColor="@android:color/white"
-        android:textSize="32sp"/>
+        android:textSize="28sp"/>
 
     <!-- Close Button -->
     <Button

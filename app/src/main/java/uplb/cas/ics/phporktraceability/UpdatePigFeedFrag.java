@@ -195,8 +195,6 @@ public class UpdatePigFeedFrag extends Fragment {
 
                         int vid = to.getId();
                         if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            Toast.makeText(getActivity(), "Chosen " + feed_id,
-                                    Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Updating Last Feed...")
                                     .setMessage("Confirm update?")
@@ -211,7 +209,7 @@ public class UpdatePigFeedFrag extends Fragment {
                                                 String prod_date = "";
                                                 quantity = et_edit.getText().toString().trim();
                                                 String unit = "";
-                                                db.feedPigRecAuto(quantity, unit, date, time, pig_id,
+                                                db.addFeedTransAuto(quantity, unit, date, time, pig_id,
                                                         feed_id, prod_date, "false");
                                                 Intent i = new Intent(getActivity(),
                                                         UpdatePigActivity.class);

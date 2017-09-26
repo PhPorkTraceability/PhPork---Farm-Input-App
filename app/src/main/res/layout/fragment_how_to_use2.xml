@@ -32,9 +32,9 @@
         android:text="@string/how_to_2" />
     <ImageView
         android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="15dp"
         android:scaleType="fitCenter"
         android:layout_below="@+id/textView2"
         android:layout_centerHorizontal="true"

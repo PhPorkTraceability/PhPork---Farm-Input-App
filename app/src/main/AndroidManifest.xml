@@ -38,7 +38,6 @@
 
         <activity
             android:name=".IntroSliderActivity"
-            android:label="@string/title_activity_intro_slider"
             android:launchMode="singleInstance" />
 
         <activity
@@ -67,18 +66,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocationPage" />
         </activity>
-        <!--
-        <activity
-            android:name=".WeaningPage"
-            android:label="@string/function"
-            android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage">
-
-            Parent activity meta-data to support 4.0 and lower
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".LocationPage" />
-        </activity> -->
 
         <activity
             android:name=".ChooseModule"
@@ -118,18 +105,6 @@
 
         <activity
             android:name=".ViewListOfPigs"
-            android:label="@string/function"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseViewPen">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseViewPen" />
-        </activity>
-
-        <activity
-            android:name=".ViewListOfPigs_v2"
             android:label="@string/function"
             android:launchMode="singleTop"
             android:parentActivityName=".ChooseViewPen">
@@ -278,18 +253,6 @@
         </activity>
 
         <activity
-            android:name=".WeekFarrowedPage"
-            android:label="@string/week_farrowed"
-            android:launchMode="singleTop"
-            android:parentActivityName=".ChooseBreedPage">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ChooseBreedPage" />
-        </activity>
-
-        <activity
             android:name=".ChooseGender"
             android:label="@string/gender"
             android:launchMode="singleTop"
@@ -422,19 +385,6 @@
                 android:value=".AssignPenPage" />
         </activity>
 
-        <!--
-        <activity
-            android:name=".GrowingPage"
-            android:label="@string/function"
-            android:launchMode="singleTop"
-            android:parentActivityName=".LocationPage">
-
-            Parent activity meta-data to support 4.0 and lower
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".LocationPage" />
-        </activity> -->
-
         <activity
             android:name=".ChooseSelection"
             android:label="@string/choose_sel"
@@ -507,5 +457,4 @@
             android:launchMode="singleTask" >
         </activity>
     </application>
-
 </manifest>

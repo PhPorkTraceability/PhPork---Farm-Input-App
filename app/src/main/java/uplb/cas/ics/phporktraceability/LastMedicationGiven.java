@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
-import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -59,17 +57,11 @@ public class LastMedicationGiven extends AppCompatActivity
     String[] ids = {};
     private Toolbar toolbar;
 
-    TestSessionManager test;
-    int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-        test = new TestSessionManager(getApplicationContext());
-        HashMap<String, Integer> testuser = test.getCount();
-        count = testuser.get(TestSessionManager.KEY_COUNT);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -192,8 +184,6 @@ public class LastMedicationGiven extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-                count++;
-                test.updateCount(count);
                 Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
                 i.putExtra("rfid", rfid);
                 i.putExtra("boar_id", boar_id);
@@ -285,9 +275,6 @@ public class LastMedicationGiven extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(LastMedicationGiven.this, "Chosen Vaccine: " +
-                                    getLabel(med_id),
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(LastMedicationGiven.this, AddThePig.class);
                     i.putExtra("pen", pen);
                     i.putExtra("rfid", rfid);
@@ -327,8 +314,6 @@ public class LastMedicationGiven extends AppCompatActivity
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        count++;
-        test.updateCount(count);
         Intent i = new Intent(LastMedicationGiven.this, LastFeedGivenPage.class);
         i.putExtra("rfid", rfid);
         i.putExtra("boar_id", boar_id);

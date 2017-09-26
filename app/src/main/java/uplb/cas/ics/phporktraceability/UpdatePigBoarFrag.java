@@ -180,8 +180,6 @@ public class UpdatePigBoarFrag extends Fragment {
 
                         int vid = to.getId();
                         if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            Toast.makeText(getActivity(), "Chosen " + boar_id,
-                                    Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Updating Boar Parent...")
                                     .setMessage("Confirm update?")

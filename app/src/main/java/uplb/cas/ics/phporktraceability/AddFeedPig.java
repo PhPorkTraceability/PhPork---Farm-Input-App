@@ -1,21 +1,22 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,22 +26,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
-import helper.TestSessionManager;
+import helper.SessionManager;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 11/25/2015.
@@ -71,7 +72,7 @@ public class AddFeedPig extends AppCompatActivity
     String feed_id = "";
     String feed_name = "";
     String feed_type = "";
-    String pen = "";
+    String pen_id = "";
     String house_id = "";
     String[] total_pigs;
     String[] pigs;
@@ -79,20 +80,14 @@ public class AddFeedPig extends AppCompatActivity
     Dialog addD = null;
 
     Calendar dateAndTime=Calendar.getInstance();
-    private Toolbar toolbar;
     private int year, month, day;
 
     String selection = "";
     String module = "";
 
-//    TestSessionManager test;
-//    int count = 0;
-//    String testID = "";
-//    DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
-//    DateFormat curTime2 = new SimpleDateFormat("HH:mm:ss");
-//    Date dateObj = new Date();
-
+    @SuppressLint("SimpleDateFormat")
     DateFormat curTime = new SimpleDateFormat("HH:mm");
+
     TimePickerDialog.OnTimeSetListener t=new TimePickerDialog.OnTimeSetListener() {
         public void onTimeSet(TimePicker view, int hourOfDay,
                               int minute) {
@@ -103,22 +98,40 @@ public class AddFeedPig extends AppCompatActivity
     };
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_addfeedpig);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-//        test = new TestSessionManager(getApplicationContext());
-//        HashMap<String, Integer> testuser = test.getCount();
-//        count = testuser.get(TestSessionManager.KEY_COUNT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(AddFeedPig.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.feed);
+
+        db = SQLiteHandler.getInstance();
 
         Intent i = getIntent();
         selection = i.getStringExtra("selection");
@@ -127,13 +140,11 @@ public class AddFeedPig extends AppCompatActivity
         house_id = i.getStringExtra("house_id");
         if(selection.equals(SEL_PIG)){
             pigs = i.getStringArrayExtra("pigs");
-            pen = i.getStringExtra("pen");
+            pen_id = i.getStringExtra("pen_id");
             total_pigs = pigs;
         } else {
             pens = i.getStringArrayExtra("pens");
         }
-
-        db = SQLiteHandler.getInstance();
 
         tv_feedname = (TextView) findViewById(R.id.tv_feedname);
         tv_feedtype = (TextView) findViewById(R.id.tv_feedtype);
@@ -147,11 +158,6 @@ public class AddFeedPig extends AppCompatActivity
         btn_timeGiven = (Button) findViewById(R.id.btn_timeGiven);
         btn_submit = (Button) findViewById(R.id.btn_addFeed);
         lv = (ListView) findViewById(R.id.listview);
-
-        loadList();
-
-        tv_feedname.setText("Feed Name: " + feed_name);
-        tv_feedtype.setText("Feed Type: " + feed_type);
 
         btn_proddate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,6 +221,9 @@ public class AddFeedPig extends AppCompatActivity
                 if (et_quantity.getText().toString().length() > 0 &&
                         tv_dateGiven.getText().toString().length() > 0 &&
                         tv_timeGiven.getText().toString().length() > 0 ){
+                    SessionManager session = new SessionManager(getApplicationContext());
+                    HashMap<String, String> user = session.getUserSession();
+                    String user_id = user.get(SessionManager.KEY_USERID);
                     String quantity = et_quantity.getText().toString();
                     String unit = "kg";
                     String date = tv_dateGiven.getText().toString();
@@ -225,8 +234,8 @@ public class AddFeedPig extends AppCompatActivity
                     Double kg = Double.parseDouble(quantity) / total_pigs.length;
                     quantity = String.valueOf(kg);
 
-                    db.feedPigRecByGroup(quantity, unit, date, time, total_pigs,
-                            feed_id, prod_date, status);
+                    db.addFeedTransByGroup(quantity, unit, date, time, total_pigs,
+                            feed_id, prod_date, status, user_id);
 
                     // Create Object of Dialog class
                     addD = new Dialog(AddFeedPig.this);
@@ -254,6 +263,7 @@ public class AddFeedPig extends AppCompatActivity
             }
         });
 
+        loadList();
 
     }
 
@@ -266,9 +276,9 @@ public class AddFeedPig extends AppCompatActivity
 
         if(selection.equals(SEL_PEN)) {
             ArrayList<HashMap<String, String>> pig_list = new ArrayList<>();
-            for(int i = 0;i < pens.length;i++){
-                ArrayList<HashMap<String, String>> pigs_by_pen = db.getPigsByPen(pens[i]);
-                for(int k = 0;k < pigs_by_pen.size();k++){
+            for (String pen1 : pens) {
+                ArrayList<HashMap<String, String>> pigs_by_pen = db.getPigsByPen(pen1);
+                for (int k = 0; k < pigs_by_pen.size(); k++) {
                     HashMap<String, String> p = pigs_by_pen.get(k);
                     HashMap<String, String> a = new HashMap<>();
                     a.put(KEY_PIGID, p.get(KEY_PIGID));
@@ -286,9 +296,52 @@ public class AddFeedPig extends AppCompatActivity
             }
         } else {
             labels = new String[pigs.length];
-            for(int j = 0;j < pigs.length;j++) {
-                HashMap<String, String> b = db.getLabel(pigs[j]);
-                labels[j] = "Pig Label: " + b.get(KEY_LABEL);
+            if(pigs.length > 0) {
+                for (int j = 0; j < pigs.length; j++) {
+                    HashMap<String, String> b = db.getLabel(pigs[j]);
+                    labels[j] = "Pig Label: " + b.get(KEY_LABEL);
+                }
+            } else {
+                final int SPLASH_TIME_OUT = 4000;
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("There are no pigs selected.")
+                        .setMessage("Please update your database. Cannot proceed any further.")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(final DialogInterface dialog, int id) {
+
+                                new Handler().postDelayed(new Runnable() {
+
+                                    /*
+                                     * Showing splash screen with a timer. This will be useful when you
+                                     * want to show case your app logo / company
+                                     */
+                                    @Override
+                                    public void run() {
+                                        // This method will be executed once the timer is over
+                                        // Start your app main activity
+                                        Intent i = new Intent();
+                                        if(selection.equals(SEL_PIG)){
+                                            i.setClass(AddFeedPig.this, ChooseByPig.class);
+                                            i.putExtra("pen_id", pen_id);
+                                        } else
+                                            i.setClass(AddFeedPig.this, ChooseByPen.class);
+                                        i.putExtra("feed_id", feed_id);
+                                        i.putExtra("house_id", house_id);
+                                        i.putExtra("selection", selection);
+                                        i.putExtra("module", module);
+                                        startActivity(i);
+                                        finish();
+
+                                        dialog.cancel();
+                                    }
+                                }, SPLASH_TIME_OUT);
+                            }
+                        });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             }
         }
 
@@ -296,13 +349,9 @@ public class AddFeedPig extends AppCompatActivity
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, labels);
         lv.setAdapter(adapter);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
+        tv_feedname.setText("Feed Name: " + feed_name);
+        tv_feedtype.setText("Feed Type: " + feed_type);
     }
 
     @Override
@@ -313,22 +362,16 @@ public class AddFeedPig extends AppCompatActivity
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-//                count++;
-//                test.updateCount(count);
-
                 Intent i = new Intent();
                 if(selection.equals(SEL_PIG)){
                     i.setClass(AddFeedPig.this, ChooseByPig.class);
-                    i.putExtra("pen", pen);
+                    i.putExtra("pen_id", pen_id);
                 } else
                     i.setClass(AddFeedPig.this, ChooseByPen.class);
-
                 i.putExtra("feed_id", feed_id);
                 i.putExtra("house_id", house_id);
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
 
@@ -336,7 +379,6 @@ public class AddFeedPig extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
-
     }
 
     @Override
@@ -370,16 +412,12 @@ public class AddFeedPig extends AppCompatActivity
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
 
-                    addD.dismiss();
                     Intent i = new Intent();
                     if(choice.equals("add_another")){
                         i.setClass(AddFeedPig.this, ChooseSelection.class);
                         i.putExtra("module", module);
                     } else if(choice.equals("finish"))
-                        //i.setClass(AddFeedPig.this, HomeActivity.class);
                         i.setClass(AddFeedPig.this, ChooseModule.class);
-                    //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -398,7 +436,10 @@ public class AddFeedPig extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -406,25 +447,27 @@ public class AddFeedPig extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
-
         Intent i = new Intent();
         if(selection.equals(SEL_PIG)){
             i.setClass(AddFeedPig.this, ChooseByPig.class);
-            i.putExtra("pen", pen);
+            i.putExtra("pen_id", pen_id);
         } else
             i.setClass(AddFeedPig.this, ChooseByPen.class);
+
         i.putExtra("feed_id", feed_id);
         i.putExtra("house_id", house_id);
         i.putExtra("selection", selection);
         i.putExtra("module", module);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
 
+        if(addD != null && addD.isShowing()){
+            addD.dismiss();
+        }
+    }
 }

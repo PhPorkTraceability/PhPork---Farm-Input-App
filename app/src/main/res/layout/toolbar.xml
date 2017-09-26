@@ -8,4 +8,24 @@
     app:layout_scrollFlags="scroll|enterAlways"
     android:elevation="4dp"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" >
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/home_logo"
+        android:scaleType="fitCenter"
+        android:background="@mipmap/ic_phpork"
+        android:gravity="start"
+        android:clickable="true"
+        app:showAsAction="always" />
+
+    <TextView
+        android:id="@+id/page_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/mg_title"
+        android:layout_marginStart="@dimen/mg_title"
+        android:textSize="@dimen/fs_subtitle"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
 </android.support.v7.widget.Toolbar>

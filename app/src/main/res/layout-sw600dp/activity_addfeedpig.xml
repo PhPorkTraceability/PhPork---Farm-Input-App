@@ -83,12 +83,15 @@
 
             <Button
                 android:id="@+id/btn_proddate"
+                android:background="@drawable/btn_gradient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_feedtype"
                 android:layout_alignBaseline="@id/tv_proddate"
                 android:layout_toEndOf="@+id/tv_proddate"
                 android:layout_toRightOf="@+id/tv_proddate"
+                android:textSize="24sp"
+                android:padding="15dp"
                 android:text="Select" />
 
             <TextView
@@ -105,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_proddate"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="@dimen/mgt_big_item"
                 android:text="Date Given: "
                 android:textSize="@dimen/fs_reg_items"
@@ -113,13 +116,15 @@
 
             <Button
                 android:id="@+id/btn_dateGiven"
-                style="?android:attr/buttonStyleSmall"
+                android:background="@drawable/btn_gradient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_proddate"
                 android:layout_alignBaseline="@id/tv_dateGiven"
                 android:layout_toEndOf="@+id/tv_dateGiven"
                 android:layout_toRightOf="@+id/tv_dateGiven"
+                android:textSize="24sp"
+                android:padding="15dp"
                 android:text="Select" />
 
             <TextView
@@ -136,7 +141,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tv_dateGiven"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="@dimen/mgt_big_item"
                 android:text="Time Given: "
                 android:textSize="@dimen/fs_reg_items"
@@ -144,13 +149,15 @@
 
             <Button
                 android:id="@+id/btn_timeGiven"
-                style="?android:attr/buttonStyleSmall"
+                android:background="@drawable/btn_gradient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/et_quantity"
                 android:layout_alignBaseline="@id/tv_timeGiven"
                 android:layout_toEndOf="@+id/tv_timeGiven"
                 android:layout_toRightOf="@+id/tv_timeGiven"
+                android:textSize="24sp"
+                android:padding="15dp"
                 android:text="Select" />
 
             <TextView

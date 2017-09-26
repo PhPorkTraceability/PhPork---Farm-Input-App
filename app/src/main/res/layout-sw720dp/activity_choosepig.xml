@@ -1,67 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/main_content"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/main_content"
     android:layout_width="match_parent" android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                app:layout_scrollFlags="scroll|enterAlways"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            <include layout="@layout/toolbar"/>
 
         </android.support.design.widget.AppBarLayout>
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="30dp"
+            android:layout_margin="5dp"
             android:text="Choose Pigs"
+            android:layout_below="@id/appBar"
+            android:layout_centerHorizontal="true"
             android:textSize="60sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tv_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:text="Tap Items to Choose"
+            android:layout_below="@id/tv_title"
+            android:layout_centerHorizontal="true"
             android:textSize="48sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All: "
+            android:textSize="42sp"
+            android:layout_alignBottom="@+id/cb_selectAll"
+            android:layout_toLeftOf="@+id/cb_selectAll"
+            android:layout_toStartOf="@+id/cb_selectAll" />
+
+        <CheckBox
+            android:id="@+id/cb_selectAll"
+            android:layout_width="55dp"
+            android:layout_height="55dp"
+            android:background="?android:attr/listChoiceIndicatorMultiple"
+            android:button="@null"
+            android:layout_below="@+id/tv_subtitle"
+            android:layout_alignRight="@+id/recycler_view"
+            android:layout_alignEnd="@+id/recycler_view" />
+
         <!--
         <EditText
             android:id="@+id/et_searchPig"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="100dp"
-            android:textSize="32sp"
+            android:layout_margin="30dp"
             android:hint="Search Pig: i.e. 00-0001"
-            android:inputType="text" /> -->
+            android:inputType="text" />
+
+            -->
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
             android:layout_gravity="center"
-            android:scrollbars="vertical" />
+            android:layout_below="@id/tv_selectAll"
+            android:layout_centerHorizontal="true"
+            android:scrollbars="vertical"
+            android:layout_above="@+id/btn_submit" />
 
         <Button
             android:id="@+id/btn_submit"
@@ -69,12 +92,14 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:layout_gravity="center"
-            android:layout_margin="60dp"
-            android:ems="8"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="30dp"
+            android:ems="4"
             android:text="Ok"
             android:textColor="@color/lbl_name"
-            android:textSize="@dimen/fs_subtitle" />
+            android:textSize="@dimen/fs_title" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

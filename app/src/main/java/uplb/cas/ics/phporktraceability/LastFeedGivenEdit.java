@@ -286,9 +286,6 @@ public class LastFeedGivenEdit extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(LastFeedGivenEdit.this, "Chosen Feed: " +
-                                    getLabel(feed_id),
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(LastFeedGivenEdit.this, AddThePig.class);
                     createIntent(i);
                     startActivity(i);

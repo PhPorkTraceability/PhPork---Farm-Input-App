@@ -1,10 +1,12 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -18,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +30,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 5/5/2016.
@@ -39,18 +44,21 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
     private static final String LOGCAT = ChooseViewPen.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
     SQLiteHandler db;
-    String pen = "";
+    String pen_id = "";
     String house_id = "";
     String[] lists = {};
     String[] lists2 = {};
     String[] lists3 = {};
     String[] ids = {};
-    private Toolbar toolbar;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,12 +66,27 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ChooseViewPen.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.function);
 
         Intent i = getIntent();
         house_id = i.getStringExtra("house_id");
@@ -72,12 +95,20 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
 
         loadLists();
 
-        ll = (LinearLayout) findViewById(R.id.top_container);
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-        //ll.setOnDragListener(this);
         bl.setOnDragListener(this);
+        bl.setOnTouchListener(new OnSwipeTouchListener(ChooseViewPen.this) {
+            @Override
+            public void onSwipeLeft() {
+                nextItem();
+            }
+
+            @Override
+            public void onSwipeRight(){
+                prevItem();
+            }
+        });
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        //viewPager.setOnDragListener(this);
         adapter = new CustomPagerAdapter(ChooseViewPen.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
@@ -90,8 +121,6 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
             @Override
             public void onPageSelected(int position) {
                 try {
-                    // Log.i("View Pager", "page selected " + position);
-
                     int currentPage = position + 1;
                     if (currentPage == 1) {
                         iv_left.setVisibility(View.INVISIBLE);
@@ -104,8 +133,6 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
                         iv_left.setVisibility(View.VISIBLE);
                         iv_right.setVisibility(View.VISIBLE);
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -125,16 +152,14 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
+                prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
+                nextItem();
 
             }
         });
@@ -143,19 +168,18 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
         String title = "Swipe to Choose a Pen to View";
         tv_title.setText(title);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null) {
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    add_pen();
-                }
-            });
-        } else {
-            Log.e(LOGCAT, "fab is null.");
-        }
-
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        if(fab != null) {
+//            fab.setVisibility(View.VISIBLE);
+//            fab.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    add_pen();
+//                }
+//            });
+//        } else {
+//            Log.e(LOGCAT, "fab is null.");
+//        }
     }
 
     public void checkList(){
@@ -163,32 +187,68 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
         if(count + 1 < lists.length){
             iv_right.setVisibility(View.VISIBLE);
         }
+    }
 
+    public void nextItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item - 1);
     }
 
     public void loadLists(){
         ArrayList<HashMap<String, String>> the_list = db.getPensByHouse(house_id);
 
-        lists = new String[the_list.size()];
-        lists2 = new String[the_list.size()];
-        lists3 = new String[the_list.size()];
-        ids = new String[the_list.size()];
+        if(the_list.size() > 0) {
+            lists = new String[the_list.size()];
+            lists2 = new String[the_list.size()];
+            lists3 = new String[the_list.size()];
+            ids = new String[the_list.size()];
 
-        for(int i = 0;i < the_list.size();i++) {
-            HashMap<String, String> c = the_list.get(i);
+            for (int i = 0; i < the_list.size(); i++) {
+                HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen No: " + c.get(KEY_PENNO);
-            lists2[i] = "Function: " + c.get(KEY_FUNC);
-            lists3[i] = "";
-            ids[i] = c.get(KEY_PENID);
+                lists[i] = "Pen No: " + c.get(KEY_PENNO);
+                lists2[i] = "Function: " + c.get(KEY_FUNC);
+                lists3[i] = "";
+                ids[i] = c.get(KEY_PENID);
+            }
+        } else {
+            final int SPLASH_TIME_OUT = 2000;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No data available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                            new Handler().postDelayed(new Runnable() {
+
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(ChooseViewPen.this, ChooseModule.class);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
     }
 
     @Override
@@ -200,8 +260,6 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
                 Intent i = new Intent(ChooseViewPen.this, ChooseViewHouse.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -235,22 +293,18 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
                 view.setVisibility(View.VISIBLE);
 
                 int id = view.getId();
-                pen = view.findViewById(id).getTag().toString();
+                pen_id = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseViewPen.this, "Chosen " + pen,
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(ChooseViewPen.this, ViewListOfPigs.class);
-                    i.putExtra("pen", pen);
+                    i.putExtra("pen_id", pen_id);
                     i.putExtra("house_id", house_id);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
 
-                Log.d(LOGCAT, "Dropped " + pen);
+                Log.d(LOGCAT, "Dropped " + pen_id);
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
                 Log.d(LOGCAT, "Drag ended");
@@ -263,14 +317,11 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
         Intent i = new Intent(ChooseViewPen.this, ChooseViewHouse.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+        finish();
     }
-
-
+    /*
     public void add_pen(){
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -343,6 +394,5 @@ public class ChooseViewPen extends AppCompatActivity implements View.OnDragListe
         adapter = new CustomPagerAdapter(ChooseViewPen.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
     }
-
-
+    */
 }

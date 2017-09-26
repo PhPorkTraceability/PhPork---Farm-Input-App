@@ -45,13 +45,15 @@ public class IntroSliderSession {
      * Check login method wil check user login status
      * If false it will redirect user to login page
      * Else won't do anything
-     * */
+     **/
     public void checkLogin(){
         if(isLoggedIn()){ }
     }
+
     /**
      * Get stored session data
-     * */
+     **/
+
     public HashMap<String, String> getUserSession(){
         HashMap<String, String> user = new HashMap<>();
 
@@ -59,10 +61,9 @@ public class IntroSliderSession {
         return user;
     }
 
-
     /**
      * Clear session details
-     * */
+     **/
     public void logoutUser() {
         // Clearing all data from Shared Preferences
         editor.clear();

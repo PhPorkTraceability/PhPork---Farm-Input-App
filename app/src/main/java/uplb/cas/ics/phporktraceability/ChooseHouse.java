@@ -1,18 +1,22 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,7 +26,8 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
-import helper.TestSessionManager;
+import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 7/26/2016.
@@ -41,9 +46,9 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
 
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
+    TextView pg_title;
     ImageView iv_left, iv_right;
     SQLiteHandler db;
     String house_id = "";
@@ -55,13 +60,14 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
     String[] lists3 = {};
     String[] ids = {};
     String location= "";
-    private Toolbar toolbar;
 
     String selection = "";
     String module = "";
 
-//    TestSessionManager test;
-//    int count = 0;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,43 +75,50 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-//        test = new TestSessionManager(getApplicationContext());
-//        HashMap<String, Integer> testuser = test.getCount();
-//        count = testuser.get(TestSessionManager.KEY_COUNT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ChooseHouse.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        pg_title = (TextView) toolbar.findViewById(R.id.page_title);
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserLoc();
         location = user.get(SessionManager.KEY_LOC);
 
-        Intent i = getIntent();
-        module = i.getStringExtra("module");
-        selection = i.getStringExtra("selection");
-        if(module.equals(FEED_MOD)) {
-            getSupportActionBar().setTitle(R.string.feed);
-            feed_id = i.getStringExtra("feed_id");
-        }
-       else{
-            getSupportActionBar().setTitle(R.string.med);
-            med_id = i.getStringExtra("med_id");
-        }
-
         db = SQLiteHandler.getInstance();
 
+        bl = (LinearLayout) findViewById(R.id.bottom_container);
+        bl.setOnDragListener(this);
+        bl.setOnDragListener(this);
+        bl.setOnTouchListener(new OnSwipeTouchListener(ChooseHouse.this) {
+            @Override
+            public void onSwipeLeft() {
+                nextItem();
+            }
+
+            @Override
+            public void onSwipeRight(){
+                prevItem();
+            }
+        });
         loadLists();
 
-        ll = (LinearLayout) findViewById(R.id.top_container);
-        bl = (LinearLayout) findViewById(R.id.bottom_container);
-        //ll.setOnDragListener(this);
-        bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        //viewPager.setOnDragListener(this);
         adapter = new CustomPagerAdapter(ChooseHouse.this, lists, lists2, lists3, ids);
         viewPager.setAdapter(adapter);
 
@@ -118,8 +131,6 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
             @Override
             public void onPageSelected(int position) {
                 try {
-                    // Log.i("View Pager", "page selected " + position);
-
                     int currentPage = position + 1;
                     if (currentPage == 1) {
                         iv_left.setVisibility(View.INVISIBLE);
@@ -132,8 +143,6 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
                         iv_left.setVisibility(View.VISIBLE);
                         iv_right.setVisibility(View.VISIBLE);
                     }
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -153,16 +162,14 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
+                prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
+                nextItem();
 
             }
         });
@@ -172,39 +179,89 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         tv_title.setText(title);
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        Intent i = getIntent();
+        module = i.getStringExtra("module");
+        selection = i.getStringExtra("selection");
+        if(module.equals(FEED_MOD)) {
+            pg_title.setText(R.string.feed);
+            feed_id = i.getStringExtra("feed_id");
+        }
+        else {
+            pg_title.setText(R.string.med);
+            med_id = i.getStringExtra("med_id");
+        }
+    }
+
     public void checkList(){
         int count = viewPager.getCurrentItem();
         if(count + 1 < lists.length){
             iv_right.setVisibility(View.VISIBLE);
         }
+    }
 
+    public void nextItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item - 1);
     }
 
     public void loadLists(){
 
         ArrayList<HashMap<String, String>> the_list = db.getHouses(location);
+        if(the_list.size() > 0) {
+            lists = new String[the_list.size()];
+            lists2 = new String[the_list.size()];
+            lists3 = new String[the_list.size()];
+            ids = new String[the_list.size()];
+            for (int i = 0; i < the_list.size(); i++) {
+                HashMap<String, String> c = the_list.get(i);
 
-        lists = new String[the_list.size()];
-        lists2 = new String[the_list.size()];
-        lists3 = new String[the_list.size()];
-        ids = new String[the_list.size()];
-        for(int i = 0;i < the_list.size();i++)
-        {
-            HashMap<String, String> c = the_list.get(i);
+                lists[i] = "House: " + c.get(KEY_HOUSENO);
+                lists2[i] = "House Name: " + c.get(KEY_HOUSENAME);
+                lists3[i] = "Function: " + c.get(KEY_FUNC);
+                ids[i] = c.get(KEY_HOUSEID);
+            }
+        } else {
+            final int SPLASH_TIME_OUT = 2000;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No data available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
 
-            lists[i] = "House: " + c.get(KEY_HOUSENO);
-            lists2[i] = "House Name: " + c.get(KEY_HOUSENAME);
-            lists3[i] = "Function: " + c.get(KEY_FUNC);
-            ids[i] = c.get(KEY_HOUSEID);
+                            new Handler().postDelayed(new Runnable() {
 
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(ChooseHouse.this, ChooseModule.class);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
     }
 
     @Override
@@ -215,19 +272,13 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
         switch(item.getItemId()) {
             //noinspection SimplifiableIfStatement
             case android.R.id.home:
-//                count++;
-//                test.updateCount(count);
-
                 Intent i = new Intent();
                 if(module.equals(FEED_MOD))
                     i.setClass(ChooseHouse.this, ChooseFeedPage.class);
                 else
                     i.setClass(ChooseHouse.this, ChooseMedPage.class);
-
                 i.putExtra("selection", selection);
                 i.putExtra("module", module);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -280,12 +331,9 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
                         else
                             i.putExtra("med_id", med_id);
                     }
-
                     i.putExtra("house_id", house_id);
                     i.putExtra("selection", selection);
                     i.putExtra("module", module);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -303,20 +351,13 @@ public class ChooseHouse extends AppCompatActivity implements View.OnDragListene
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
-
         Intent i = new Intent();
         if(module.equals(FEED_MOD))
             i.setClass(ChooseHouse.this, ChooseFeedPage.class);
         else
             i.setClass(ChooseHouse.this, ChooseMedPage.class);
-
         i.putExtra("selection", selection);
         i.putExtra("module", module);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }

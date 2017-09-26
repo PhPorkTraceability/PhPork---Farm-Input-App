@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
+import listeners.OnSwipeTouchListener;
 
 /**
  * Created by marmagno on 12/11/2015.
@@ -39,16 +40,15 @@ public class UpdatePigPenFrag extends Fragment {
     String[] lists3 = {};
     String[] ids = {};
     String pig_id = "";
-    String pen = "";
-    String house_id = "";
     String pen_id = "";
+    String house_id = "";
+    String prev_pen = "";
     String pen_no = "";
     String function = "";
     String title = "Update Holding Pen";
     String location = "";
+    String user_id = "";
     private ViewPager frag_viewPager;
-    private PagerAdapter frag_adapter;
-    private LinearLayout ll;
     private LinearLayout bl;
     private TextView tv_item;
     private TextView tv_title;
@@ -83,8 +83,7 @@ public class UpdatePigPenFrag extends Fragment {
         Intent i = getActivity().getIntent();
         pig_id = i.getStringExtra("pig_id");
         house_id = i.getStringExtra("house_id");
-        pen = i.getStringExtra("pen");
-
+        pen_id = i.getStringExtra("pen_id");
 
         db = SQLiteHandler.getInstance();
 
@@ -92,11 +91,15 @@ public class UpdatePigPenFrag extends Fragment {
         HashMap<String, String > user = session.getUserLoc();
         location = user.get(SessionManager.KEY_LOC);
 
+        user = session.getUserSession();
+        user_id = user.get(SessionManager.KEY_USERID);
+
         HashMap<String, String> b = db.getPigGroup(pig_id);
         String pen_disp = "Current Pen: ";
         pen_no = b.get(KEY_PENNO);
         function = b.get(KEY_FUNC);
         pen_disp += pen_no + " (" + function + ")";
+        prev_pen = b.get(KEY_PENID);
 
         tv_title.setText(title);
         tv_item.setText(pen_disp);
@@ -127,7 +130,6 @@ public class UpdatePigPenFrag extends Fragment {
                         iv_right.setVisibility(View.VISIBLE);
                     }
 
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -144,16 +146,14 @@ public class UpdatePigPenFrag extends Fragment {
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = frag_viewPager.getCurrentItem();
-                frag_viewPager.setCurrentItem(item - 1);
+                prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = frag_viewPager.getCurrentItem();
-                frag_viewPager.setCurrentItem(item + 1);
+                nextItem();
 
             }
         });
@@ -185,12 +185,9 @@ public class UpdatePigPenFrag extends Fragment {
 
                         int id = view2.getId();
                         pen_id = v.findViewById(id).getTag().toString();
-                        Log.d(LOGCAT, "Dropped " + pen_id);
 
                         int vid = to.getId();
                         if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            Toast.makeText(getActivity(), "Chosen " + pen_id,
-                                    Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Updating Holding Pen...")
                                     .setMessage("Confirm update?")
@@ -198,11 +195,11 @@ public class UpdatePigPenFrag extends Fragment {
                                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int id) {
-                                            db.updatePigPen(pig_id, pen_id);
+                                            db.updatePigPen(pig_id, prev_pen, pen_id, user_id);
                                             Intent i = new Intent(getActivity(),
                                                     UpdatePigActivity.class);
                                             i.putExtra("pig_id", pig_id);
-                                            i.putExtra("pen", pen);
+                                            i.putExtra("pen_id", pen_id);
                                             i.putExtra("house_id", house_id);
                                             i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
                                             getActivity().finish();
@@ -212,7 +209,21 @@ public class UpdatePigPenFrag extends Fragment {
                                         }
 
                                     })
-                                    .setNegativeButton("No", null);
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent i = new Intent(getActivity(),
+                                                    UpdatePigActivity.class);
+                                            i.putExtra("pig_id", pig_id);
+                                            i.putExtra("pen_id", pen_id);
+                                            i.putExtra("house_id", house_id);
+                                            i.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                            getActivity().finish();
+                                            getActivity().startActivity(i);
+
+                                            dialog.cancel();
+                                        }
+                                    });
 
                             AlertDialog alert = builder.create();
                             alert.show();
@@ -239,6 +250,16 @@ public class UpdatePigPenFrag extends Fragment {
 
     }
 
+    public void nextItem() {
+        int item = frag_viewPager.getCurrentItem();
+        frag_viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = frag_viewPager.getCurrentItem();
+        frag_viewPager.setCurrentItem(item - 1);
+    }
+
     private void loadPens(){
 
         ArrayList<HashMap<String, String>> the_list = db.getPensByLocs(location);
@@ -257,7 +278,7 @@ public class UpdatePigPenFrag extends Fragment {
             ids[i] = c.get(KEY_PENID);
         }
 
-        frag_adapter = new FragCustomPagerAdapter(getActivity(),
+        PagerAdapter frag_adapter = new FragCustomPagerAdapter(getActivity(),
                 lists, lists2, lists3, ids);
         frag_viewPager.setAdapter(frag_adapter);
 
