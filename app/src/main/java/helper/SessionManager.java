@@ -12,22 +12,22 @@ import android.util.Log;
 
 import java.util.HashMap;
 
-import uplb.cas.ics.phporktraceability.GrowingPage;
-import uplb.cas.ics.phporktraceability.HomeActivity;
 import uplb.cas.ics.phporktraceability.LoginActivity;
-import uplb.cas.ics.phporktraceability.WeaningPage;
 
 
 public class SessionManager {
     public static final String KEY_FUNC = "function";
-    public static final String KEY_LOC = "loc_name";
+    public static final String KEY_LOC = "loc_id";
 
-    public static final String KEY_USERNAME = "username";
+    public static final String KEY_USERID = "user_id";
+    public static final String KEY_USERNAME = "user_name";
     public static final String KEY_PASSWORD = "password";
 
     // Shared preferences file name
     private static final String PREF_NAME = "PHPorkLogin";
     private static final String KEY_IS_LOGGEDIN = "isLoggedIn";
+    private static final String KEY_LOC_LOGGEDIN = "locLoggedIn";
+
     // LogCat tag
     private static String TAG = SessionManager.class.getSimpleName();
     // Shared Preferences
@@ -45,8 +45,10 @@ public class SessionManager {
     }
 
 
-    public void setLogin(String username, String password) {
+    public void setLogin(String user_id, String username, String password) {
         editor.putBoolean(KEY_IS_LOGGEDIN, true);
+
+        editor.putString(KEY_USERID, user_id);
 
         editor.putString(KEY_USERNAME, username);
 
@@ -58,11 +60,13 @@ public class SessionManager {
         Log.d(TAG, "User login session modified!");
     }
 
-    public void setLocation(String function, String loc_name) {
+    public void setLocation(String function, String loc_id) {
+
+        editor.putBoolean(KEY_LOC_LOGGEDIN, true);
 
         editor.putString(KEY_FUNC, function);
 
-        editor.putString(KEY_LOC, loc_name);
+        editor.putString(KEY_LOC, loc_id);
 
         // commit changes
         editor.commit();
@@ -90,9 +94,12 @@ public class SessionManager {
     public HashMap<String, String> getUserSession(){
         HashMap<String, String> user = new HashMap<>();
 
+        user.put(KEY_USERID, pref.getString(KEY_USERID, null));
+
         user.put(KEY_USERNAME, pref.getString(KEY_USERNAME, null));
 
         user.put(KEY_PASSWORD, pref.getString(KEY_PASSWORD, null));
+
 
         // return user
         return user;
@@ -116,7 +123,12 @@ public class SessionManager {
         _context.startActivity(i);
 
     }
+
     public boolean isLoggedIn() {
         return pref.getBoolean(KEY_IS_LOGGEDIN, false);
+    }
+
+    public boolean locLoggedIn() {
+        return pref.getBoolean(KEY_LOC_LOGGEDIN, false);
     }
 }

@@ -1,10 +1,13 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,10 +20,20 @@ public class RecyclerAdapterWithCheckBox extends
         RecyclerView.Adapter<RecyclerAdapterWithCheckBox.ViewHolder> {
 
     /**
-     * Code snippets taken from http://android-pratap.blogspot.com/2015/01/recyclerview-with-checkbox-example.html
+     * Code snippets source from http://android-pratap.blogspot.com/2015/01/recyclerview-with-checkbox-example.html
      * By Prathap Kumar on 01/09/2015
      */
     private List<CheckItemModel> chkList;
+    private CheckBox selectAll;
+    private CheckBox checkBox;
+    private Boolean isAllSelected = false;
+    private CheckItemModel checkItemModel;
+
+
+    public RecyclerAdapterWithCheckBox(List<CheckItemModel> chkList, CheckBox selectAll) {
+        this.chkList = chkList;
+        this.selectAll = selectAll;
+    }
 
     public RecyclerAdapterWithCheckBox(List<CheckItemModel> chkList) {
         this.chkList = chkList;
@@ -45,17 +58,42 @@ public class RecyclerAdapterWithCheckBox extends
         holder.cb_checkbox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CheckBox checkBox = (CheckBox) v;
+                checkBox = (CheckBox) v;
 
-                CheckItemModel checkItemModel = (CheckItemModel) checkBox.getTag();
+                checkItemModel = (CheckItemModel) checkBox.getTag();
                 checkItemModel.setSelected(checkBox.isChecked());
-
-                Toast.makeText(
-                        v.getContext(),
-                        "Chosen " + checkItemModel.getLabel(), Toast.LENGTH_LONG).show();
+                if(checkIfAllSelected()) selectAll.setChecked(true);
+                else selectAll.setChecked(false);
             }
         });
 
+        if(isAllSelected) {
+            checkBox = holder.cb_checkbox;
+            checkItemModel = (CheckItemModel) checkBox.getTag();
+            checkItemModel.setSelected(true);
+            holder.cb_checkbox.setChecked(true);
+            holder.cb_checkbox.setSelected(true);
+
+        }
+        else {
+            checkBox = holder.cb_checkbox;
+            checkItemModel = (CheckItemModel) checkBox.getTag();
+            checkItemModel.setSelected(false);
+            holder.cb_checkbox.setChecked(false);
+            holder.cb_checkbox.setSelected(false);
+        }
+
+    }
+
+    private boolean checkIfAllSelected(){
+        Boolean result = true;
+        for(int i = 0;i < chkList.size();i++){
+            if(!chkList.get(i).isSelected()) {
+                result = false;
+                break;
+            }
+        }
+        return result;
     }
 
     @Override
@@ -81,6 +119,16 @@ public class RecyclerAdapterWithCheckBox extends
 
     public List<CheckItemModel> getCheckList(){
         return chkList;
+    }
+
+    public void selectAll(){
+        isAllSelected=true;
+        notifyDataSetChanged();
+    }
+
+    public void unselectAll(){
+        isAllSelected=false;
+        notifyDataSetChanged();
     }
 
 }

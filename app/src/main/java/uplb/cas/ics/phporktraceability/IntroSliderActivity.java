@@ -2,6 +2,7 @@ package uplb.cas.ics.phporktraceability;
 
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import helper.IntroSliderSession;
 import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class IntroSliderActivity extends AppCompatActivity {
     private int mIndex;
@@ -39,6 +41,12 @@ public class IntroSliderActivity extends AppCompatActivity {
         this.mIndex = 0;
         this.f = tempF;
     }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

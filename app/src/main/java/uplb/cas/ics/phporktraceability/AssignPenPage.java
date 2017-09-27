@@ -5,30 +5,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
-import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -59,7 +55,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
     String[] lists3 = {};
     String[] ids = {};
     String location= "";
-    private Toolbar toolbar;
 
 //    TestSessionManager test;
 //    int count = 0;
@@ -74,12 +69,27 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
 //        HashMap<String, Integer> testuser = test.getCount();
 //        count = testuser.get(TestSessionManager.KEY_COUNT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(AssignPenPage.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.assign_pen);
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserLoc();
@@ -168,17 +178,17 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         String title = "Swipe to Choose a Pen";
         tv_title.setText(title);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(fab != null) {
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    add_pen();
-                }
-            });
-        } else {
-            Log.e(LOGCAT, "fab is null.");
-        }
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        if(fab != null) {
+//            fab.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    add_pen();
+//                }
+//            });
+//        } else {
+//            Log.e(LOGCAT, "fab is null.");
+//        }
     }
 
     public void checkList(){
@@ -193,28 +203,61 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
 
         ArrayList<HashMap<String, String>> the_list = db.getPensByLocs(location);
 
-        lists = new String[the_list.size()];
-        lists2 = new String[the_list.size()];
-        lists3 = new String[the_list.size()];
-        ids = new String[the_list.size()];
-        for(int i = 0;i < the_list.size();i++)
-        {
-            HashMap<String, String> c = the_list.get(i);
+        if(the_list.size() > 0) {
+            lists = new String[the_list.size()];
+            lists2 = new String[the_list.size()];
+            lists3 = new String[the_list.size()];
+            ids = new String[the_list.size()];
+            for (int i = 0; i < the_list.size(); i++) {
+                HashMap<String, String> c = the_list.get(i);
 
-            lists[i] = "Pen: " + c.get(KEY_PENNO);
-            lists2[i] = "Function: " + c.get(KEY_FUNC);
-            lists3[i] = "";
-            ids[i] = c.get(KEY_PENID);
+                lists[i] = "Pen: " + c.get(KEY_PENNO);
+                lists2[i] = "Function: " + c.get(KEY_FUNC);
+                lists3[i] = "";
+                ids[i] = c.get(KEY_PENID);
+            }
+        } else {
+            final int SPLASH_TIME_OUT = 2000;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No data available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                            new Handler().postDelayed(new Runnable() {
+
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(AssignPenPage.this,ChooseModule.class);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
-     /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    } */
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -274,8 +317,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(AssignPenPage.this, "Chosen " + pen,
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(AssignPenPage.this, AddThePig.class);
                     i.putExtra("pen", pen);
                     i.putExtra("rfid", rfid);
@@ -285,8 +326,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
                     i.putExtra("gender", gender);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -302,9 +341,6 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
         Intent i = new Intent(AssignPenPage.this, AssignRFIDPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
@@ -312,82 +348,81 @@ public class AssignPenPage extends AppCompatActivity implements View.OnDragListe
         i.putExtra("group_label", group_label);
         i.putExtra("breed", breed);
         i.putExtra("gender", gender);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+        finish();
     }
 
-    public void add_pen(){
-
-        /**********TO DO: DETERMINE FUNCTION FOR db.addHouse(); 4th argument **************/
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
-
-        LayoutInflater inflater = this.getLayoutInflater();
-        View subView = inflater.inflate(R.layout.add_pen_fragment,null);
-
-        final EditText et_penid = (EditText) subView.findViewById(R.id.et_pen_id);
-        final EditText et_penno= (EditText) subView.findViewById(R.id.et_pen_no);
-        final EditText et_penfunc= (EditText) subView.findViewById(R.id.et_pen_function);
-        final EditText et_penhouseid= (EditText) subView.findViewById(R.id.et_pen_house_id);
-
-        builder.setTitle("Add a House");
-        builder.setView(subView);
-        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialog, int id){
-
-                verifier.setMessage("Are you sure all entries are correct?");
-                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String pen_id=et_penid.getText().toString();
-                        String pen_no=et_penno.getText().toString();
-                        String pen_function=et_penfunc.getText().toString().trim().toLowerCase();
-                        String pen_penhouseid=et_penhouseid.getText().toString();
-                        try{
-                            Toast.makeText(AssignPenPage.this, "Pen Added", Toast.LENGTH_SHORT).show();
-                            db.addPen(pen_id,pen_no,pen_function,pen_penhouseid);
-                            refresh();
-                        }
-                        catch(Exception e){
-
-                            Toast.makeText(AssignPenPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                AlertDialog verify_prompt = verifier.create();
-                verify_prompt.show();
-
-            }
-
-
-
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Toast.makeText(AssignPenPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog contact_prompt = builder.create();
-        contact_prompt.show();
-
-
-    }
-
-    public void refresh() {
-        loadLists();
-        adapter = new CustomPagerAdapter(AssignPenPage.this, lists, lists2, lists3, ids);
-        viewPager.setAdapter(adapter);
-    }
+//    public void add_pen(){
+//
+//        /**********TO DO: DETERMINE FUNCTION FOR db.addHouse(); 4th argument **************/
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        final AlertDialog.Builder verifier = new AlertDialog.Builder(this);
+//
+//        LayoutInflater inflater = this.getLayoutInflater();
+//        View subView = inflater.inflate(R.layout.add_pen_fragment,null);
+//
+//        final EditText et_penid = (EditText) subView.findViewById(R.id.et_pen_id);
+//        final EditText et_penno= (EditText) subView.findViewById(R.id.et_pen_no);
+//        final EditText et_penfunc= (EditText) subView.findViewById(R.id.et_pen_function);
+//        final EditText et_penhouseid= (EditText) subView.findViewById(R.id.et_pen_house_id);
+//
+//        builder.setTitle("Add a House");
+//        builder.setView(subView);
+//        builder.setPositiveButton("Add", new DialogInterface.OnClickListener(){
+//            @Override
+//            public void onClick(DialogInterface dialog, int id){
+//
+//                verifier.setMessage("Are you sure all entries are correct?");
+//                verifier.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        String pen_id=et_penid.getText().toString();
+//                        String pen_no=et_penno.getText().toString();
+//                        String pen_function=et_penfunc.getText().toString().trim().toLowerCase();
+//                        String pen_penhouseid=et_penhouseid.getText().toString();
+//                        try{
+//                            Toast.makeText(AssignPenPage.this, "Pen Added", Toast.LENGTH_SHORT).show();
+//                            db.addPen(pen_id,pen_no,pen_function,pen_penhouseid);
+//                            refresh();
+//                        }
+//                        catch(Exception e){
+//
+//                            Toast.makeText(AssignPenPage.this, "Error on inputs.", Toast.LENGTH_SHORT).show();
+//                        }
+//                    }
+//                });
+//                verifier.setNegativeButton("No", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        dialog.cancel();
+//                    }
+//                });
+//
+//                AlertDialog verify_prompt = verifier.create();
+//                verify_prompt.show();
+//
+//            }
+//
+//
+//
+//        });
+//        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//                Toast.makeText(AssignPenPage.this, "Cancelled action", Toast.LENGTH_SHORT).show();
+//                dialog.cancel();
+//            }
+//        });
+//
+//        AlertDialog contact_prompt = builder.create();
+//        contact_prompt.show();
+//
+//
+//    }
+//
+//    public void refresh() {
+//        loadLists();
+//        adapter = new CustomPagerAdapter(AssignPenPage.this, lists, lists2, lists3, ids);
+//        viewPager.setAdapter(adapter);
+//    }
 }

@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -18,13 +20,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +38,6 @@ import java.util.HashMap;
 
 import helper.SQLiteHandler;
 import helper.SessionManager;
-import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/14/2015.
@@ -96,22 +96,15 @@ public class AddThePig extends AppCompatActivity
 //    String med_name = "";
     String function = "";
 //    String unit = "";
+    String user_id = "";
 
     int curID;
     DateFormat curDate = new SimpleDateFormat("yyyy-MM-dd");
     DateFormat curTime = new SimpleDateFormat("HH:mm:ss");
     Calendar dateAndTime=Calendar.getInstance();
     Date dateObj = new Date();
-    private Toolbar toolbar;
     private int year, month, day;
     Dialog addD = null;
-
-    /**
-     * For testing only
-     */
-//    TestSessionManager test;
-//    int count = 0;
-//    String testID = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,19 +113,27 @@ public class AddThePig extends AppCompatActivity
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-//        test = new TestSessionManager(getApplicationContext());
-//        HashMap<String, Integer> testcount = test.getCount();
-//        count = testcount.get(TestSessionManager.KEY_COUNT);
-//
-//        HashMap<String, String> testuser = test.getID();
-//        testID = testuser.get(TestSessionManager.KEY_ID);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(AddThePig.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.add_pig);
 
         retrieveIntentExtra(getIntent());
 
@@ -140,12 +141,14 @@ public class AddThePig extends AppCompatActivity
 
         session = new SessionManager(getApplicationContext());
         HashMap<String, String > user = session.getUserLoc();
-
         function = user.get(SessionManager.KEY_FUNC);
+
+        user = session.getUserSession();
+        user_id = user.get(SessionManager.KEY_USERID);
 
         curID = db.getMaxPigID();
         curID++;
-        label = getLabel(String.valueOf(curID));
+        label = String.valueOf(curID);
 
         tv_group = (TextView) findViewById(R.id.tv_group);
         tv_boar = (TextView) findViewById(R.id.tv_boar);
@@ -183,7 +186,7 @@ public class AddThePig extends AppCompatActivity
         tv_pen.setText(pen_disp);
 //        tv_feed.setText("Last Feed Given: " + feed_name);
 //        tv_med.setText("Last Vaccine Given: " + med_name);
-        tv_pigid.setText("Pig Label: " + label);
+        tv_pigid.setText("Pig ID: " + label);
 
         btn_addpig = (Button) findViewById(R.id.btn_addPig);
         btn_farrowing = (Button) findViewById(R.id.btn_farrowing);
@@ -259,9 +262,9 @@ public class AddThePig extends AppCompatActivity
                     db.addPig(pig_id, boar_id, sow_id, foster_sow, week_farrowed, gender,
                             farrowing_date, function, pen, breed, user, group_label, status);
 
-                    db.updateTag(rfid, pig_id, "active");
+                    db.updateTag(null, rfid, pig_id, user_id, "active");
                     //db.updateTagLabel(rfid, label);
-                    db.addWeightRecByAuto(weight, pig_id, date, time, "initial weight", status);
+                    db.addWeightRecByAuto(weight, pig_id, date, time, "initial weight", user_id, status);
 //                    db.feedPigRecAuto(quantity, feed_unit, date, time, pig_id, feed_id, prod_date, status);
 //                    db.addMedRecAuto(date, time, quantity2, unit, pig_id, med_id, status);
 
@@ -286,14 +289,9 @@ public class AddThePig extends AppCompatActivity
 
                 }
                 else{
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AddThePig.this);
-                    builder.setTitle("Fill up data.")
-                            .setMessage("Please fill up the blank fields before proceeding.")
-                            .setCancelable(false)
-                            .setNeutralButton("OK", null);
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    Snackbar snackbar = Snackbar
+                            .make(v, "Fill up details before proceeding", Snackbar.LENGTH_LONG);
+                    snackbar.show();
                 }
             }
         });
@@ -304,7 +302,6 @@ public class AddThePig extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         //getMenuInflater().inflate(R.menu.menu_home, menu);
         getMenuInflater().inflate(R.menu.menu_edit, menu);
-        getMenuInflater().inflate(R.menu.menu_help, menu);
         return true;
     }
 
@@ -333,10 +330,8 @@ public class AddThePig extends AppCompatActivity
             case android.R.id.home:
 //                count++;
 //                test.updateCount(count);
-                Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
+                Intent i = new Intent(AddThePig.this, AssignPenPage.class);
                 createIntent(i);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -466,23 +461,23 @@ public class AddThePig extends AppCompatActivity
         else return result;
     }
 
-    private String getLabel(String _id){
-        String result = "";
-
-        if(!checkIfNull(_id).equals("")) {
-            int size = _id.length();
-            String s = "0";
-            size = 6 - size;
-            for (int i = 0; i < size; i++) {
-                s = s + "0";
-            }
-            s = s + _id;
-            String temp1 = s.substring(0, 2);
-            String temp2 = s.substring(3, 7);
-            result = temp1 + "-" + temp2;
-        }
-        return result;
-    }
+//    private String getLabel(String _id){
+//        String result = "";
+//
+//        if(!checkIfNull(_id).equals("")) {
+//            int size = _id.length();
+//            String s = "0";
+//            size = 6 - size;
+//            for (int i = 0; i < size; i++) {
+//                s = s + "0";
+//            }
+//            s = s + _id;
+//            String temp1 = s.substring(0, 2);
+//            String temp2 = s.substring(3, 7);
+//            result = temp1 + "-" + temp2;
+//        }
+//        return result;
+//    }
 
     @Override
     public boolean onDrag(View v, DragEvent e) {
@@ -520,7 +515,7 @@ public class AddThePig extends AppCompatActivity
                         startActivity(i);
                         finish();
                     }
-                        if(choice.equals("finish")) {
+                    else {
 //                        String time = curTime.format(dateObj);
 //                        db.updateTest(testID, time, String.valueOf(count));
 //
@@ -528,8 +523,6 @@ public class AddThePig extends AppCompatActivity
 
 //                        Intent i = new Intent(AddThePig.this, HomeActivity.class);
                         Intent i = new Intent(AddThePig.this, ChooseModule.class);
-                        //i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(i);
                         finish();
                     }
@@ -550,7 +543,10 @@ public class AddThePig extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -558,10 +554,7 @@ public class AddThePig extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
-        Intent i = new Intent(AddThePig.this, LastMedicationGiven.class);
+        Intent i = new Intent(AddThePig.this, AssignPenPage.class);
         createIntent(i);
         startActivity(i);
         finish();
@@ -571,6 +564,7 @@ public class AddThePig extends AppCompatActivity
     public void onDestroy(){
         super.onDestroy();
 
-        addD.dismiss();
+        if(addD != null)
+            addD.dismiss();
     }
 }

@@ -1,11 +1,14 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -22,12 +25,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 
 import helper.SessionManager;
-import helper.TestSessionManager;
+import listeners.OnSwipeTouchListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 3/9/2016.
@@ -39,40 +42,41 @@ public class ChooseModule extends AppCompatActivity
 
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
     SessionManager session;
     String module = "";
     String function = "";
-    private Toolbar toolbar;
-    private int[] mResources = {
-            R.drawable.ic_addpig,
-            R.drawable.ic_feeds,
-            R.drawable.ic_medications,
-            R.drawable.ic_viewlist,
-            R.drawable.ic_senddata };
+//    private int[] mResources = {
+//            //R.drawable.ic_addpig,
+//            R.drawable.ic_feeds,
+//            R.drawable.ic_medications,
+//            R.drawable.ic_viewlist,
+//            R.drawable.ic_senddata };
     private int[] mResources2 = {
             R.drawable.ic_feeds,
             R.drawable.ic_medications,
             R.drawable.ic_viewlist,
             R.drawable.ic_senddata };
-    private String[] names = {
-            "Add Pig",
-            "Feed Pig",
-            "Medicate Pig",
-            "View List of Pigs",
-            "Send Data to Server" };
+//    private String[] names = {
+//            "Add Pig",
+//            "Feed Pig",
+//            "Medicate Pig",
+//            "View List of Pigs",
+//            "Send Data to Server" };
     private String[] names2 = {
             "Feed Pig",
             "Medicate Pig",
             "View List of Pigs",
             "Send Data to Server" };
     private int[] list;
+    private AlertDialog alertDialog;
 
-//    TestSessionManager test;
-//    int count = 0;
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,38 +84,44 @@ public class ChooseModule extends AppCompatActivity
         setContentView(R.layout.layout_viewpager);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-//        test = new TestSessionManager(getApplicationContext());
-//        HashMap<String, Integer> testuser = test.getCount();
-//        count = testuser.get(TestSessionManager.KEY_COUNT);
-
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.function);
 
         session = new SessionManager(getApplicationContext());
-
-        HashMap<String, String > user = session.getUserLoc();
+        HashMap<String, String> user = session.getUserLoc();
         function = user.get(SessionManager.KEY_FUNC);
 
         bl = (LinearLayout) findViewById(R.id.bottom_container);
-
         bl.setOnDragListener(this);
-        //ll.setOnDragListener(this);
+        bl.setOnTouchListener(new OnSwipeTouchListener(ChooseModule.this) {
+            @Override
+            public void onSwipeLeft() {
+                nextItem();
+            }
+
+            @Override
+            public void onSwipeRight(){
+                prevItem();
+            }
+        });
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
 
-        if(function.equals("weaning")) {
-            adapter = new ImagePagerAdapter(getApplicationContext(), mResources, names);
-            list = mResources;
-            viewPager.setAdapter(adapter);
-        } else {
+//        if(function.equals("weaning")) {
+//            adapter = new ImagePagerAdapter(getApplicationContext(), mResources, names);
+//            list = mResources;
+//            viewPager.setAdapter(adapter);
+//        } else {
             adapter = new ImagePagerAdapter(getApplicationContext(), mResources2, names2);
             list = mResources2;
             viewPager.setAdapter(adapter);
-        }
+//        }
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -153,19 +163,18 @@ public class ChooseModule extends AppCompatActivity
         iv_right = (ImageView)findViewById(R.id.iv_right);
 
         checkList();
+
         iv_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item - 1);
+               prevItem();
             }
         });
 
         iv_right.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int item = viewPager.getCurrentItem();
-                viewPager.setCurrentItem(item + 1);
+               nextItem();
 
             }
         });
@@ -173,7 +182,6 @@ public class ChooseModule extends AppCompatActivity
         tv_title = (TextView) findViewById(R.id.tv_title);
         String title = "Choose What to Do";
         tv_title.setText(title);
-
     }
 
     public void checkList(){
@@ -181,7 +189,16 @@ public class ChooseModule extends AppCompatActivity
         if(count + 1 < list.length){
             iv_right.setVisibility(View.VISIBLE);
         }
+    }
 
+    public void nextItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item + 1);
+    }
+
+    public void prevItem() {
+        int item = viewPager.getCurrentItem();
+        viewPager.setCurrentItem(item - 1);
     }
 
     @Override
@@ -201,14 +218,8 @@ public class ChooseModule extends AppCompatActivity
             case R.id.action_help:
             	 show_help();
             	 return true;
-            case android.R.id.home:
-//                count++;
-//                test.updateCount(count);
-                Intent i = new Intent(ChooseModule.this, LocationPage.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                i.putExtra("function", function);
-                startActivity(i);
+            case R.id.action_logout:
+                session.logoutUser();
                 finish();
                 return true;
             default:
@@ -244,34 +255,21 @@ public class ChooseModule extends AppCompatActivity
                 module = view.findViewById(id).getTag().toString();
 
                 int vid = to.getId();
-                if(findViewById(vid) == findViewById(R.id.bottom_container)){
+                if(findViewById(vid) == findViewById(R.id.bottom_container)) {
 
-                    //Toast.makeText(ChooseModule.this, "Chosen " + module, Toast.LENGTH_LONG).show();
-
-                    if(module.equals(names[0])) {
-                        Intent i = new Intent(ChooseModule.this, ChooseBoarPage.class);
-                        startActivity(i);
-                        finish();
-                    } else if(module.equals(names[1])) {
-                        Intent i = new Intent(ChooseModule.this, ChooseSelection.class);
+                    Intent i = new Intent();
+                 /*   if(module.equals(names[0])) {
+                        i.setClass(ChooseModule.this, ChooseBoarPage.class);
+                    } else */if(module.equals(names2[0]) || module.equals(names2[1])) {
+                        i.setClass(ChooseModule.this, ChooseSelection.class);
                         i.putExtra("module", module);
-                        startActivity(i);
-                        finish();
-                    } else if(module.equals(names[2])) {
-                        Intent i = new Intent(ChooseModule.this, ChooseSelection.class);
-                        i.putExtra("module", module);
-                        startActivity(i);
-                        finish();
-                    } else if(module.equals(names[3])){
-                        Intent i = new Intent(ChooseModule.this, ChooseViewHouse.class);
-                        i.putExtra("function", function);
-                        startActivity(i);
-                        finish();
-                    } else if(module.equals(names[4])) {
-                        Intent i = new Intent(ChooseModule.this, ExportData.class);
-                        startActivity(i);
-                        finish();
+                    } else if(module.equals(names2[2])){
+                        i.setClass(ChooseModule.this, ChooseViewHouse.class);
+                    } else if(module.equals(names2[3])) {
+                        i.setClass(ChooseModule.this, ExportData.class);
                     }
+                    startActivity(i);
+                    finish();
                 }
 
                 Log.d(LOGCAT, "Dropped " + module);
@@ -283,39 +281,49 @@ public class ChooseModule extends AppCompatActivity
                 break;
         }
         return true;
-
     }
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-
-//        count++;
-//        test.updateCount(count);
-
-        Intent i = new Intent(ChooseModule.this, LocationPage.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        i.putExtra("function", function);
-        startActivity(i);
-        finish();
-
+        alertDialog = new AlertDialog.Builder(this)
+                .setTitle("Quit Farm Android App")
+                .setMessage("Close App?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO: Do intense testing on this part
+                        finish();
+                    }
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                }).show();
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        if(alertDialog != null)
+            alertDialog.dismiss();
+    }
+    
     public void show_help(){
         Intent intent = new Intent(this, HelpPage.class);
         intent.putExtra("help_page", 3);
         startActivity(intent);
     }
 
-    class ImagePagerAdapter extends PagerAdapter implements View.OnTouchListener {
+    private class ImagePagerAdapter extends PagerAdapter implements View.OnTouchListener {
 
         LayoutInflater mInflater;
         int[] images;
         String[] titles;
         private Context mContext;
 
-        public ImagePagerAdapter(Context context, int[] _images, String[] _titles) {
+        ImagePagerAdapter(Context context, int[] _images, String[] _titles) {
             mContext = context;
             images = _images;
             titles = _titles;
@@ -364,9 +372,13 @@ public class ChooseModule extends AppCompatActivity
         public boolean onTouch(View v, MotionEvent e) {
             if (e.getAction() == MotionEvent.ACTION_DOWN) {
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-                v.startDrag(null, shadowBuilder, v, 0);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    v.startDragAndDrop(null, shadowBuilder, v, 0);
+                } else
+                    v.startDrag(null, shadowBuilder, v, 0);
                 return true;
             }
+
             else { return false; }
         }
     }

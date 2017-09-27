@@ -2,24 +2,20 @@ package uplb.cas.ics.phporktraceability;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.util.HashMap;
-
-import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -34,11 +30,6 @@ public class ChooseGender extends AppCompatActivity
     String foster_sow = "";
     String group_label = "";
     String breed = "";
-    private Toolbar toolbar;
-    private ImageView iv_male;
-    private ImageView iv_female;
-    private LinearLayout top_cont;
-    private LinearLayout bot_cont;
     //String week_farrowed = "";
 
 //    TestSessionManager test;
@@ -54,12 +45,27 @@ public class ChooseGender extends AppCompatActivity
 //        HashMap<String, Integer> testuser = test.getCount();
 //        count = testuser.get(TestSessionManager.KEY_COUNT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ChooseGender.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.gender);
 
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
@@ -68,25 +74,22 @@ public class ChooseGender extends AppCompatActivity
         group_label = i.getStringExtra("group_label");
         breed = i.getStringExtra("breed");
 
-        iv_male = (ImageView) findViewById(R.id.iv_male);
-        iv_female = (ImageView) findViewById(R.id.iv_female);
-        top_cont = (LinearLayout) findViewById(R.id.top_container);
-        bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
+        ImageView iv_male = (ImageView) findViewById(R.id.iv_male);
+        ImageView iv_female = (ImageView) findViewById(R.id.iv_female);
+        LinearLayout bot_cont = (LinearLayout) findViewById(R.id.bottom_container);
 
         iv_male.setOnTouchListener(this);
         iv_female.setOnTouchListener(this);
-        //top_cont.setOnDragListener(this);
         bot_cont.setOnDragListener(this);
 
     }
 
-     /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    } */
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -102,9 +105,6 @@ public class ChooseGender extends AppCompatActivity
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
                 i.putExtra("foster_sow", foster_sow);
-                i.putExtra("group_label", group_label);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -146,8 +146,6 @@ public class ChooseGender extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseGender.this, "Chosen " + gender,
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(ChooseGender.this, AssignRFIDPage.class);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
@@ -155,8 +153,6 @@ public class ChooseGender extends AppCompatActivity
                     i.putExtra("group_label", group_label);
                     i.putExtra("breed", breed);
                     i.putExtra("gender", gender);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -175,7 +171,10 @@ public class ChooseGender extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -183,16 +182,10 @@ public class ChooseGender extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
         Intent i = new Intent(ChooseGender.this, ChooseBreedPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
         i.putExtra("foster_sow", foster_sow);
-        i.putExtra("group_label", group_label);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }

@@ -1,10 +1,11 @@
 <resources>
-    <string name="app_name">Farm Android Application</string>
+    <string name="app_name">PhPork Farm Input</string>
     <string name="action_settings">Settings</string>
     <string name="action_help">Help</string>
     <string name="action_edit">Edit</string>
     <string name="action_export">Export Test</string>
     <string name="action_import">Import</string>
+    <string name="action_change">Change Location</string>
     <string name="section_format">Hello World from section: %1$d</string>
 
     <string name="hint_username">Username</string>
@@ -97,7 +98,7 @@
     <string name="feed">Feeding Pig</string>
     <string name="med">Medicate Pig</string>
     <string name="weight_record">Weekly Graphical Report</string>
-    <string name="title_activity_intro_slider"> </string>
+    <string name="update_pig">Update Pig Info</string>
 
     <string name="prev_name">Previous</string>
     <string name="next_name">Next</string>

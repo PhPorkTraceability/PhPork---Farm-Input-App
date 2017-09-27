@@ -5,4 +5,8 @@
         android:orderInCategory="100" app:showAsAction="ifRoom"
         android:icon="@drawable/ic_edit" />
 
+    <item android:id="@+id/action_help" android:title="@string/actions_help"
+        android:orderInCategory="200" app:showAsAction="ifRoom"
+        android:icon="@mipmap/ic_help"/>
+
 </menu>

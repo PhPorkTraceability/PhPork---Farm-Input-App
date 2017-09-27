@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import listeners.OnSwipeTouchListener;
+
 /**
  * Created by marmagno on 11/25/2015.
  */
@@ -93,6 +95,4 @@ public class CustomPagerAdapter extends PagerAdapter
         }
         else { return false; }
     }
-
-
 }

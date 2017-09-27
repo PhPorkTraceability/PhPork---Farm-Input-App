@@ -180,8 +180,6 @@ public class UpdatePigFosterSowFrag extends Fragment {
 
                         int vid = to.getId();
                         if (view.findViewById(vid) == view.findViewById(R.id.bottom_container)) {
-                            Toast.makeText(getActivity(), "Chosen " + foster_sow,
-                                    Toast.LENGTH_LONG).show();
                             final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             builder.setTitle("Updating Foster Sow Parent...")
                                     .setMessage("Confirm update?")

@@ -287,9 +287,6 @@ public class LastMedicationGivenEdit extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(LastMedicationGivenEdit.this, "Chosen Vaccine: " +
-                                    getLabel(med_id),
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(LastMedicationGivenEdit.this, AddThePig.class);
                     createIntent(i);
                     startActivity(i);

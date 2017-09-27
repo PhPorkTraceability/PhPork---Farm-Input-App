@@ -1,12 +1,15 @@
 package app;
 
 import android.app.Application;
+import android.text.TextUtils;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
-import helper.TypefaceUtil;
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+import uplb.cas.ics.phporktraceability.R;
 
 /**
  * Created by marmagno on 11/10/2015.
@@ -26,6 +29,13 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // font from assets: "assets/fonts/Roboto-Regular.ttf
+        CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
+                .setDefaultFontPath("fonts/BebasNeue.ttf")
+                .setFontAttrId(R.attr.fontPath)
+                .build()
+        );
+
         mInstance = this;
     }
 
@@ -37,7 +47,6 @@ public class AppController extends Application {
         return mRequestQueue;
     }
 
-    /*
     public <T> void addToRequestQueue(Request<T> req, String tag) {
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
         req.setRetryPolicy(new DefaultRetryPolicy(
@@ -47,11 +56,9 @@ public class AppController extends Application {
         getRequestQueue().add(req);
     }
 
-    */
     public <T> void addToRequestQueue(Request<T> req) {
         req.setTag(TAG);
         getRequestQueue().add(req);
-
     }
 
     public void cancelPendingRequests(Object tag) {

@@ -1,15 +1,20 @@
 package uplb.cas.ics.phporktraceability;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInstaller;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.ProgressBar;
@@ -34,11 +39,14 @@ import app.AppConfig;
 import app.AppController;
 import helper.NetworkUtil;
 import helper.SQLiteHandler;
+import helper.SessionManager;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 3/21/2016.
  */
-public class ExportData extends Activity implements Runnable {
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+public class ExportData extends Activity {
 
     private static final String TAG = ExportData.class.getSimpleName();
     private boolean tag_error = false;
@@ -59,6 +67,7 @@ public class ExportData extends Activity implements Runnable {
     private static final String KEY_FARROWING = "farrowing_date";
     private static final String KEY_PIGSTAT = "pig_status";
     private static final String KEY_USER = "user";
+    private static final String KEY_GNAME = "pig_batch";
 
     // Table Weight Record
     private static final String KEY_WRID = "record_id";
@@ -82,10 +91,28 @@ public class ExportData extends Activity implements Runnable {
     private static final String KEY_MRID = "mr_id";
     private static final String KEY_MEDID = "med_id";
 
+    // Table RFID Tags
+    private static final String KEY_TAGID = "tag_id";
+    private static final String KEY_TAGRFID = "tag_rfid";
+    private static final String KEY_TAGSTAT = "status";
+    private static final String KEY_LABEL = "label";
+
+    // Table User Transaction
+    private static final String KEY_TRANSID = "trans_id";
+    private static final String KEY_USERID = "user_id";
+    private static final String KEY_DATEEDITED = "date_edited";
+    private static final String KEY_IDEDITED = "id_edited";
+    private static final String KEY_TYPEEDITED = "type_edited";
+    private static final String KEY_PREVVAL = "prev_value";
+    private static final String KEY_CURVAL = "curr_value";
+    private static final String KEY_FLAG = "flag";
+
     String[] pigs = {};
     String[] weights = {};
     String[] fed_lists = {};
     String[] med_lists = {};
+    String[] rfid_tags = {};
+    String[] user_trans = {};
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
@@ -93,15 +120,13 @@ public class ExportData extends Activity implements Runnable {
             Manifest.permission.READ_EXTERNAL_STORAGE,
     };
     SQLiteHandler db;
-    //Initialize a counter integer to zero
-    int counter = 0;
-    private ProgressBar progressBar;
-    //A ProgressDialog View
     private ProgressDialog progressDialog;
-    //A thread, that will be used to execute code in parallel with the UI thread
-    private Thread thread;
-    //Create a Thread handler to queue code execution on a thread
-    private Handler handler;
+    private AlertDialog alertDialog;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -114,7 +139,7 @@ public class ExportData extends Activity implements Runnable {
         //Create a new progress dialog.
         progressDialog = new ProgressDialog(ExportData.this);
         //Set the progress dialog to display a horizontal bar .
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         //Set the dialog title to 'Loading...'.
         progressDialog.setTitle("Exporting Data to Server.");
         //Set the dialog message to 'Loading application View, please wait...'.
@@ -122,20 +147,9 @@ public class ExportData extends Activity implements Runnable {
         //This dialog can't be canceled by pressing the back key.
         progressDialog.setCancelable(false);
         //This dialog isn't indeterminate.
-        progressDialog.setIndeterminate(false);
-        //The maximum number of progress items is 100.
-        progressDialog.setMax(100);
-        //Set the current progress to zero.
-        progressDialog.setProgress(0);
+        progressDialog.setIndeterminate(true);
         //Display the progress dialog.
         progressDialog.show();
-
-        //Initialize the handler
-        handler = new Handler();
-        //Initialize the thread
-        thread = new Thread(this, "ProgressDialogThread");
-        //start the thread
-        thread.start();
 
     }
 
@@ -145,25 +159,53 @@ public class ExportData extends Activity implements Runnable {
 
         int status = NetworkUtil.getConnectivityStatus(getApplicationContext());
         if(status == 0){
-            tag_error = true;
-
+            displayAlert("Cannot establish connection to server.");
         } else {
             sendDataToServer();
-
         }
     }
 
+    public void updateDB(){
+        for (String pig : pigs) {
+            db.updatePig(pig);
+        }
+
+        for (String weight : weights) {
+            db.updateWeightRec(weight);
+        }
+
+        for (String fed_list : fed_lists) {
+            db.updateFeedRec(fed_list);
+        }
+
+        for (String med_list : med_lists) {
+            db.updateMedRec(med_list);
+        }
+
+        for(String rfid_tag : rfid_tags) {
+            db.updateTagStat(rfid_tag);
+        }
+
+        for(String trans_id : user_trans) {
+            db.updateUserTrans(trans_id);
+        }
+
+        nextPage();
+    }
 
     private void sendDataToServer() {
-        final String tag_string_send = "send_alldata";
+//        final String tag_string_send = "send_alldata";
 
         ArrayList<HashMap<String, String>> weight_records = db.getWeightRecs();
         ArrayList<HashMap<String, String>> feed_records = db.getFeedRecs();
         ArrayList<HashMap<String, String>> med_records = db.getMedRecs();
         ArrayList<HashMap<String, String>> newPigs = db.getNewPigs();
+        ArrayList<HashMap<String, String>> updatedTags = db.getUpdatedTags();
+        ArrayList<HashMap<String, String>> userTrans = db.getUserTransactions();
 
-        //ArrayList<HashMap<String, String>> updatePigs = db.getUpdatedPigs();
         final JSONObject allData = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
+        final JSONArray allDataArray = new JSONArray();
 
         try{
 
@@ -171,11 +213,15 @@ public class ExportData extends Activity implements Runnable {
             JSONArray ft_jsonArray = new JSONArray();
             JSONArray mr_jsonArray = new JSONArray();
             JSONArray pig_jsonArray = new JSONArray();
+            JSONArray rfid_jsonArray = new JSONArray();
+            JSONArray userTrans_jsonArray = new JSONArray();
 
             pigs = new String[newPigs.size()];
             fed_lists = new String[feed_records.size()];
             weights = new String[weight_records.size()];
             med_lists = new String[med_records.size()];
+            rfid_tags = new String[updatedTags.size()];
+            user_trans = new String[userTrans.size()];
 
             for(int i = 0;i < newPigs.size();i++){
                 HashMap<String, String> data = newPigs.get(i);
@@ -184,13 +230,14 @@ public class ExportData extends Activity implements Runnable {
                 jsonObjectData.put(KEY_BOARID, data.get(KEY_BOARID));
                 jsonObjectData.put(KEY_SOWID, data.get(KEY_SOWID));
                 jsonObjectData.put(KEY_FOSTER, data.get(KEY_FOSTER));
-                //jsonObjectData.put(KEY_WEEKF, data.get(KEY_WEEKF));
+                jsonObjectData.put(KEY_WEEKF, data.get(KEY_WEEKF));
                 jsonObjectData.put(KEY_GENDER, data.get(KEY_GENDER));
-                //jsonObjectData.put(KEY_FARROWING, data.get(KEY_FARROWING));
+                jsonObjectData.put(KEY_FARROWING, data.get(KEY_FARROWING));
                 jsonObjectData.put(KEY_PIGSTAT, data.get(KEY_PIGSTAT));
                 jsonObjectData.put(KEY_PENID, data.get(KEY_PENID));
                 jsonObjectData.put(KEY_BREEDID, data.get(KEY_BREEDID));
-                //jsonObjectData.put(KEY_USER, data.get(KEY_USER));
+                jsonObjectData.put(KEY_USER, data.get(KEY_USER));
+                jsonObjectData.put(KEY_GNAME, data.get(KEY_GNAME));
                 pig_jsonArray.put(jsonObjectData);
 
                 pigs[i] = data.get(KEY_PIGID);
@@ -204,6 +251,7 @@ public class ExportData extends Activity implements Runnable {
                 jsonObjectData.put(KEY_WEIGHT, data.get(KEY_WEIGHT));
                 jsonObjectData.put(KEY_PIGID, data.get(KEY_PIGID));
                 jsonObjectData.put(KEY_REMARKS, data.get(KEY_REMARKS));
+                jsonObjectData.put(KEY_USER, data.get(KEY_USER));
                 wr_jsonArray.put(jsonObjectData);
 
                 weights[i] = data.get(KEY_WRID);
@@ -238,29 +286,59 @@ public class ExportData extends Activity implements Runnable {
                 med_lists[i] = data.get(KEY_MRID);
             }
 
-            /*
-            jsonObject.put("weight_record", wr_jsonArray);
+            for(int i = 0;i < updatedTags.size();i++){
+                HashMap<String, String> data = updatedTags.get(i);
+                JSONObject jsonObjectData = new JSONObject();
+                jsonObjectData.put(KEY_TAGID, data.get(KEY_TAGID));
+                jsonObjectData.put(KEY_TAGRFID, data.get(KEY_TAGRFID));
+                jsonObjectData.put(KEY_PIGID, data.get(KEY_PIGID));
+                jsonObjectData.put(KEY_LABEL, data.get(KEY_LABEL));
+                jsonObjectData.put(KEY_TAGSTAT, data.get(KEY_TAGSTAT));
+                rfid_jsonArray.put(jsonObjectData);
+
+                rfid_tags[i] = data.get(KEY_TAGID);
+            }
+
+            for(int i = 0;i < userTrans.size();i++){
+                HashMap<String, String> data = userTrans.get(i);
+                JSONObject jsonObjectData = new JSONObject();
+                jsonObjectData.put(KEY_USERID, data.get(KEY_USERID));
+                jsonObjectData.put(KEY_DATEEDITED, data.get(KEY_DATEEDITED));
+                jsonObjectData.put(KEY_IDEDITED, data.get(KEY_IDEDITED));
+                jsonObjectData.put(KEY_TYPEEDITED, data.get(KEY_TYPEEDITED));
+                jsonObjectData.put(KEY_PREVVAL, data.get(KEY_PREVVAL));
+                jsonObjectData.put(KEY_CURVAL, data.get(KEY_CURVAL));
+                jsonObjectData.put(KEY_PIGID, data.get(KEY_PIGID));
+                jsonObjectData.put(KEY_FLAG, data.get(KEY_FLAG));
+                userTrans_jsonArray.put(jsonObjectData);
+
+                user_trans[i] = data.get(KEY_TRANSID);
+            }
+
+
+         /*   jsonObject.put("weight_record", wr_jsonArray);
             jsonObject.put("feed_transaction", ft_jsonArray);
             jsonObject.put("med_record", mr_jsonArray);
-            jsonObject.put("pig", newPigs);
+            jsonObject.put("pig", pig_jsonArray);
+            jsonObject.put("rfid_tags", rfid_jsonArray);
+            jsonObject.put("user_transaction", userTrans);
 
             allDataArray.put(jsonObject);
 
-            allData.put("response", allDataArray);
-
-            */
+            allData.put("response", allDataArray);*/
 
             allData.put("pig", pig_jsonArray);
             allData.put("weight_record", wr_jsonArray);
             allData.put("feed_transaction", ft_jsonArray);
             allData.put("med_record", mr_jsonArray);
+            allData.put("rfid_tags", rfid_jsonArray);
+            allData.put("user_transaction", userTrans_jsonArray);
 
             //Toast.makeText(this, String.valueOf(allData), Toast.LENGTH_LONG).show();
             Log.d(TAG,  String.valueOf(allData));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST,
                 AppConfig.URL_SENDNEWDATA, allData,
@@ -273,43 +351,45 @@ public class ExportData extends Activity implements Runnable {
                             //JSONObject resp = new JSONObject(response);
                             boolean error = response.getBoolean("error");
 
-                            if(error){
-                                tag_error = true;
-                                String errorMsg = response.getString("error_msg");
-                                Toast.makeText(ExportData.this, errorMsg, Toast.LENGTH_LONG).show();
+                            if(!error)
+                                updateDB();
+                            else {
+                                String errorMsg = response.getString("error_message");
+                                Log.e(TAG, "Error Response: " + errorMsg);
+                                displayAlert("Error Response: " + errorMsg);
                             }
 
                         } catch (JSONException e) {
-                            tag_error = true;
-                            e.printStackTrace();
-                            Toast.makeText(ExportData.this, "Json error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
+                            try {
+                                e.printStackTrace();
+                                Log.e(TAG, "JSON Error: " + response.toString(3));
+                            } catch (JSONException e1) {
+                                e1.printStackTrace();
+                                displayAlert("Error Response: " + e1.getMessage());
+                            }
                         }
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                try{
-                    Log.d(TAG, "Response error: " + error);
-                    Toast.makeText(ExportData.this, error.getMessage(), Toast.LENGTH_LONG).show();
-
-                }catch (NullPointerException ex){}
-                tag_error = true;
+                    Log.d(TAG, "Volley error: " + error.getMessage());
+                    displayAlert("Connection failed.");
             }
         }){
 
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 HashMap<String, String> headers = new HashMap<>();
-                headers.put("Content-Type", "application/json; charset=utf-8");
+                headers.put("Content-Type", "application/json;charset=utf-8");
                 return headers;
             }
 
         };
 
         request.setRetryPolicy(new DefaultRetryPolicy(
-                0, -1, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                3000, // timeout in ms
+                0, // no of retries
+                1)); // backoff multiplier
 
         // Adding request to request queue
         AppController.getInstance().addToRequestQueue(request);//, tag_string_send);
@@ -323,94 +403,25 @@ public class ExportData extends Activity implements Runnable {
         finish();
     }
 
-    @Override
-    public void run()
-    {
-        try
-        {
-            //Obtain the thread's token
-            synchronized (thread)
-            {
-                //While the counter is smaller than four
-                while(counter <= 10)
-                {
-                    //Wait 1000 milliseconds
-                    thread.wait(1000);
-                    //Increment the counter
-                    counter++;
+    public void displayAlert(String message){
 
-                    //update the changes to the UI thread
-                    handler.post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            //Set the current progress.
-                            progressDialog.setProgress(counter*10);
-                        }
-                    });
-                }
-            }
-        }
-        catch (InterruptedException e)
-        {
-            e.printStackTrace();
-        }
-
-        //This works just like the onPostExecute method from the AsyncTask class
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Intent i = new Intent(ExportData.this, ChooseModule.class);
-                startActivity(i);
-                finish();
-
-                if (tag_error) {
-                    new AlertDialog.Builder(ExportData.this)
-                            .setTitle("Connection Failed")
-                            .setMessage("Your phone cannot establish a connection to the server. " +
-                                    "Want to store the database content on your phone?")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //TODO: Do intense testing on this part
-                                    exportOffline();
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            }).show();
-                } else{
-
-                    for (String pig : pigs) {
-                        db.updatePig(pig);
+        alertDialog = new AlertDialog.Builder(this)
+                .setTitle(message)
+                .setCancelable(false)
+                .setMessage("Do you want to import offline?")
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //TODO: Do intense testing on this part
+                        exportOffline();
                     }
-
-                    for (String weight : weights) {
-                        db.updateWeightRec(weight);
+                })
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        nextPage();
                     }
-
-                    for (String fed_list : fed_lists) {
-                        db.updateFeedRec(fed_list);
-                    }
-
-                    for (String med_list : med_lists) {
-                        db.updateMedRec(med_list);
-                    }
-
-                    nextPage();
-                }
-
-            }
-        });
-
-        //Try to "kill" the thread, by interrupting its execution
-        synchronized (thread)
-        {
-            thread.interrupt();
-        }
+                }).show();
     }
 
     public void exportOffline() {
@@ -432,14 +443,13 @@ public class ExportData extends Activity implements Runnable {
             db.exportTables(this);
         }
 
-        Intent i = new Intent(ExportData.this, ChooseModule.class);
-        startActivity(i);
-        finish();
+        nextPage();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
@@ -447,7 +457,6 @@ public class ExportData extends Activity implements Runnable {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     db.exportTables(this);
                 }
-                return;
             }
         }
     }
@@ -457,6 +466,9 @@ public class ExportData extends Activity implements Runnable {
         super.onDestroy();
 
         //Close the progress dialog
-        progressDialog.dismiss();
+        if(progressDialog != null && progressDialog.isShowing())
+            progressDialog.dismiss();
+        if(alertDialog != null && alertDialog.isShowing())
+            alertDialog.dismiss();
     }
 }

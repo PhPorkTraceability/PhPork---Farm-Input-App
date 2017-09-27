@@ -1,10 +1,15 @@
 package uplb.cas.ics.phporktraceability;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -18,9 +23,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -32,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import helper.SQLiteHandler;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by marmagno on 11/19/2015.
@@ -63,12 +71,17 @@ public class ViewListOfPigs extends AppCompatActivity
     SQLiteHandler db;
     String pig_id = "";
     String house_id = "";
-    String pen = "";
-    private Toolbar toolbar;
+    String pen_id = "";
     private ListView lv;
     private TextView tv_drag;
     private EditText et_searchPig;
-    //private RecyclerView lv;
+    Dialog longViewD = null;
+    Dialog viewD = null;
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,22 +89,36 @@ public class ViewListOfPigs extends AppCompatActivity
         setContentView(R.layout.view_list_of_pigs);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Intent i = getIntent();
         house_id = i.getStringExtra("house_id");
-        pen = i.getStringExtra("pen");
+        pen_id = i.getStringExtra("pen_id");
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ViewListOfPigs.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.function);
 
         db = SQLiteHandler.getInstance();
 
         et_searchPig = (EditText) findViewById(R.id.et_searchPig);
         lv = (ListView)findViewById(R.id.listview);
-       // lv = (RecyclerView)findViewById(R.id.listview);
         lv.setTextFilterEnabled(true);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -132,7 +159,7 @@ public class ViewListOfPigs extends AppCompatActivity
                 tag_label = "Tag: " + checkIfNull(c.get(KEY_TAGLABEL));
 
                 // Create Object of Dialog class
-                final Dialog viewD = new Dialog(ViewListOfPigs.this);
+                viewD = new Dialog(ViewListOfPigs.this);
                 // Set GUI of login screen
                 viewD.setContentView(R.layout.dialog_view_pig);
                 viewD.setTitle("Viewing Pig Details");
@@ -186,7 +213,7 @@ public class ViewListOfPigs extends AppCompatActivity
                         view.findViewById(R.id.tv_pig)).getText().toString().trim();
 
                 // Create Object of Dialog class
-                final Dialog longViewD = new Dialog(ViewListOfPigs.this);
+                longViewD = new Dialog(ViewListOfPigs.this);
                 // Set GUI of login screen
                 longViewD.setContentView(R.layout.dialog_longclick);
                 longViewD.setTitle("What else to do?");
@@ -212,13 +239,6 @@ public class ViewListOfPigs extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -228,8 +248,6 @@ public class ViewListOfPigs extends AppCompatActivity
             case android.R.id.home:
                 Intent i = new Intent(ViewListOfPigs.this, ChooseViewPen.class);
                 i.putExtra("house_id", house_id);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -240,52 +258,84 @@ public class ViewListOfPigs extends AppCompatActivity
 
     public void loadLists(){
 
-        ArrayList<HashMap<String, String>> pigs = db.getPigsByPen(pen);
+        ArrayList<HashMap<String, String>> pigs = db.getPigsByPen(pen_id);
+        if(pigs.size() > 0) {
+            pig_list = new ArrayList<>();
+            for (int i = 0; i < pigs.size(); i++) {
+                HashMap<String, String> c = pigs.get(i);
+                HashMap<String, String> b = new HashMap<>();
+                b.put(KEY_LABEL, "Pig Label: " + c.get(KEY_LABEL));
+                b.put(KEY_PIGID, c.get(KEY_PIGID));
+                b.put(KEY_BREED, "Breed: " + c.get(KEY_BREED));
+                b.put(KEY_GENDER, "Gender: " + c.get(KEY_GENDER));
 
-        pig_list = new ArrayList<>();
-        for(int i = 0;i < pigs.size();i++)
-        {
-            HashMap<String, String> c = pigs.get(i);
-            HashMap<String, String> b = new HashMap<>();
-            b.put(KEY_LABEL, "Pig Label: " + getLabel(c.get(KEY_PIGID)));
-            b.put(KEY_PIGID, c.get(KEY_PIGID));
-            b.put(KEY_BREED, "Breed: " + c.get(KEY_BREED));
-            b.put(KEY_GENDER, "Gender: " + c.get(KEY_GENDER));
+                pig_list.add(b);
+            }
 
-            pig_list.add(b);
+            final ListAdapter adapter = new SimpleAdapter(
+                    ViewListOfPigs.this, pig_list,
+                    R.layout.pig_list, new String[]{
+                    KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[]{
+                    R.id.tv_pig, R.id.tv_pig_label, R.id.tv_breed, R.id.tv_gender});
+
+            lv.setAdapter(adapter);
+
+            et_searchPig.addTextChangedListener(new TextWatcher() {
+
+                @Override
+                public void beforeTextChanged(CharSequence s,
+                                              int start, int count, int after) {
+                    // TODO Auto-generated method stub
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start,
+                                          int before, int count) {
+                    // TODO Auto-generated method stub
+                    ((Filterable) adapter).getFilter().filter(s);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    // TODO Auto-generated method stub
+
+                }
+
+            });
+        } else {
+            final int SPLASH_TIME_OUT = 2000;
+            final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("No pigs available.")
+                    .setMessage("Please update your database. Cannot proceed any further.")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, int id) {
+
+                            new Handler().postDelayed(new Runnable() {
+
+                                /*
+                                 * Showing splash screen with a timer. This will be useful when you
+                                 * want to show case your app logo / company
+                                 */
+                                @Override
+                                public void run() {
+                                    // This method will be executed once the timer is over
+                                    // Start your app main activity
+                                    Intent i = new Intent(ViewListOfPigs.this, ChooseModule.class);
+                                    startActivity(i);
+                                    finish();
+
+                                    dialog.cancel();
+                                }
+                            }, SPLASH_TIME_OUT);
+                        }
+                    });
+
+            AlertDialog alert = builder.create();
+            alert.show();
         }
-
-        final ListAdapter adapter = new SimpleAdapter(
-                ViewListOfPigs.this, pig_list,
-                R.layout.pig_list, new String[] {
-                KEY_PIGID, KEY_LABEL, KEY_BREED, KEY_GENDER}, new int[] {
-                R.id.tv_pig, R.id.tv_pig_label, R.id.tv_breed, R.id.tv_gender});
-
-         lv.setAdapter(adapter);
-
-        et_searchPig.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s,
-                                          int start, int count, int after) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-                // TODO Auto-generated method stub
-                ((Filterable) adapter).getFilter().filter(s);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
-
-            }
-
-        });
     }
 
     private String checkIfNull(String _value){
@@ -293,24 +343,24 @@ public class ViewListOfPigs extends AppCompatActivity
         if(_value != null && !_value.isEmpty() && !_value.equals("null")) return _value;
         else return result;
     }
-
-    private String getLabel(String _id){
-        String result = "";
-
-        if(!checkIfNull(_id).equals("")) {
-            int size = _id.length();
-            String s = "0";
-            size = 6 - size;
-            for (int i = 0; i < size; i++) {
-                s = s + "0";
-            }
-            s = s + _id;
-            String temp1 = s.substring(0, 2);
-            String temp2 = s.substring(3, 7);
-            result = temp1 + "-" + temp2;
-        }
-        return result;
-    }
+//
+//    private String getLabel(String _id){
+//        String result = "";
+//
+//        if(!checkIfNull(_id).equals("")) {
+//            int size = _id.length();
+//            String s = "0";
+//            size = 6 - size;
+//            for (int i = 0; i < size; i++) {
+//                s = s + "0";
+//            }
+//            s = s + _id;
+//            String temp1 = s.substring(0, 2);
+//            String temp2 = s.substring(3, 7);
+//            result = temp1 + "-" + temp2;
+//        }
+//        return result;
+//    }
 
     @Override
     public boolean onDrag(View v, DragEvent e) {
@@ -342,28 +392,17 @@ public class ViewListOfPigs extends AppCompatActivity
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
+
+                    Intent i = new Intent();
                     if(choice.equals("weight")){
-
-                        Intent i = new Intent(ViewListOfPigs.this, PigWeightRecord.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        i.putExtra("pig_id", pig_id);
-                        i.putExtra("house_id", house_id);
-                        i.putExtra("pen", pen);
-                        startActivity(i);
-                        finish();
-                    } else if(choice.equals("update")) {
-
-                        Intent i = new Intent(ViewListOfPigs.this, UpdatePigActivity.class);
-                        i.putExtra("pig_id", pig_id);
-                        i.putExtra("house_id", house_id);
-                        i.putExtra("pen", pen);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
-                        finish();
-                    }
-
+                        i.setClass(ViewListOfPigs.this, PigWeightRecord.class);
+                    } else if(choice.equals("update"))
+                        i.setClass(ViewListOfPigs.this, UpdatePigActivity.class);
+                    i.putExtra("pig_id", pig_id);
+                    i.putExtra("house_id", house_id);
+                    i.putExtra("pen_id", pen_id);
+                    startActivity(i);
+                    finish();
                 }
                 break;
             case DragEvent.ACTION_DRAG_ENDED:
@@ -379,7 +418,10 @@ public class ViewListOfPigs extends AppCompatActivity
     public boolean onTouch(View v, MotionEvent e) {
         if (e.getAction() == MotionEvent.ACTION_DOWN) {
             View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(v);
-            v.startDrag(null, shadowBuilder, v, 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                v.startDragAndDrop(null, shadowBuilder, v, 0);
+            } else
+                v.startDrag(null, shadowBuilder, v, 0);
             return true;
         }
         else { return false; }
@@ -387,13 +429,21 @@ public class ViewListOfPigs extends AppCompatActivity
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-
         Intent i = new Intent(ViewListOfPigs.this, ChooseViewPen.class);
         i.putExtra("house_id", house_id);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+        if(viewD != null) {
+            viewD.dismiss();
+        }
+        if(longViewD != null) {
+            longViewD.dismiss();
+        }
     }
 }

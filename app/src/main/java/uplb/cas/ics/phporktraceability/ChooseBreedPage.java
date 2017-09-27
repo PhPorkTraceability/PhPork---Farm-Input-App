@@ -10,19 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.DragEvent;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.HashMap;
 import java.util.Random;
-
-import helper.TestSessionManager;
 
 /**
  * Created by marmagno on 11/11/2015.
@@ -32,7 +28,6 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     private static final String LOGCAT = ChooseBreedPage.class.getSimpleName();
     ViewPager viewPager;
     PagerAdapter adapter;
-    LinearLayout ll;
     LinearLayout bl;
     TextView tv_title;
     ImageView iv_left, iv_right;
@@ -46,7 +41,6 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
     String[] arr2 = {"", "", "", "", "", ""};
     String[] arr3 = {"", "", "", "", "", ""};
     String[] ids = {"1", "2", "3", "4", "5", "6"};
-    private Toolbar toolbar;
 
 //    TestSessionManager test;
 //    int count = 0;
@@ -61,12 +55,27 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
 //        HashMap<String, Integer> testuser = test.getCount();
 //        count = testuser.get(TestSessionManager.KEY_COUNT);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        assert getSupportActionBar() != null;
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setIcon(R.mipmap.ic_phpork);
+
+        ImageButton home = (ImageButton) toolbar.findViewById(R.id.home_logo);
+        home.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent();
+                i.setClass(ChooseBreedPage.this, ChooseModule.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        TextView pg_title = (TextView) toolbar.findViewById(R.id.page_title);
+        pg_title.setText(R.string.breed);
 
         Intent i = getIntent();
         boar_id = i.getStringExtra("boar_id");
@@ -76,9 +85,7 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
         res = getResources();
         arr = res.getStringArray(R.array.pig_breeds);
 
-        ll = (LinearLayout) findViewById(R.id.top_container);
-        bl = (LinearLayout) findViewById(R.id.bottom_container);
-        //ll.setOnDragListener(this);
+        bl = (LinearLayout) findViewById(R.id.bottom_container);;
         bl.setOnDragListener(this);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         //viewPager.setOnDragListener(this);
@@ -158,13 +165,13 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
 
     }
 
-    /*
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_home, menu);
-        return true;
-    } */
+
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_home, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -179,8 +186,6 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
                 Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
                 i.putExtra("boar_id", boar_id);
                 i.putExtra("sow_id", sow_id);
-                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 finish();
                 return true;
@@ -233,17 +238,12 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
 
                 int vid = to.getId();
                 if(findViewById(vid) == findViewById(R.id.bottom_container)){
-                    Toast.makeText(ChooseBreedPage.this, "Chosen Pig Breed: " +
-                                    arr[Integer.parseInt(breed)-1],
-                            Toast.LENGTH_LONG).show();
                     Intent i = new Intent(ChooseBreedPage.this, ChooseGender.class);
                     i.putExtra("breed", breed);
                     i.putExtra("boar_id", boar_id);
                     i.putExtra("sow_id", sow_id);
                     i.putExtra("foster_sow", foster_sow);
                     i.putExtra("group_label", group_label);
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(i);
                     finish();
                 }
@@ -259,14 +259,9 @@ public class ChooseBreedPage extends AppCompatActivity implements View.OnDragLis
 
     @Override
     public void onBackPressed(){
-        super.onBackPressed();
-//        count++;
-//        test.updateCount(count);
         Intent i = new Intent(ChooseBreedPage.this, ChooseFosterSowPage.class);
         i.putExtra("boar_id", boar_id);
         i.putExtra("sow_id", sow_id);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
         finish();
     }

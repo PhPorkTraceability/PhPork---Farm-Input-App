@@ -3,12 +3,13 @@
     android:id="@+id/main_content" android:layout_width="match_parent"
     android:layout_height="match_parent" android:fitsSystemWindows="true" >
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent" >
 
         <android.support.design.widget.AppBarLayout
+            android:id="@+id/appBar"
+            android:layout_centerHorizontal="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -18,22 +19,50 @@
         </android.support.design.widget.AppBarLayout>
 
         <TextView
+            android:id="@id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:text="Choose Pens"
+            android:layout_below="@id/appBar"
+            android:layout_centerHorizontal="true"
             android:textSize="32sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tv_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
+            android:layout_below="@id/tv_title"
+            android:layout_centerHorizontal="true"
             android:text="Tap Items to Choose"
             android:textSize="28sp"
             android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_subtitle"
+            android:layout_toLeftOf="@+id/cb_selectAll"
+            android:layout_toStartOf="@id/cb_selectAll"
+            android:textSize="18sp"
+            android:text="Select All: " />
+
+        <CheckBox
+            android:id="@+id/cb_selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:background="?android:attr/listChoiceIndicatorMultiple"
+            android:layout_below="@id/tv_subtitle"
+            android:layout_alignBaseline="@+id/tv_selectAll"
+            android:layout_alignRight="@+id/recycler_view"
+            android:layout_alignEnd="@+id/recycler_view" />
+
         <!--
         <EditText
             android:id="@+id/et_searchPig"
@@ -48,13 +77,15 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:layout_weight="1"
             android:layout_gravity="center"
-            android:scrollbars="vertical" />
+            android:layout_below="@id/tv_selectAll"
+            android:layout_centerHorizontal="true"
+            android:scrollbars="vertical"
+            android:layout_above="@+id/btn_submit" />
 
         <Button
             android:id="@+id/btn_submit"
@@ -62,12 +93,14 @@
             android:layout_height="wrap_content"
             android:background="@color/colorAccent"
             android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentBottom="true"
             android:layout_margin="30dp"
-            android:ems="8"
+            android:ems="4"
             android:text="Ok"
             android:textColor="@color/lbl_name"
-            android:textSize="@dimen/fs_first_item" />
+            android:textSize="@dimen/fs_title" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
